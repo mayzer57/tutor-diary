@@ -118,3 +118,36 @@ export const getStudentProfile = async () => {
     throw err;
   }
 };
+// В api.js заменяем функции:
+
+export const updateUserProfile = async (id, updates) => {
+  const isTutor = localStorage.getItem('userType') === 'tutor';
+  const endpoint = isTutor ? `/users/tutor/${id}` : `/users/${id}`;
+
+  const res = await fetch(`${API_URL}${endpoint}`, {
+    method: 'PATCH',
+    headers: authHeader(),
+    body: JSON.stringify(updates)
+  });
+
+  if (!res.ok) {
+    const error = await res.json();
+    throw new Error(error.message || 'Ошибка обновления профиля');
+  }
+  return await res.json();
+};
+
+export const changePassword = async ({ userId, userType, newPassword }) => {
+  const res = await fetch(`${API_URL}/auth/change-password`, {
+    method: 'POST',
+    headers: authHeader(),
+    body: JSON.stringify({ userId, userType, newPassword })
+  });
+
+  if (!res.ok) {
+    const error = await res.json();
+    throw new Error(error.message || 'Ошибка смены пароля');
+  }
+
+  return res.json();
+};

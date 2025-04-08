@@ -1,16 +1,19 @@
+// src/pages/Dashboard.js
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getStudents, addStudent } from '../api/api';
 import StudentForm from '../components/StudentForm';
 import StudentsList from '../components/StudentsList';
+import ProfileSettingsModal from '../components/ProfileSettingsModal';
+import './Dashboard.css'; // добавь css сюда
 
 function Dashboard({ onLogout }) {
   const [students, setStudents] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [user, setUser] = useState(null);
-  const navigate = useNavigate();
   const [showStudents, setShowStudents] = useState(true);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const userData = localStorage.getItem('user');
@@ -22,7 +25,6 @@ function Dashboard({ onLogout }) {
 
   const loadStudents = async () => {
     try {
-      setLoading(true);
       setError(null);
       const data = await getStudents();
       setStudents(Array.isArray(data) ? data : []);
@@ -30,16 +32,15 @@ function Dashboard({ onLogout }) {
       setError('Не удалось загрузить список учеников');
       console.error('Ошибка загрузки:', err);
       setStudents([]);
-    } finally {
-      setLoading(false);
     }
   };
+  
 
   const handleAddStudent = async (student) => {
     try {
       await addStudent({
         ...student,
-        tutor_id: JSON.parse(localStorage.getItem('user')).id
+        tutor_id: user?.id
       });
       await loadStudents();
     } catch (err) {
@@ -56,52 +57,29 @@ function Dashboard({ onLogout }) {
   };
 
   return (
-    <div style={{ padding: '20px', maxWidth: '800px', margin: '0 auto' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h1 style={{ color: '#2c3e50', margin: 0 }}>
-          📘 Панель репетитора {user && `- ${user.name}`}
-        </h1>
-        <button
-          onClick={handleLogout}
-          style={{
-            padding: '8px 16px',
-            background: '#f44336',
-            color: 'white',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: 'pointer'
-          }}
-        >
-          Выйти
-        </button>
-      </div>
-
-      {error && (
-        <div style={{ 
-          color: 'red', 
-          margin: '10px 0', 
-          padding: '10px', 
-          background: '#ffecec',
-          borderRadius: '4px'
-        }}>
-          {error}
+    <div className="dashboard-container">
+      <header className="dashboard-header">
+        <h1>📘 Панель репетитора {user && `- ${user.name}`}</h1>
+        <div className="header-controls">
+          <button className="settings-btn" onClick={() => setIsSettingsOpen(true)}>⚙️ Настройки профиля</button>
+          <button className="logout-btn" onClick={handleLogout}>Выйти</button>
         </div>
-      )}
+      </header>
+
+      {error && <div className="error-banner">{error}</div>}
 
       <StudentForm onAddStudent={handleAddStudent} />
 
-      <button 
-        onClick={() => setShowStudents(!showStudents)}
-        style={{
-          margin: '20px 0',
-          padding: '8px 16px',
-          background: '#4f46e5',
-          color: 'white',
-          border: 'none',
-          borderRadius: '4px',
-          cursor: 'pointer'
-        }}
-      >
+      <ProfileSettingsModal
+        isOpen={isSettingsOpen}
+        onClose={() => setIsSettingsOpen(false)}
+        user={{ id: user?.id, role: 'tutor' }}
+        initialData={user}
+        setUser={setUser} // 👈 передаём сюда
+      />
+
+
+      <button className="toggle-btn" onClick={() => setShowStudents(!showStudents)}>
         {showStudents ? 'Скрыть список учеников' : 'Показать список учеников'}
       </button>
 

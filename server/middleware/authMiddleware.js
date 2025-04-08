@@ -56,6 +56,7 @@ function authMiddleware(req, res, next) {
       message: err.message
     });
   }
+  
 }
 
 module.exports = authMiddleware;

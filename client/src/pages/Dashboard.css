@@ -1,9 +1,9 @@
-.student-dashboard {
+.dashboard-container {
   padding: 24px;
   max-width: 1100px;
   margin: auto;
   font-family: 'Segoe UI', sans-serif;
-  background-color: #fefefe;
+  background-color: #f9fafb;
   color: #1f2937;
 }
 
@@ -11,7 +11,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #e0f2fe;
+  background-color: #e0f2fe;
   padding: 18px 24px;
   border-radius: 10px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
@@ -19,9 +19,9 @@
 }
 
 .dashboard-header h1 {
-  margin: 0;
   font-size: 22px;
   font-weight: 600;
+  margin: 0;
 }
 
 .header-controls {
@@ -30,13 +30,14 @@
 }
 
 .settings-btn,
-.logout-btn {
+.logout-btn,
+.toggle-btn {
   padding: 10px 14px;
   font-size: 14px;
   border-radius: 6px;
   border: none;
   cursor: pointer;
-  transition: 0.3s ease;
+  transition: 0.2s ease;
 }
 
 .settings-btn {
@@ -58,26 +59,20 @@
   color: white;
 }
 
-.dashboard-content {
-  display: flex;
-  gap: 24px;
-  flex-wrap: wrap;
+.toggle-btn {
+  background-color: #6366f1;
+  color: white;
+  margin: 20px 0;
 }
 
-.dashboard-sidebar,
-.dashboard-main {
-  background-color: white;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.06);
+.toggle-btn:hover {
+  background-color: #4f46e5;
 }
 
-.dashboard-sidebar {
-  width: 100%;
-  max-width: 320px;
-}
-
-.dashboard-main {
-  flex: 1;
-  min-width: 300px;
+.error-banner {
+  color: #991b1b;
+  background: #fee2e2;
+  padding: 10px 12px;
+  border-radius: 6px;
+  margin-bottom: 16px;
 }

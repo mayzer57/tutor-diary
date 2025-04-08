@@ -3,12 +3,13 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getStudentProfile } from '../api/api';
 import './StudentDashboard.css';
+import ProfileSettingsModal from '../components/ProfileSettingsModal';
 
 function StudentDashboard({ onLogout }) {
   const [student, setStudent] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false); 
   useEffect(() => {
     const userType = localStorage.getItem('userType');
     if (userType !== 'student') {
@@ -44,7 +45,12 @@ function StudentDashboard({ onLogout }) {
     <div className="student-dashboard">
       <header className="dashboard-header">
         <h1>👨‍🎓 Личный кабинет ученика</h1>
-        <button className="logout-btn" onClick={handleLogout}>Выйти</button>
+        <div className="header-controls">
+          <button className="settings-btn" onClick={() => setIsSettingsOpen(true)}>
+            ⚙️ Настройки профиля
+          </button>
+          <button className="logout-btn" onClick={handleLogout}>Выйти</button>
+        </div>
       </header>
 
       <div className="dashboard-content">
@@ -60,6 +66,14 @@ function StudentDashboard({ onLogout }) {
           <p>Здесь появится ваше расписание, оценки и дневник 📘</p>
         </main>
       </div>
+       {/* Профиль модал */}
+       <ProfileSettingsModal
+        isOpen={isSettingsOpen}
+        onClose={() => setIsSettingsOpen(false)}
+        user={{ id: student?.id, role: 'student' }}
+        initialData={student}
+      />
+
     </div>
   );
 }

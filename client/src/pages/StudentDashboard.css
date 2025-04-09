@@ -1,83 +1,92 @@
 .student-dashboard {
-  padding: 24px;
-  max-width: 1100px;
+  padding: 32px;
+  max-width: 1200px;
   margin: auto;
   font-family: 'Segoe UI', sans-serif;
-  background-color: #fefefe;
+  background: linear-gradient(to bottom right, #f0f9ff, #e0f2fe);
   color: #1f2937;
+  min-height: 100vh;
 }
 
 .dashboard-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #e0f2fe;
-  padding: 18px 24px;
-  border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
-  margin-bottom: 20px;
+  background: linear-gradient(to right, #3b82f6, #60a5fa);
+  padding: 20px 28px;
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+  margin-bottom: 28px;
+  color: white;
 }
 
 .dashboard-header h1 {
   margin: 0;
-  font-size: 22px;
+  font-size: 24px;
   font-weight: 600;
 }
 
 .header-controls {
   display: flex;
-  gap: 12px;
+  gap: 14px;
 }
 
 .settings-btn,
 .logout-btn {
-  padding: 10px 14px;
+  padding: 10px 16px;
   font-size: 14px;
-  border-radius: 6px;
+  font-weight: 500;
+  border-radius: 8px;
   border: none;
   cursor: pointer;
-  transition: 0.3s ease;
+  transition: all 0.25s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .settings-btn {
-  background-color: #dbeafe;
+  background-color: #eff6ff;
   color: #1e3a8a;
 }
 
 .settings-btn:hover {
-  background-color: #bfdbfe;
+  background-color: #dbeafe;
+  transform: translateY(-1px);
 }
 
 .logout-btn {
-  background-color: #fecaca;
+  background-color: #fee2e2;
   color: #991b1b;
 }
 
 .logout-btn:hover {
-  background-color: #f87171;
+  background-color: #fca5a5;
   color: white;
+  transform: translateY(-1px);
 }
 
 .dashboard-content {
   display: flex;
-  gap: 24px;
+  gap: 28px;
   flex-wrap: wrap;
 }
 
 .dashboard-sidebar,
 .dashboard-main {
-  background-color: white;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.06);
+  background: white;
+  padding: 24px;
+  border-radius: 14px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
 }
 
-.dashboard-sidebar {
-  width: 100%;
-  max-width: 320px;
-}
-
+.dashboard-sidebar,
 .dashboard-main {
-  flex: 1;
-  min-width: 300px;
+  background: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  padding: 24px;
+  border-radius: 16px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.3);
 }

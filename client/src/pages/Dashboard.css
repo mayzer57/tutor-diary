@@ -5,6 +5,7 @@
   font-family: 'Segoe UI', sans-serif;
   background-color: #f9fafb;
   color: #1f2937;
+  min-height: 100vh;
 }
 
 .dashboard-header {
@@ -15,13 +16,14 @@
   padding: 18px 24px;
   border-radius: 10px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
-  margin-bottom: 20px;
+  margin-bottom: 24px;
 }
 
 .dashboard-header h1 {
   font-size: 22px;
   font-weight: 600;
   margin: 0;
+  color: #1e3a8a;
 }
 
 .header-controls {
@@ -75,4 +77,18 @@
   padding: 10px 12px;
   border-radius: 6px;
   margin-bottom: 16px;
+}
+
+/* Дополнительно для карточек учеников, если есть */
+.student-card {
+  background-color: #ffffff;
+  border-radius: 10px;
+  padding: 16px;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.05);
+  margin-bottom: 12px;
+  transition: box-shadow 0.2s ease;
+}
+
+.student-card:hover {
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
 }

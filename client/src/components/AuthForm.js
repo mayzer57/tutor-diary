@@ -38,7 +38,12 @@ function AuthForm({ onAuthSuccess }) {
         console.log("TOKEN OK. NAVIGATING TO", userType === 'tutor' ? '/dashboard' : '/student-dashboard');
 
   localStorage.setItem('token', response.token);
-  localStorage.setItem('user', JSON.stringify(response.user));
+  if (response.user) {
+    localStorage.setItem('user', JSON.stringify(response.user));
+  } else {
+    localStorage.removeItem('user');
+  }
+  
   localStorage.setItem('userType', userType);
 
   if (typeof onAuthSuccess === 'function') {

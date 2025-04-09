@@ -85,12 +85,21 @@ function ProfileSettingsModal({ isOpen, onClose, user, initialData, setUser }) {
       });
   
       const updatedUser = {
-        ...JSON.parse(localStorage.getItem('user')),
+        ...(() => {
+          const _val = localStorage.getItem('user');
+          return _val ? JSON.parse(_val) : null;
+        })()
+        ,
         name: formData.name,
         login: formData.login || formData.email
       };
   
-      localStorage.setItem('user', JSON.stringify(updatedUser));
+      if (updatedUser) {
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+      } else {
+        localStorage.removeItem('user');
+      }
+      
       if (setUser) setUser(updatedUser);
   
       // ✅ Сброс пароля

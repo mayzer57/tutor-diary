@@ -10,18 +10,25 @@ import './Dashboard.css'; // добавь css сюда
 function Dashboard({ onLogout }) {
   const [students, setStudents] = useState([]);
   const [error, setError] = useState(null);
-  const [user, setUser] = useState(null);
+
   const [showStudents, setShowStudents] = useState(true);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const userData = localStorage.getItem('user');
-    if (userData) {
-      setUser(JSON.parse(userData));
+  const [user, setUser] = useState(() => {
+    const data = localStorage.getItem('user');
+    try {
+      return data ? JSON.parse(data) : null;
+    } catch {
+      return null;
     }
+  });
+  
+  useEffect(() => {
     loadStudents();
   }, []);
+  
+
 
   const loadStudents = async () => {
     try {
@@ -67,6 +74,15 @@ function Dashboard({ onLogout }) {
       </header>
 
       {error && <div className="error-banner">{error}</div>}
+      <div style={{ marginBottom: '15px' }}>
+        <button
+          className="toggle-btn"
+          onClick={() => navigate('/schedule')}
+          style={{ marginRight: '10px' }}
+        >
+          Перейти к расписанию
+        </button>
+      </div>
 
       <StudentForm onAddStudent={handleAddStudent} />
 

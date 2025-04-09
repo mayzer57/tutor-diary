@@ -1,11 +1,12 @@
+// 📁 middleware/authMiddleware.js
 const jwt = require('jsonwebtoken');
 const pool = require('../db');
 
-function authMiddleware(req, res, next) {
+async function authMiddleware(req, res, next) {
   const authHeader = req.headers.authorization;
-  
+
   if (!authHeader) {
-    return res.status(401).json({ 
+    return res.status(401).json({
       code: 'TOKEN_MISSING',
       message: 'Authorization header is required'
     });
@@ -22,41 +23,32 @@ function authMiddleware(req, res, next) {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    
-    // Проверка существования пользователя в БД
-    pool.query('SELECT id FROM tutors WHERE id = $1', [decoded.id])
-      .then(result => {
-        if (result.rows.length === 0) {
-          return res.status(401).json({
-            code: 'USER_NOT_FOUND',
-            message: 'User not found'
-          });
-        }
-        
-        req.tutor = { id: decoded.id };
-        next();
-      })
-      .catch(err => {
-        console.error(err);
-        res.status(500).json({
-          code: 'SERVER_ERROR',
-          message: 'Server error'
-        });
-      });
-    
+
+    if (decoded.role === 'tutor') {
+      const tutor = await pool.query('SELECT id FROM tutors WHERE id = $1', [decoded.id]);
+      if (tutor.rows.length === 0) {
+        return res.status(401).json({ code: 'USER_NOT_FOUND', message: 'Репетитор не найден' });
+      }
+      req.tutor = { id: decoded.id };
+    } else if (decoded.role === 'student') {
+      const student = await pool.query('SELECT id FROM students WHERE id = $1', [decoded.id]);
+      if (student.rows.length === 0) {
+        return res.status(401).json({ code: 'USER_NOT_FOUND', message: 'Ученик не найден' });
+      }
+      req.student = { id: decoded.id };
+    } else {
+      return res.status(403).json({ code: 'FORBIDDEN', message: 'Неизвестная роль' });
+    }
+
+    next();
   } catch (err) {
     console.error('JWT Error:', err.message);
-    
-    const errorType = err.name === 'TokenExpiredError' 
-      ? 'TOKEN_EXPIRED' 
-      : 'INVALID_TOKEN';
-
+    const errorType = err.name === 'TokenExpiredError' ? 'TOKEN_EXPIRED' : 'INVALID_TOKEN';
     res.status(401).json({
       code: errorType,
       message: err.message
     });
   }
-  
 }
 
 module.exports = authMiddleware;

@@ -60,6 +60,13 @@ function StudentDashboard({ onLogout }) {
           <p><strong>Предмет:</strong> {student.subject}</p>
           <p><strong>Репетитор:</strong> {student.tutor_name || 'Не назначен'}</p>
         </aside>
+        <button 
+            className="toggle-btn" 
+            onClick={() => navigate('/student-schedule')}
+            style={{ marginBottom: '20px' }}
+          >
+            📘 Посмотреть расписание
+          </button>
 
         <main className="dashboard-main">
           <h2>Добро пожаловать, {student.name}!</h2>

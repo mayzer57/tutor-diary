@@ -32,56 +32,39 @@ function AuthForm({ onAuthSuccess }) {
         response = await loginStudent(name, password);
       }
   
-      console.log('Auth response:', response); // 🔍 Лог отладки
-  
       if (response?.token) {
-        console.log("TOKEN OK. NAVIGATING TO", userType === 'tutor' ? '/dashboard' : '/student-dashboard');
-
-  localStorage.setItem('token', response.token);
-  if (response.user) {
-    localStorage.setItem('user', JSON.stringify(response.user));
-  } else {
-    localStorage.removeItem('user');
-  }
+        localStorage.setItem('token', response.token);
+        if (response.user) {
+          localStorage.setItem('user', JSON.stringify(response.user));
+        } else {
+          localStorage.removeItem('user');
+        }
+        localStorage.setItem('userType', userType);
   
-  localStorage.setItem('userType', userType);
-
-  if (typeof onAuthSuccess === 'function') {
-    onAuthSuccess(); // <- может блокировать navigate()
-  }
-
-  navigate(userType === 'tutor' ? '/dashboard' : '/student-dashboard', { replace: true });
-} else {
-  console.warn("No token in response");
-}
+        if (typeof onAuthSuccess === 'function') {
+          onAuthSuccess();
+        }
+  
+        navigate(userType === 'tutor' ? '/dashboard' : '/student-dashboard', { replace: true });
+      } else {
+        console.warn('No token in response');
+      }
     } catch (err) {
       console.error('Auth error:', err);
-      switch (err.code) {
-        case 'EMAIL_EXISTS':
-          setError('Этот email уже зарегистрирован');
-          break;
-        case 'LOGIN_EXISTS':
-          setError('Этот логин уже занят');
-          break;
-        case 'WEAK_PASSWORD':
-          setError('Пароль должен быть не менее 6 символов');
-          break;
-        case 'INVALID_EMAIL':
-          setError('Некорректный формат email');
-          break;
-        case 'USER_NOT_FOUND':
-          setError('Пользователь не найден');
-          break;
-        case 'INVALID_PASSWORD':
-          setError('Неверный пароль');
-          break;
-        default:
-          setError(err.message || 'Ошибка авторизации');
-      }
+  
+      // 💬 Читаем сообщение от сервера
+      const message =
+        err?.response?.data?.error ||  // axios-стиль (если используешь axios)
+        err?.message ||                // fetch-стиль (то что ты используешь)
+        'Ошибка авторизации';
+
+      setError(message);
+
     } finally {
       setLoading(false);
     }
   };
+  
   
 
   return (

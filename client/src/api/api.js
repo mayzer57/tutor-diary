@@ -52,13 +52,18 @@ export const login = async (email, password) => {
 
   const data = await safeJson(response);
 
-  if (!response.ok) throw new Error(data.message || 'Ошибка входа');
+  if (!response.ok) {
+    const error = new Error(data.error || data.message || 'Ошибка входа');
+    error.code = response.status;
+    throw error;
+  }
 
   localStorage.setItem('token', data.token);
   localStorage.setItem('userType', 'tutor');
   localStorage.setItem('user', JSON.stringify(data.user));
   return data;
 };
+
 
 // ✅ Вход ученика
 export const loginStudent = async (login, password) => {
@@ -70,12 +75,29 @@ export const loginStudent = async (login, password) => {
 
   const data = await safeJson(response);
 
-  if (!response.ok) throw new Error(data.message || 'Ошибка входа ученика');
+  if (!response.ok) {
+    const error = new Error(data.error || data.message || 'Ошибка входа ученика');
+    error.code = response.status;
+    throw error;
+  }
 
   localStorage.setItem('token', data.token);
   localStorage.setItem('userType', 'student');
   localStorage.setItem('user', JSON.stringify(data.user));
   return data;
+};
+export const deleteStudent = async (id) => {
+  const res = await fetch(`${API_URL}/students/${id}`, {
+    method: 'DELETE',
+    headers: authHeader()
+  });
+
+  if (!res.ok) {
+    const error = await safeJson(res);
+    throw new Error(error.message || 'Ошибка удаления ученика');
+  }
+
+  return await safeJson(res);
 };
 
 // 👤 Профиль ученика
@@ -258,6 +280,24 @@ export const changePassword = async ({ userId, userType, newPassword }) => {
   if (!res.ok) {
     const error = await safeJson(res);
     throw new Error(error.message || 'Ошибка смены пароля');
+  }
+
+  return await safeJson(res);
+};
+export const updateStudent = async (student) => {
+  const res = await fetch(`${API_URL}/students/${student.id}`, {
+    method: 'PATCH',
+    headers: authHeader(),
+    body: JSON.stringify({
+      name: student.name,
+      subject: student.subject,
+      login: student.login
+    }),
+  });
+
+  if (!res.ok) {
+    const error = await safeJson(res);
+    throw new Error(error.message || 'Ошибка обновления ученика');
   }
 
   return await safeJson(res);

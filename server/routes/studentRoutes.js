@@ -51,13 +51,20 @@ router.post('/', auth, [
       [name, subject, login, hashed, req.tutor.id]
     );
 
-    res.status(201).json(result.rows[0]);
+    res.status(201).json({
+      message: 'Ученик успешно добавлен!',
+      student: result.rows[0]
+    });
+    
   } catch (err) {
     console.error('❌ Ошибка при добавлении ученика:', err.message);
     res.status(500).json({ error: 'Ошибка при добавлении ученика' });
   }
 });
-
+router.delete('/:id', auth, async (req, res) => {
+  await pool.query('DELETE FROM students WHERE id = $1', [req.params.id]);
+  res.json({ message: 'Ученик удалён' });
+});
 // ✅ Логин ученика
 router.post('/login', async (req, res) => {
   const { login, password } = req.body;
@@ -65,11 +72,15 @@ router.post('/login', async (req, res) => {
 
   try {
     const result = await pool.query('SELECT * FROM students WHERE login = $1', [login]);
-    if (result.rows.length === 0) return res.status(404).json({ error: 'Ученик не найден' });
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Логин не найден. Проверьте правильность данных' });
+    }
 
     const student = result.rows[0];
     const isMatch = await bcrypt.compare(password, student.password);
-    if (!isMatch) return res.status(401).json({ error: 'Неверный пароль' });
+    if (!isMatch) {
+      return res.status(401).json({ error: 'Неверный пароль. Попробуйте снова' });
+    }
 
     const token = jwt.sign(
       { id: student.id, role: 'student' },
@@ -81,7 +92,8 @@ router.post('/login', async (req, res) => {
     res.json({ token, user: data });
   } catch (err) {
     console.error('❌ Ошибка входа ученика:', err.message);
-    res.status(500).json({ error: 'Ошибка входа' });
+    res.status(500).json({ error: 'Ошибка сервера при входе. Попробуйте позже.' });
+
   }
 });
 
@@ -104,6 +116,32 @@ router.get('/me', auth, async (req, res) => {
   } catch (err) {
     console.error('❌ Ошибка загрузки профиля:', err.message);
     res.status(500).json({ error: 'Ошибка загрузки профиля' });
+  }
+});
+router.patch('/:id', auth, async (req, res) => {
+  const { name, subject, login } = req.body;
+
+  if (!name || !subject || !login) {
+    return res.status(400).json({ error: 'Все поля обязательны для обновления' });
+  }
+
+  try {
+    const result = await pool.query(
+      `UPDATE students
+       SET name = $1, subject = $2, login = $3
+       WHERE id = $4
+       RETURNING id, name, subject, login`,
+      [name, subject, login, req.params.id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Ученик не найден' });
+    }
+
+    res.json({ message: 'Ученик успешно обновлён', student: result.rows[0] });
+  } catch (err) {
+    console.error('Ошибка при обновлении ученика:', err.message);
+    res.status(500).json({ error: 'Ошибка сервера при обновлении ученика' });
   }
 });
 

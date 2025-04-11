@@ -1,16 +1,19 @@
-// src/pages/Dashboard.js
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getStudents, addStudent } from '../api/api';
-import StudentForm from '../components/StudentForm';
+import { getStudents, addStudent, deleteStudent, updateStudent } from '../api/api';
+
 import StudentsList from '../components/StudentsList';
 import ProfileSettingsModal from '../components/ProfileSettingsModal';
-import './Dashboard.css'; // добавь css сюда
+import EditStudentModal from '../components/EditStudentModal';
+import AddStudentModal from '../components/AddStudentModal';
+import './Dashboard.css';
 
 function Dashboard({ onLogout }) {
   const [students, setStudents] = useState([]);
   const [error, setError] = useState(null);
-
+  const [editingStudent, setEditingStudent] = useState(null);
+  const [toast, setToast] = useState('');
+  const [showAddModal, setShowAddModal] = useState(false);
   const [showStudents, setShowStudents] = useState(true);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const navigate = useNavigate();
@@ -23,12 +26,10 @@ function Dashboard({ onLogout }) {
       return null;
     }
   });
-  
+
   useEffect(() => {
     loadStudents();
   }, []);
-  
-
 
   const loadStudents = async () => {
     try {
@@ -41,18 +42,49 @@ function Dashboard({ onLogout }) {
       setStudents([]);
     }
   };
-  
 
   const handleAddStudent = async (student) => {
     try {
-      await addStudent({
+      const res = await addStudent({
         ...student,
         tutor_id: user?.id
       });
       await loadStudents();
+      return res;
     } catch (err) {
       setError('Не удалось добавить ученика');
       console.error('Ошибка добавления:', err);
+    }
+  };
+
+  const handleDeleteStudent = async (id) => {
+    try {
+      const res = await deleteStudent(id);
+      await loadStudents();
+      setToast(res.message || 'Ученик удалён');
+      setTimeout(() => setToast(''), 3000);
+      return res;
+    } catch (err) {
+      console.error('Ошибка при удалении:', err);
+      setError('Не удалось удалить ученика');
+      throw err;
+    }
+  };
+
+  const handleEditStudent = (student) => {
+    setEditingStudent(student);
+  };
+
+  const handleUpdateStudent = async (updatedStudent) => {
+    try {
+      const res = await updateStudent(updatedStudent);
+      await loadStudents();
+      setEditingStudent(null);
+      setToast(res.message || 'Ученик обновлён');
+      setTimeout(() => setToast(''), 3000);
+    } catch (err) {
+      console.error('Ошибка обновления:', err);
+      setError('Не удалось обновить ученика');
     }
   };
 
@@ -65,6 +97,22 @@ function Dashboard({ onLogout }) {
 
   return (
     <div className="dashboard-container">
+      {toast && (
+        <div style={{
+          position: 'fixed',
+          top: '20px',
+          right: '20px',
+          backgroundColor: '#4caf50',
+          color: 'white',
+          padding: '12px 16px',
+          borderRadius: '6px',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+          zIndex: 1000,
+        }}>
+          {toast}
+        </div>
+      )}
+
       <header className="dashboard-header">
         <h1>📘 Панель репетитора {user && `- ${user.name}`}</h1>
         <div className="header-controls">
@@ -74,32 +122,58 @@ function Dashboard({ onLogout }) {
       </header>
 
       {error && <div className="error-banner">{error}</div>}
+
       <div style={{ marginBottom: '15px' }}>
         <button
           className="toggle-btn"
-          onClick={() => navigate('/schedule')}
+          onClick={() => setShowAddModal(true)}
           style={{ marginRight: '10px' }}
+        >
+          ➕ Добавить ученика
+        </button>
+
+        <button
+          className="toggle-btn"
+          onClick={() => navigate('/schedule')}
         >
           Перейти к расписанию
         </button>
       </div>
 
-      <StudentForm onAddStudent={handleAddStudent} />
+      {showAddModal && (
+        <AddStudentModal
+          onAdd={handleAddStudent}
+          onClose={() => setShowAddModal(false)}
+        />
+      )}
+
+      
+
+      <EditStudentModal
+        student={editingStudent}
+        onSave={(student, save) => save && handleUpdateStudent(student)}
+        onClose={() => setEditingStudent(null)}
+      />
 
       <ProfileSettingsModal
         isOpen={isSettingsOpen}
         onClose={() => setIsSettingsOpen(false)}
         user={{ id: user?.id, role: 'tutor' }}
         initialData={user}
-        setUser={setUser} // 👈 передаём сюда
+        setUser={setUser}
       />
-
 
       <button className="toggle-btn" onClick={() => setShowStudents(!showStudents)}>
         {showStudents ? 'Скрыть список учеников' : 'Показать список учеников'}
       </button>
 
-      {showStudents && <StudentsList students={students} />}
+      {showStudents && (
+        <StudentsList
+          students={students}
+          onDelete={handleDeleteStudent}
+          onEdit={handleEditStudent}
+        />
+      )}
     </div>
   );
 }

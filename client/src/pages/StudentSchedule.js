@@ -29,7 +29,7 @@ function StudentSchedule() {
         {dayLessons.length === 0 && <p>Нет уроков</p>}
         {dayLessons.map((lesson) => (
           <div key={lesson.id} className="lesson-entry">
-            ⏰ {lesson.time?.slice(0, 5)} — 📘 {lesson.subject}
+            ⏰ {lesson.time?.slice(0, 5)} — 📘 {lesson.subject_name}
             {lesson.homework && <div className="hw">📝 {lesson.homework}</div>}
             {lesson.grade !== null && <div className="grade">🎯 Оценка: {lesson.grade}</div>}
             {lesson.homework_file && (

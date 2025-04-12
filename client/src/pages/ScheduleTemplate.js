@@ -8,9 +8,14 @@ const WEEKDAYS = ['Понедельник', 'Вторник', 'Среда', 'Ч�
 function ScheduleTemplate() {
   const [students, setStudents] = useState([]);
   const [templates, setTemplates] = useState([]);
-  const [form, setForm] = useState({
-    student_id: '',
-    time: ''
+  const [templatesData, setTemplatesData] = useState({
+    0: { student_id: '', subject_id: '', time: '' },
+    1: { student_id: '', subject_id: '', time: '' },
+    2: { student_id: '', subject_id: '', time: '' },
+    3: { student_id: '', subject_id: '', time: '' },
+    4: { student_id: '', subject_id: '', time: '' },
+    5: { student_id: '', subject_id: '', time: '' },
+    6: { student_id: '', subject_id: '', time: '' },
   });
 
   const navigate = useNavigate();
@@ -29,15 +34,25 @@ function ScheduleTemplate() {
     loadAll();
   }, []);
 
-  const handleChange = (e) => {
-    setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
+  const handleTemplateChange = (weekday, field, value) => {
+    setTemplatesData(prev => ({
+      ...prev,
+      [weekday]: {
+        ...prev[weekday],
+        [field]: value
+      }
+    }));
   };
 
   const handleInlineSubmit = async (e, weekday) => {
     e.preventDefault();
+    const data = templatesData[weekday];
     try {
-      await addTemplate({ ...form, weekday });
-      setForm({ student_id: '', time: '' });
+      await addTemplate({ ...data, weekday });
+      setTemplatesData(prev => ({
+        ...prev,
+        [weekday]: { student_id: '', subject_id: '', time: '' }
+      }));
       await loadAll();
     } catch (err) {
       alert('Ошибка добавления шаблона');
@@ -70,7 +85,7 @@ function ScheduleTemplate() {
             {templatesForDay.map(t => (
               <div key={t.id} className="template-day__entry">
                 <div className="template-day__info">
-                  ⏰ {t.time} — 👤 {t.student_name}
+                  ⏰ {t.time} — 👤 {t.student_name} 📘 {t.subject_name}
                 </div>
                 <button className="template-day__delete" onClick={() => handleDelete(t.id)}>❌</button>
               </div>
@@ -78,9 +93,8 @@ function ScheduleTemplate() {
 
             <form onSubmit={(e) => handleInlineSubmit(e, index)} className="template-day__form">
               <select
-                name="student_id"
-                value={form.student_id}
-                onChange={handleChange}
+                value={templatesData[index].student_id}
+                onChange={(e) => handleTemplateChange(index, 'student_id', e.target.value)}
                 required
               >
                 <option value="">👤 Ученик</option>
@@ -89,11 +103,21 @@ function ScheduleTemplate() {
                 ))}
               </select>
 
+              <select
+                value={templatesData[index].subject_id}
+                onChange={(e) => handleTemplateChange(index, 'subject_id', e.target.value)}
+                required
+              >
+                <option value="">📘 Предмет</option>
+                {(students.find(s => s.id === parseInt(templatesData[index].student_id))?.subjects || []).map(sub => (
+                  <option key={sub.id} value={sub.id}>{typeof sub === 'string' ? sub : sub.name}</option>
+                ))}
+              </select>
+
               <input
                 type="time"
-                name="time"
-                value={form.time}
-                onChange={handleChange}
+                value={templatesData[index].time}
+                onChange={(e) => handleTemplateChange(index, 'time', e.target.value)}
                 required
               />
 

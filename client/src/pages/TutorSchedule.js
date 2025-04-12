@@ -63,7 +63,8 @@ function TutorSchedule() {
       openModal(date, lesson);
     }}
   >
-    ⏰ {lesson.time?.slice(0, 5)} – 👤 {lesson.student_name || `Ученик #${lesson.student_id}`}
+    ⏰ {lesson.time?.slice(0, 5)} – 👤 {lesson.student_name}  
+      📘 {lesson.subject_name || 'Предмет'}
     {lesson.homework && <div className="hw">📝 {lesson.homework}</div>}
     {lesson.grade !== null && <div className="grade">🎯 Оценка: {lesson.grade}</div>}
 

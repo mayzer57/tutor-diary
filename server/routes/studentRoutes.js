@@ -1,4 +1,3 @@
-// 📁 server/routes/studentRoutes.js
 const express = require('express');
 const router = express.Router();
 const pool = require('../db');
@@ -7,18 +6,36 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const auth = require('../middleware/authMiddleware');
 
-// ✅ Получение всех учеников (только для репетитора)
+// ✅ Получение всех учеников
 router.get('/', auth, async (req, res) => {
-  if (!req.tutor) {
-    return res.status(403).json({ error: 'Нет доступа: только для репетитора' });
-  }
-
   try {
     const result = await pool.query(`
-      SELECT id, name, subject, login FROM students WHERE tutor_id = $1
+      SELECT s.id AS student_id, s.name, s.login, ss.id AS subject_id, ss.subject
+      FROM students s
+      LEFT JOIN student_subjects ss ON ss.student_id = s.id
+      WHERE s.tutor_id = $1
     `, [req.tutor.id]);
 
-    res.json(result.rows);
+    const grouped = {};
+    result.rows.forEach(row => {
+      if (!grouped[row.student_id]) {
+        grouped[row.student_id] = {
+          id: row.student_id,
+          name: row.name,
+          login: row.login,
+          subjects: []
+        };
+      }
+
+      if (row.subject_id && row.subject) {
+        grouped[row.student_id].subjects.push({
+          id: row.subject_id,
+          name: row.subject
+        });
+      }
+    });
+
+    res.json(Object.values(grouped));
   } catch (err) {
     console.error('❌ Ошибка загрузки учеников:', err.message);
     res.status(500).json({ error: 'Ошибка загрузки учеников' });
@@ -28,43 +45,45 @@ router.get('/', auth, async (req, res) => {
 // ✅ Добавление ученика
 router.post('/', auth, [
   check('name').notEmpty(),
-  check('subject').notEmpty(),
   check('login').notEmpty(),
-  check('password').isLength({ min: 6 })
+  check('password').isLength({ min: 6 }),
+  check('subjects').isArray({ min: 1 })
 ], async (req, res) => {
-  if (!req.tutor) return res.status(403).json({ error: 'Нет доступа' });
-
   const errors = validationResult(req);
   if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
 
-  const { name, subject, login, password } = req.body;
+  const { name, login, password, subjects } = req.body;
 
   try {
     const existing = await pool.query('SELECT id FROM students WHERE login = $1', [login]);
-    if (existing.rows.length > 0) return res.status(409).json({ error: 'Логин уже занят' });
+    if (existing.rows.length > 0) {
+      return res.status(409).json({ error: 'Логин уже занят' });
+    }
 
     const hashed = await bcrypt.hash(password, 10);
     const result = await pool.query(
-      `INSERT INTO students (name, subject, login, password, tutor_id)
-       VALUES ($1, $2, $3, $4, $5)
-       RETURNING id, name, subject, login`,
-      [name, subject, login, hashed, req.tutor.id]
+      `INSERT INTO students (name, login, password, tutor_id)
+       VALUES ($1, $2, $3, $4)
+       RETURNING id, name, login`,
+      [name, login, hashed, req.tutor.id]
     );
 
-    res.status(201).json({
-      message: 'Ученик успешно добавлен!',
-      student: result.rows[0]
-    });
-    
+    const studentId = result.rows[0].id;
+
+    for (const subject of subjects) {
+      await pool.query(
+        `INSERT INTO student_subjects (student_id, subject) VALUES ($1, $2)`,
+        [studentId, subject]
+      );
+    }
+
+    res.status(201).json({ message: 'Ученик добавлен', student: result.rows[0] });
   } catch (err) {
     console.error('❌ Ошибка при добавлении ученика:', err.message);
     res.status(500).json({ error: 'Ошибка при добавлении ученика' });
   }
 });
-router.delete('/:id', auth, async (req, res) => {
-  await pool.query('DELETE FROM students WHERE id = $1', [req.params.id]);
-  res.json({ message: 'Ученик удалён' });
-});
+
 // ✅ Логин ученика
 router.post('/login', async (req, res) => {
   const { login, password } = req.body;
@@ -93,7 +112,6 @@ router.post('/login', async (req, res) => {
   } catch (err) {
     console.error('❌ Ошибка входа ученика:', err.message);
     res.status(500).json({ error: 'Ошибка сервера при входе. Попробуйте позже.' });
-
   }
 });
 
@@ -102,46 +120,105 @@ router.get('/me', auth, async (req, res) => {
   if (!req.student) return res.status(403).json({ error: 'Нет доступа' });
 
   try {
-    const result = await pool.query(`
-      SELECT s.id, s.name, s.subject, s.login, t.name as tutor_name
+    const studentInfo = await pool.query(`
+      SELECT s.id, s.name, s.login, t.name as tutor_name
       FROM students s
       JOIN tutors t ON s.tutor_id = t.id
       WHERE s.id = $1
     `, [req.student.id]);
 
-    if (result.rows.length === 0)
+    if (studentInfo.rows.length === 0)
       return res.status(404).json({ error: 'Ученик не найден' });
 
-    res.json(result.rows[0]);
+    const subjects = await pool.query(
+      `SELECT id, subject FROM student_subjects WHERE student_id = $1`,
+      [req.student.id]
+    );
+
+    const profile = {
+      ...studentInfo.rows[0],
+      subjects: subjects.rows.map(sub => ({ id: sub.id, name: sub.subject }))
+    };
+
+    res.json(profile);
   } catch (err) {
     console.error('❌ Ошибка загрузки профиля:', err.message);
     res.status(500).json({ error: 'Ошибка загрузки профиля' });
   }
 });
-router.patch('/:id', auth, async (req, res) => {
-  const { name, subject, login } = req.body;
 
-  if (!name || !subject || !login) {
-    return res.status(400).json({ error: 'Все поля обязательны для обновления' });
+// ✅ Обновление ученика
+router.patch('/:id', auth, async (req, res) => {
+  const { name, login, subjects } = req.body;
+
+  if (!name || !login || !Array.isArray(subjects)) {
+    return res.status(400).json({ error: 'Неверные данные для обновления' });
   }
 
   try {
-    const result = await pool.query(
-      `UPDATE students
-       SET name = $1, subject = $2, login = $3
-       WHERE id = $4
-       RETURNING id, name, subject, login`,
-      [name, subject, login, req.params.id]
-    );
+    await pool.query(`UPDATE students SET name = $1, login = $2 WHERE id = $3`, [name, login, req.params.id]);
 
-    if (result.rows.length === 0) {
-      return res.status(404).json({ error: 'Ученик не найден' });
+    const result = await pool.query(`SELECT subject FROM student_subjects WHERE student_id = $1`, [req.params.id]);
+    const existingSubjects = result.rows.map(r => r.subject);
+
+    const subjectsToAdd = subjects.filter(sub => !existingSubjects.includes(sub));
+    const subjectsToRemove = existingSubjects.filter(sub => !subjects.includes(sub));
+
+    for (const subject of subjectsToRemove) {
+      // Найдём ID записи subject_id
+      const subRes = await pool.query(`
+        SELECT id FROM student_subjects WHERE student_id = $1 AND subject = $2
+      `, [req.params.id, subject]);
+
+      if (subRes.rows.length > 0) {
+        const subjectId = subRes.rows[0].id;
+
+        // Удалим уроки и шаблоны по этому subject_id
+        await pool.query(`DELETE FROM lessons WHERE subject_id = $1`, [subjectId]);
+        await pool.query(`DELETE FROM lesson_templates WHERE subject_id = $1`, [subjectId]);
+
+        // Удалим сам subject
+        await pool.query(`DELETE FROM student_subjects WHERE id = $1`, [subjectId]);
+      }
     }
 
-    res.json({ message: 'Ученик успешно обновлён', student: result.rows[0] });
+    for (const subject of subjectsToAdd) {
+      await pool.query(`INSERT INTO student_subjects (student_id, subject) VALUES ($1, $2)`, [req.params.id, subject]);
+    }
+
+    res.json({ message: 'Ученик обновлён' });
   } catch (err) {
-    console.error('Ошибка при обновлении ученика:', err.message);
-    res.status(500).json({ error: 'Ошибка сервера при обновлении ученика' });
+    console.error('Ошибка обновления ученика:', err.message);
+    res.status(500).json({ error: 'Ошибка обновления ученика' });
+  }
+});
+
+// ✅ Удаление ученика
+router.delete('/:id', auth, async (req, res) => {
+  try {
+    const studentId = req.params.id;
+
+    await pool.query(`
+      DELETE FROM lessons 
+      WHERE subject_id IN (
+        SELECT id FROM student_subjects WHERE student_id = $1
+      )`, [studentId]);
+
+    await pool.query(`
+      DELETE FROM lesson_templates 
+      WHERE subject_id IN (
+        SELECT id FROM student_subjects WHERE student_id = $1
+      )`, [studentId]);
+
+    await pool.query(`DELETE FROM students WHERE id = $1 AND tutor_id = $2`, [
+      studentId,
+      req.tutor.id,
+    ]);
+
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Ошибка при удалении ученика:', err.message);
+    res.status(500).json({ error: 'Ошибка при удалении ученика' });
   }
 });
 

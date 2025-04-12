@@ -7,10 +7,11 @@ import StudentDashboard from './pages/StudentDashboard';
 import TutorSchedule from './pages/TutorSchedule';
 import StudentSchedule from './pages/StudentSchedule';
 import ScheduleTemplate from './pages/ScheduleTemplate';
-
+import TutorJournal from './pages/TutorJournal';
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userType, setUserType] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -22,6 +23,7 @@ function App() {
       setIsAuthenticated(false);
       setUserType(null);
     }
+    setLoading(false);
   }, []);
 
   const handleAuthSuccess = useCallback(() => {
@@ -37,6 +39,8 @@ function App() {
     localStorage.removeItem('userType');
     localStorage.removeItem('user');
   }, []);
+
+  if (loading) return null;
 
   return (
     <BrowserRouter>
@@ -55,6 +59,16 @@ function App() {
 
         {/* Панель репетитора */}
         <Route
+        path="/journal"
+        element={
+          isAuthenticated && userType === 'tutor' ? (
+            <TutorJournal />
+          ) : (
+            <Navigate to="/auth" replace />
+          )
+        }
+      />
+        <Route
           path="/dashboard"
           element={
             isAuthenticated && userType === 'tutor' ? (
@@ -64,7 +78,7 @@ function App() {
             )
           }
         />
-<Route
+        <Route
           path="/schedule-template"
           element={
             isAuthenticated && userType === 'tutor' ? (
@@ -85,8 +99,6 @@ function App() {
             )
           }
         />
-
-        
 
         {/* Расписание ученика */}
         <Route
@@ -109,26 +121,9 @@ function App() {
             )
           }
         />
-          
-
-       
 
         {/* Fallback */}
-        <Route
-          path="*"
-          element={
-            <Navigate
-              to={
-                isAuthenticated
-                  ? userType === 'student'
-                    ? '/student-dashboard'
-                    : '/dashboard'
-                  : '/auth'
-              }
-              replace
-            />
-          }
-        />
+        <Route path="*" element={<Navigate to="/auth" replace />} />
         
       </Routes>
    

@@ -116,8 +116,8 @@ function Dashboard({ onLogout }) {
       <header className="dashboard-header">
         <h1>📘 Панель репетитора {user && `- ${user.name}`}</h1>
         <div className="header-controls">
-          <button className="settings-btn" onClick={() => setIsSettingsOpen(true)}>⚙️ Настройки профиля</button>
-          <button className="logout-btn" onClick={handleLogout}>Выйти</button>
+          <button className="dashboard-btn" onClick={() => setIsSettingsOpen(true)}>⚙️ Настройки профиля</button>
+          <button className="dashboard-btn" onClick={handleLogout}>Выйти</button>
         </div>
       </header>
 
@@ -125,7 +125,7 @@ function Dashboard({ onLogout }) {
 
       <div style={{ marginBottom: '15px' }}>
         <button
-          className="toggle-btn"
+          className="dashboard-btn"
           onClick={() => setShowAddModal(true)}
           style={{ marginRight: '10px' }}
         >
@@ -133,11 +133,18 @@ function Dashboard({ onLogout }) {
         </button>
 
         <button
-          className="toggle-btn"
+          className="dashboard-btn"
           onClick={() => navigate('/schedule')}
         >
           Перейти к расписанию
         </button>
+        <button
+        className="dashboard-btn"
+        onClick={() => navigate('/journal')}
+        style={{ marginRight: '10px' }}
+      >
+        📘 Журнал
+      </button>
       </div>
 
       {showAddModal && (
@@ -163,7 +170,7 @@ function Dashboard({ onLogout }) {
         setUser={setUser}
       />
 
-      <button className="toggle-btn" onClick={() => setShowStudents(!showStudents)}>
+      <button className="dashboard-btn" onClick={() => setShowStudents(!showStudents)}>
         {showStudents ? 'Скрыть список учеников' : 'Показать список учеников'}
       </button>
 

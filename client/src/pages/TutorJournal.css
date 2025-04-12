@@ -1,0 +1,234 @@
+:root {
+  --primary: #3b82f6;
+  --primary-dark: #1d4ed8;
+  --bg: #f9fafb;
+  --bg-alt: #ffffff;
+  --text-main: #1f2937;
+  --text-sub: #6b7280;
+  --accent: #e0f2fe;
+  --success-bg: #e6fce7;
+  --success-text: #065f46;
+  --radius: 10px;
+  --transition: 0.2s ease-in-out;
+  --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  --font: 'Inter', sans-serif;
+}
+
+body {
+  font-family: var(--font);
+  background-color: var(--bg);
+  color: var(--text-main);
+  margin: 0;
+  padding: 0;
+}
+
+.journal-container {
+  padding: 2rem;
+  max-width: 100%;
+  background-color: var(--bg);
+}
+
+h2 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+}
+
+.filters-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.filters-row select,
+.filters-row input,
+.filters-row .react-datepicker-wrapper {
+  padding: 0.5rem;
+  font-size: 0.95rem;
+  border: 1px solid #d1d5db;
+  border-radius: var(--radius);
+  background: #fff;
+  box-shadow: var(--box-shadow);
+}
+
+.filters-row input:focus,
+.filters-row select:focus {
+  border-color: var(--primary);
+  outline: none;
+}
+
+.mode-btn,
+.active-mode-btn {
+  padding: 8px 14px;
+  font-size: 0.9rem;
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: background-color var(--transition), transform var(--transition);
+}
+
+.mode-btn {
+  background-color: #e5e7eb;
+  color: var(--text-main);
+}
+
+.active-mode-btn {
+  background-color: var(--primary);
+  color: #fff;
+}
+
+.mode-btn:hover,
+.active-mode-btn:hover {
+  transform: translateY(-1px);
+}
+
+.back-button {
+  background-color: var(--primary-dark);
+  color: white;
+  padding: 8px 14px;
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  margin-bottom: 1rem;
+  transition: background-color var(--transition);
+}
+
+.back-button:hover {
+  background-color: var(--primary);
+}
+
+/* Table */
+.table-scroll-wrapper {
+  overflow-x: auto;
+  margin-top: 1rem;
+  border-radius: var(--radius);
+  box-shadow: var(--box-shadow);
+}
+
+.grade-table {
+  width: 100%;
+  min-width: 900px;
+  border-collapse: collapse;
+  background-color: white;
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.grade-table th,
+.grade-table td {
+  padding: 0.8rem 1rem;
+  text-align: center;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 0.95rem;
+  white-space: nowrap;
+}
+
+.grade-table th {
+  background-color: var(--bg-alt);
+  font-weight: 600;
+  color: var(--text-sub);
+  cursor: pointer;
+  transition: background-color var(--transition);
+}
+
+.grade-table th:hover {
+  background-color: var(--accent);
+}
+
+.grade-cell {
+  cursor: pointer;
+  transition: background-color var(--transition);
+  border-radius: 6px;
+}
+
+.grade-cell:hover {
+  background-color: var(--accent);
+}
+
+.editable-cell input {
+  width: 3rem;
+  text-align: center;
+  border: 1px solid #d1d5db;
+  border-radius: var(--radius);
+  padding: 0.3rem;
+  font-size: 1rem;
+}
+
+.average-cell {
+  font-weight: bold;
+  color: #111;
+  transition: background-color var(--transition);
+  border-radius: var(--radius);
+}
+
+.subject-header,
+.student-name {
+  font-weight: 600;
+  background-color: var(--bg-alt);
+  text-align: left;
+  padding-left: 1rem;
+}
+
+.chart {
+  margin-top: 2rem;
+}
+
+/* Datepicker */
+.react-datepicker-wrapper {
+  display: inline-block;
+  width: auto;
+}
+
+.react-datepicker__input-container input {
+  width: 110px;
+  text-align: center;
+  padding: 0.4rem;
+  border: 1px solid #d1d5db;
+  border-radius: var(--radius);
+}
+
+.react-datepicker__input-container input:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+/* Responsive Chart Fix */
+.header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.header-row h2 {
+  font-size: 28px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.home-button {
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 10px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.home-button:hover {
+  background-color: #2563eb;
+}
+
+.mode-btn {
+  background-color: #e5e7eb;
+  color: #111827;
+  padding: 6px 12px;
+  margin-right: 8px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}

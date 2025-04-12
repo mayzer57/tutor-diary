@@ -34,8 +34,23 @@ function LessonFormModal({ isOpen, onClose, initialData = null, selectedDate }) 
     if (!isOpen) return;
 
     if (initialData) {
+      let resolvedSubjectId = initialData.subject_id;
+      let resolvedStudentId = initialData.student_id;
+
+      if (!resolvedSubjectId) {
+        for (const s of students) {
+          const match = s.subjects?.find(sub => sub.id === initialData.subject_id);
+          if (match) {
+            resolvedSubjectId = match.id;
+            resolvedStudentId = s.id;
+            break;
+          }
+        }
+      }
+
       setForm({
-        student_id: initialData.student_id || '',
+        student_id: String(resolvedStudentId || ''),
+        subject_id: String(resolvedSubjectId || ''),
         date: initialData.date || '',
         time: initialData.time || '',
         homework: initialData.homework || '',
@@ -110,18 +125,43 @@ function LessonFormModal({ isOpen, onClose, initialData = null, selectedDate }) 
       <div className="modal">
         <h3>{initialData?.id ? 'Редактировать урок' : 'Добавить урок'}</h3>
         <form onSubmit={handleSubmit}>
-          <label>Ученик:</label>
-          <select
-            name="student_id"
-            value={students.some(s => s.id === Number(form.student_id)) ? form.student_id : ''}
-            onChange={handleChange}
-            required
-          >
-            <option value="">Выберите ученика</option>
-            {students.map((s) => (
-              <option key={s.id} value={s.id}>{s.name}</option>
-            ))}
-          </select>
+        <label>Ученик:</label>
+        <select
+          value={form.student_id || ''}
+          onChange={(e) => {
+            const student_id = e.target.value;
+            setForm((prev) => ({
+              ...prev,
+              student_id,
+              subject_id: '' // сбрасываем выбранный предмет при смене ученика
+            }));
+          }}
+          required
+        >
+          <option value="">Выберите ученика</option>
+          {students.map((s) => (
+            <option key={s.id} value={s.id}>{s.name}</option>
+          ))}
+        </select>
+
+        {form.student_id && (
+          <>
+            <label>Предмет:</label>
+            <select
+              name="subject_id"
+              value={form.subject_id || ''}
+              onChange={handleChange}
+              required
+            >
+              <option value="">Выберите предмет</option>
+              {(students.find(s => String(s.id) === String(form.student_id))?.subjects || []).map(sub => (
+                <option key={sub.id} value={sub.id}>
+                  {sub.name}
+                </option>
+              ))}
+            </select>
+          </>
+        )}
 
           <label>Время:</label>
           <input

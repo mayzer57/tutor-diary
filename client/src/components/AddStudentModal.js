@@ -3,19 +3,38 @@ import { useState } from 'react';
 function AddStudentModal({ onAdd, onClose }) {
   const [student, setStudent] = useState({
     name: '',
-    subject: '',
     login: '',
     password: '',
+    subjects: [],
   });
-
+  const [newSubject, setNewSubject] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = (field, value) => {
     setStudent((prev) => ({ ...prev, [field]: value }));
   };
 
+  const handleAddSubject = () => {
+    const subject = newSubject.trim();
+    if (subject && !student.subjects.includes(subject)) {
+      setStudent((prev) => ({
+        ...prev,
+        subjects: [...prev.subjects, subject],
+      }));
+      setNewSubject('');
+    }
+  };
+
+  const handleRemoveSubject = (subject) => {
+    setStudent((prev) => ({
+      ...prev,
+      subjects: prev.subjects.filter((s) => s !== subject),
+    }));
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
+    console.log('Отправляем в onAdd:', student); // 👈 сюда
     onAdd(student);
     onClose();
   };
@@ -46,17 +65,8 @@ function AddStudentModal({ onAdd, onClose }) {
             type="text"
             value={student.name}
             onChange={(e) => handleChange('name', e.target.value)}
-            style={{ width: '100%', padding: '8px', marginBottom: '10px' }}
             required
-          />
-
-          <label>Предмет:</label>
-          <input
-            type="text"
-            value={student.subject}
-            onChange={(e) => handleChange('subject', e.target.value)}
             style={{ width: '100%', padding: '8px', marginBottom: '10px' }}
-            required
           />
 
           <label>Логин:</label>
@@ -64,34 +74,49 @@ function AddStudentModal({ onAdd, onClose }) {
             type="text"
             value={student.login}
             onChange={(e) => handleChange('login', e.target.value)}
-            style={{ width: '100%', padding: '8px', marginBottom: '10px' }}
             required
+            style={{ width: '100%', padding: '8px', marginBottom: '10px' }}
           />
 
           <label>Пароль:</label>
-          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '16px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
             <input
               type={showPassword ? 'text' : 'password'}
               value={student.password}
               onChange={(e) => handleChange('password', e.target.value)}
-              style={{ flex: 1, padding: '8px' }}
               required
+              style={{ flex: 1, padding: '8px' }}
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              style={{
-                marginLeft: '8px',
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-                fontSize: '18px',
-              }}
+              style={{ marginLeft: '8px', background: 'none', border: 'none', cursor: 'pointer', fontSize: '18px' }}
               title={showPassword ? 'Скрыть' : 'Показать'}
             >
               {showPassword ? '🙈' : '👁️'}
             </button>
           </div>
+
+          <label>Предметы:</label>
+          <div style={{ display: 'flex', marginBottom: '10px' }}>
+            <input
+              type="text"
+              value={newSubject}
+              onChange={(e) => setNewSubject(e.target.value)}
+              placeholder="Добавить предмет"
+              style={{ flex: 1, padding: '8px' }}
+            />
+            <button type="button" onClick={handleAddSubject} style={{ marginLeft: '8px' }}>➕</button>
+          </div>
+
+          <ul style={{ marginBottom: '10px', paddingLeft: '20px' }}>
+            {student.subjects.map((s) => (
+              <li key={s}>
+                {s}{' '}
+                <button type="button" onClick={() => handleRemoveSubject(s)}>❌</button>
+              </li>
+            ))}
+          </ul>
 
           <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
             <button

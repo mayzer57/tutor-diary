@@ -30,6 +30,7 @@ const studentRoutes = require('./routes/studentRoutes');
 const userRoutes = require('./routes/userRoutes');
 // server.js
 const lessonRoutes = require('./routes/lessonRoutes');
+
 app.use('/api/lessons', lessonRoutes);
 
 app.use('/api/users', userRoutes);

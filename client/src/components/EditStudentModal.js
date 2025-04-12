@@ -2,20 +2,52 @@ import { useState, useEffect } from 'react';
 
 function EditStudentModal({ student, onSave, onClose }) {
   const [localStudent, setLocalStudent] = useState(null);
+  const [newSubject, setNewSubject] = useState('');
 
   useEffect(() => {
-    setLocalStudent(student);
+    if (student) {
+      setLocalStudent({
+        id: student.id,
+        name: student.name || '',
+        login: student.login || '',
+        subjects: Array.isArray(student.subjects)
+          ? student.subjects.map(s => typeof s === 'string' ? s : s.name)
+          : [],
+      });
+    }
   }, [student]);
 
-  // ⚠ Проверка после хука — безопасна для React
   if (!student || !localStudent) return null;
 
   const handleChange = (field, value) => {
     setLocalStudent((prev) => ({ ...prev, [field]: value }));
   };
 
+  const handleAddSubject = () => {
+    const subject = newSubject.trim();
+    if (subject && !localStudent.subjects.includes(subject)) {
+      setLocalStudent((prev) => ({
+        ...prev,
+        subjects: [...prev.subjects, subject],
+      }));
+      setNewSubject('');
+    }
+  };
+
+  const handleRemoveSubject = (subject) => {
+    setLocalStudent((prev) => ({
+      ...prev,
+      subjects: prev.subjects.filter((s) => s !== subject),
+    }));
+  };
+
   const handleSubmit = () => {
-    onSave(localStudent, true);
+    onSave({
+      id: localStudent.id,
+      name: localStudent.name,
+      login: localStudent.login,
+      subjects: localStudent.subjects.map(s => typeof s === 'string' ? s : s.name),
+    }, true);
   };
 
   return (
@@ -46,21 +78,34 @@ function EditStudentModal({ student, onSave, onClose }) {
           style={{ width: '100%', padding: '8px', marginBottom: '10px' }}
         />
 
-        <label>Предмет:</label>
-        <input
-          type="text"
-          value={localStudent.subject}
-          onChange={(e) => handleChange('subject', e.target.value)}
-          style={{ width: '100%', padding: '8px', marginBottom: '10px' }}
-        />
-
         <label>Логин:</label>
         <input
           type="text"
           value={localStudent.login}
           onChange={(e) => handleChange('login', e.target.value)}
-          style={{ width: '100%', padding: '8px', marginBottom: '16px' }}
+          style={{ width: '100%', padding: '8px', marginBottom: '10px' }}
         />
+
+        <label>Предметы:</label>
+        <div style={{ display: 'flex', marginBottom: '10px' }}>
+          <input
+            type="text"
+            value={newSubject}
+            onChange={(e) => setNewSubject(e.target.value)}
+            placeholder="Добавить предмет"
+            style={{ flex: 1, padding: '8px' }}
+          />
+          <button type="button" onClick={handleAddSubject} style={{ marginLeft: '8px' }}>➕</button>
+        </div>
+
+        <ul style={{ marginBottom: '10px', paddingLeft: '20px' }}>
+          {localStudent.subjects.map((s, i) => (
+            <li key={typeof s === 'string' ? s : s.id || i}>
+              {typeof s === 'string' ? s : s.name}
+              <button type="button" onClick={() => handleRemoveSubject(s)}>❌</button>
+            </li>
+          ))}
+        </ul>
 
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           <button

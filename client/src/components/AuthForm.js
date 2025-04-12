@@ -10,6 +10,7 @@ function AuthForm({ onAuthSuccess }) {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -165,15 +166,24 @@ function AuthForm({ onAuthSuccess }) {
   
           <div style={styles.inputGroup}>
             <label style={styles.label}>Пароль</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              style={styles.input}
-              placeholder="••••••••"
-              minLength="6"
-            />
+            <div style={styles.passwordWrapper}>
+              <input
+                type={showPassword ? 'text' : 'password'}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                style={styles.input}
+                placeholder="••••••••"
+                minLength="6"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(prev => !prev)}
+                style={styles.eyeButton}
+              >
+                {showPassword ? '🙈' : '👁️'}
+              </button>
+            </div>
           </div>
   
           <button
@@ -286,11 +296,28 @@ const styles = {
     border: '1px solid #e5e7eb',
     borderRadius: '8px',
     fontSize: '16px',
+    width: '100%', // 👈 изменено на 100%
     transition: 'border 0.2s',
     '&:focus': {
       borderColor: '#4f46e5',
       outline: 'none',
     },
+  },
+  passwordWrapper: {
+    position: 'relative',
+    width: '100%',
+  },
+  eyeButton: {
+    position: 'absolute',
+    right: '12px',
+    top: '50%',
+    transform: 'translateY(-50%)',
+    background: 'none',
+    border: 'none',
+    cursor: 'pointer',
+    fontSize: '18px',
+    color: '#4f46e5',
+    padding: 0
   },
   submitButton: {
     backgroundColor: '#4f46e5',

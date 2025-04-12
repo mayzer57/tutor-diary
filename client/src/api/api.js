@@ -130,9 +130,24 @@ export const addStudent = async (student) => {
   const res = await fetch(`${API_URL}/students`, {
     method: 'POST',
     headers: authHeader(),
-    body: JSON.stringify(student),
+    body: JSON.stringify({
+      name: student.name,
+      login: student.login,
+      password: student.password,
+      subjects: student.subjects, // обязательно массив строк
+    }),
   });
-  return await safeJson(res);
+
+  const data = await safeJson(res);
+
+  if (!res.ok) {
+    console.error('Ошибка создания ученика:', data);
+    const error = new Error(data?.error || 'Ошибка добавления ученика');
+    error.code = res.status;
+    throw error;
+  }
+
+  return data;
 };
 
 // 📅 Уроки репетитора
@@ -290,15 +305,97 @@ export const updateStudent = async (student) => {
     headers: authHeader(),
     body: JSON.stringify({
       name: student.name,
-      subject: student.subject,
-      login: student.login
+      login: student.login,
+      subjects: Array.isArray(student.subjects)
+        ? student.subjects.map(s => typeof s === 'string' ? s : s.name)
+        : [],
     }),
   });
 
+  const data = await safeJson(res);
   if (!res.ok) {
-    const error = await safeJson(res);
-    throw new Error(error.message || 'Ошибка обновления ученика');
+    throw new Error(data.error || 'Ошибка обновления ученика');
   }
 
-  return await safeJson(res);
+  return data;
 };
+
+// 📚 Получить все оценки репетитора
+
+// src/api/api.js
+export async function getTutorGrades(
+  period,
+  offset = 0,
+  limit = 50,
+  filters = {},
+  customRange = null
+) {
+  const now = new Date();
+  let startDate = null;
+  let endDate = now.toISOString().split('T')[0];
+
+  if (customRange && customRange.start && customRange.end) {
+    startDate = customRange.start;
+    endDate = customRange.end;
+  } else if (period !== 'all') {
+    const daysMap = {
+      '7': 7,
+      '30': 30,
+      '90': 90,
+      '365': 365,
+      '3 месяца': 90,
+      'Год': 365
+    };
+
+    let daysBack = daysMap[period];
+
+    // 💡 Пробуем парсить как число
+    if (daysBack === undefined && !isNaN(Number(period))) {
+      daysBack = Number(period);
+    }
+
+    if (typeof daysBack === 'number' && daysBack > 0) {
+      const start = new Date(now.getTime() - daysBack * 24 * 60 * 60 * 1000);
+      startDate = start.toISOString().split('T')[0];
+    } else {
+      console.warn('[getTutorGrades] ❌ Invalid period value:', period);
+      startDate = null; // fallback
+    }
+  }
+
+  console.log({ startDate, endDate });
+
+  const params = new URLSearchParams({
+    limit,
+    offset,
+    ...(startDate && { start: startDate, end: endDate }),
+    ...(filters.student && { student: filters.student }),
+    ...(filters.subject && { subject: filters.subject }),
+  });
+
+  const res = await fetch(`${API_URL}/lessons/grades?${params.toString()}`, {
+    headers: authHeader(),
+  });
+
+  if (!res.ok) {
+    const errText = await res.text();
+    throw new Error(`[getTutorGrades] Ошибка ответа: ${res.status} - ${errText}`);
+  }
+
+  return await res.json();
+}
+// 🔁 Обновление только оценки
+export async function updateLessonGrade(id, grade) {
+  const res = await fetch(`${API_URL}/lessons/${id}/grade`, {
+    method: 'PATCH',
+    headers: {
+      ...authHeader(),
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ grade: Number(grade) })
+  });
+
+  const data = await safeJson(res);
+  if (!res.ok) throw new Error(data.error || 'Ошибка обновления оценки');
+  return data;
+}

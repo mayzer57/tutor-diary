@@ -1,19 +1,27 @@
+# 1. Базовый образ
 FROM node:18
 
+# 2. Рабочая директория
 WORKDIR /opt/build
 
-# Клонируем проект
-RUN git clone https://github.com/mayzer57/tutor-diary.git -b main .
+# 3. Установим git и подготовим ssh
+RUN apt update && apt install -y git
+RUN mkdir -p /root/.ssh && ssh-keyscan -t rsa github.com > /root/.ssh/known_hosts
 
-# Удаляем origin, чтобы не было конфликтов
-RUN git remote remove origin
+# 4. Клонируем проект
+RUN git clone "https://github.com/mayzer57/tutor-diary.git" -b main .
 
-# Переходим в папку server и устанавливаем зависимости
+# 5. Переключаемся на нужный коммит
+WORKDIR /opt/build
+RUN git checkout b372542c5e337d6ab7721ff4641e8b595a7ebf63
+RUN git remote rm origin
+
+# 6. Переходим в папку сервера и устанавливаем зависимости
 WORKDIR /opt/build/server
 RUN npm install
 
-# Открываем порт (если нужно)
-EXPOSE 5001
+# 7. Устанавливаем pm2 глобально (если хочешь через pm2)
+RUN npm install -g pm2
 
-# Запускаем сервер
-CMD ["node", "server.js"]
+# 8. Указываем команду запуска
+CMD ["pm2-runtime", "server.js"]

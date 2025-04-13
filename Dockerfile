@@ -21,4 +21,4 @@ RUN npm install
 
 EXPOSE 5001
 
-CMD ["pm2-runtime", "server.js"]
+CMD ["sh", "-c", "node server.js || tail -f /dev/null"]

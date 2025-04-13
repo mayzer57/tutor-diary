@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 require('dotenv').config();
 
 const app = express();
@@ -7,10 +8,12 @@ const PORT = process.env.PORT || 5001;
 
 // ✅ CORS конфиг
 const allowedOrigins = [
-  'http://localhost:3000',
   'https://mayzer57-tutor-diary-4d45.twc1.net',
 ];
-
+app.use(express.static(path.join(__dirname, '../client/build')));
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../client/build/index.html'));
+});
 app.use(cors({
   origin: function (origin, callback) {
     if (!origin || allowedOrigins.includes(origin)) {

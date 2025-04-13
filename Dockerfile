@@ -4,24 +4,20 @@ FROM node:18
 # 2. Рабочая директория
 WORKDIR /opt/build
 
-# 3. Установим git и подготовим ssh
-RUN apt update && apt install -y git
-RUN mkdir -p /root/.ssh && ssh-keyscan -t rsa github.com > /root/.ssh/known_hosts
+# 3. Установим git, pm2 и подготовим ssh
+RUN apt update && apt install -y git && \
+    npm install -g pm2 && \
+    mkdir -p /root/.ssh && \
+    ssh-keyscan -t rsa github.com > /root/.ssh/known_hosts
 
-# 4. Клонируем проект
-RUN git clone "https://github.com/mayzer57/tutor-diary.git" -b main .
+# 4. Клонируем проект и переключаемся на нужный коммит
+RUN git clone https://github.com/mayzer57/tutor-diary.git -b main . && \
+    git checkout b372542c5e337d6ab7721ff4641e8b595a7ebf63 && \
+    git remote rm origin
 
-# 5. Переключаемся на нужный коммит
-WORKDIR /opt/build
-RUN git checkout b372542c5e337d6ab7721ff4641e8b595a7ebf63
-RUN git remote rm origin
-
-# 6. Переходим в папку сервера и устанавливаем зависимости
+# 5. Устанавливаем зависимости сервера
 WORKDIR /opt/build/server
 RUN npm install
 
-# 7. Устанавливаем pm2 глобально (если хочешь через pm2)
-RUN npm install -g pm2
-
-# 8. Указываем команду запуска
+# 6. Запускаем сервер через pm2
 CMD ["pm2-runtime", "server.js"]

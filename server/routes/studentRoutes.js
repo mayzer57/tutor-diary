@@ -222,4 +222,65 @@ router.delete('/:id', auth, async (req, res) => {
   }
 });
 
+
+router.get('/my-grades', auth, async (req, res) => {
+  try {
+    const studentId = req.student?.id;
+    if (!studentId) return res.status(403).json({ error: 'Нет доступа к данным ученика' });
+
+    const result = await pool.query(`
+      SELECT 
+        l.date, 
+        l.grade, 
+        ss.subject,
+        s.name AS student
+      FROM lessons l
+      JOIN student_subjects ss ON l.subject_id = ss.id
+      JOIN students s ON ss.student_id = s.id
+      WHERE ss.student_id = $1 AND l.grade IS NOT NULL
+      ORDER BY l.date ASC
+    `, [studentId]);
+
+    res.json(result.rows);
+  } catch (err) {
+    console.error('❌ Ошибка при получении оценок:', err.message);
+    res.status(500).json({ error: 'Ошибка при получении оценок' });
+  }
+});
+router.get('/ranking', auth, async (req, res) => {
+  try {
+    const studentId = req.student?.id;
+    if (!studentId) return res.status(403).json({ error: 'Нет доступа к рейтингу' });
+
+    const tutorRes = await pool.query(`
+      SELECT l.tutor_id
+      FROM lessons l
+      JOIN student_subjects ss ON l.subject_id = ss.id
+      WHERE ss.student_id = $1
+      LIMIT 1
+    `, [studentId]);
+
+    const tutorId = tutorRes.rows[0]?.tutor_id;
+    if (!tutorId) return res.json([]);
+
+    const result = await pool.query(`
+      SELECT s.name, SUM(CASE 
+        WHEN l.grade = 5 THEN 5
+        WHEN l.grade = 4 THEN 3
+        WHEN l.grade = 3 THEN 1
+        ELSE 0 END) AS points
+      FROM lessons l
+      JOIN student_subjects ss ON l.subject_id = ss.id
+      JOIN students s ON ss.student_id = s.id
+      WHERE l.tutor_id = $1 AND l.grade IS NOT NULL
+      GROUP BY s.name
+      ORDER BY points DESC
+    `, [tutorId]);
+
+    res.json(result.rows);
+  } catch (err) {
+    console.error('❌ Ошибка при получении рейтинга:', err.message);
+    res.status(500).json({ error: 'Ошибка при получении рейтинга' });
+  }
+});
 module.exports = router;

@@ -1,4 +1,4 @@
-function StudentsList({ students, onDelete, onEdit }) {
+function StudentsList({ students, onDelete, onEdit, onSelect }) {
   if (!students || students.length === 0) {
     return <p style={{ marginTop: '20px' }}>Нет учеников</p>;
   }
@@ -18,7 +18,15 @@ function StudentsList({ students, onDelete, onEdit }) {
             alignItems: 'center',
             flexWrap: 'wrap'
           }}>
-            <div style={{ flex: '1 1 auto' }}>
+            <div
+              style={{
+                flex: '1 1 auto',
+                cursor: onSelect ? 'pointer' : 'default',
+                color: onSelect ? '#3b82f6' : 'inherit'
+              }}
+              onClick={() => onSelect?.(student.name)}
+              title="Открыть журнал"
+            >
               <strong>{student.name}</strong> — {student.login}
               <br />
               <span style={{ fontSize: '14px', color: '#666' }}>

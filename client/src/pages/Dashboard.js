@@ -176,10 +176,11 @@ function Dashboard({ onLogout }) {
 
       {showStudents && (
         <StudentsList
-          students={students}
-          onDelete={handleDeleteStudent}
-          onEdit={handleEditStudent}
-        />
+        students={students}
+        onDelete={handleDeleteStudent}
+        onEdit={handleEditStudent}
+        onSelect={(studentName) => navigate(`/journal?student=${encodeURIComponent(studentName)}`)}
+      />
       )}
     </div>
   );

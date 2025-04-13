@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-
+import StudentJournal from './pages/StudentJournal'; // 💾 импорт новой страницы
 import AuthForm from './components/AuthForm';
 import Dashboard from './pages/Dashboard';
 import StudentDashboard from './pages/StudentDashboard';
@@ -78,6 +78,16 @@ function App() {
             )
           }
         />
+        <Route
+  path="/student-journal"
+  element={
+    isAuthenticated && userType === 'student' ? (
+      <StudentJournal />
+    ) : (
+      <Navigate to="/auth" replace />
+    )
+  }
+/>
         <Route
           path="/schedule-template"
           element={

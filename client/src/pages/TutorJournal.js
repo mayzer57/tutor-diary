@@ -6,6 +6,7 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
+import { useLocation } from 'react-router-dom';
 import {
   ResponsiveContainer,
   BarChart,
@@ -13,7 +14,9 @@ import {
   XAxis,
   YAxis,
   Tooltip,
-  LabelList
+  LabelList,
+  LineChart,
+  Line
 } from 'recharts';
 import './TutorJournal.css';
 
@@ -24,6 +27,7 @@ function TutorJournal() {
   const [editingCell, setEditingCell] = useState(null);
   const [newGrade, setNewGrade] = useState('');
   const [viewMode, setViewMode] = useState('table');
+  const [chartType, setChartType] = useState('subject-avg');
   const [period, setPeriod] = useState('30');
   const [customStart, setCustomStart] = useState(null);
   const [customEnd, setCustomEnd] = useState(null);
@@ -33,6 +37,9 @@ function TutorJournal() {
   const [filters, setFilters] = useState({ student: '', subject: '' });
   const [loading, setLoading] = useState(false);
   const limit = 50;
+  const location = useLocation();
+const queryParams = new URLSearchParams(location.search);
+const preselectedStudent = queryParams.get('student');
 
   useEffect(() => {
     getStudents().then(setStudents);
@@ -48,6 +55,14 @@ function TutorJournal() {
     });
     setDates(uniqueDates);
   };
+  useEffect(() => {
+    if (preselectedStudent) {
+      setFilters(prev => ({
+        ...prev,
+        student: preselectedStudent
+      }));
+    }
+  }, [preselectedStudent]);
 
   const loadMore = useCallback(async (reset = false) => {
     try {
@@ -138,9 +153,9 @@ function TutorJournal() {
   };
 
   const getAverageColor = (avg) => {
-    if (avg < 2.5) return '#fca5a5';    // мягкий красный
-    if (avg < 3.5) return '#fde68a';    // мягкий жёлтый
-    return '#bbf7d0';                   // мягкий зелёный
+    if (avg < 2.5) return '#fca5a5';
+    if (avg < 3.5) return '#fde68a';
+    return '#bbf7d0';
   };
 
   const saveGrade = async (lessonId) => {
@@ -270,8 +285,8 @@ function TutorJournal() {
                 const avg = parseFloat(getAverage(entry.grades));
                 return (
                   <tr key={index}>
-                    <td className="student-name">{entry.student}</td>
-                    <td className="subject-header">{entry.subject}</td>
+                    <td>{entry.student}</td>
+                    <td>{entry.subject}</td>
                     {dates.map(date => {
                       const cellKey = `${entry.student}-${entry.subject}-${date}`;
                       const grades = entry.grades[date];
@@ -321,21 +336,72 @@ function TutorJournal() {
 
       {viewMode === 'chart' && (
         <>
-          <h3 style={{ marginTop: 40 }}>📊 Средний балл по предметам</h3>
-          <ResponsiveContainer width="100%" height={350}>
-            <BarChart
-              data={chartData}
-              layout="vertical"
-              margin={{ top: 20, right: 30, left: 60, bottom: 20 }}
+          <h3 style={{ marginTop: 40 }}>📊 Аналитика</h3>
+
+          <div style={{ marginBottom: 16 }}>
+            <select
+              value={chartType}
+              onChange={(e) => setChartType(e.target.value)}
+              style={{ padding: '8px 12px', fontSize: 14, borderRadius: 6 }}
             >
-              <XAxis type="number" domain={[0, 5]} />
-              <YAxis dataKey="subject" type="category" width={120} />
-              <Tooltip />
-              <Bar dataKey="average" fill="#60a5fa">
-                <LabelList dataKey="average" position="right" fill="#1e3a8a" />
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
+              <option value="subject-avg">📘 Средний балл по предметам</option>
+              <option value="progress-line">📈 Прогресс учеников</option>
+              <option value="activity-bar">👣 Активность учеников</option>
+            </select>
+          </div>
+
+          {chartType === 'subject-avg' && (
+            <ResponsiveContainer width="100%" height={350}>
+              <BarChart data={chartData} layout="vertical" margin={{ top: 20, right: 30, left: 60, bottom: 20 }}>
+                <XAxis type="number" domain={[0, 5]} />
+                <YAxis dataKey="subject" type="category" width={120} />
+                <Tooltip />
+                <Bar dataKey="average" fill="#60a5fa">
+                  <LabelList dataKey="average" position="right" fill="#1e3a8a" />
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          )}
+
+          {chartType === 'progress-line' && (
+            <ResponsiveContainer width="100%" height={350}>
+              <LineChart
+                data={lessons
+                  .filter(l => typeof l.grade === 'number')
+                  .map(l => ({
+                    date: format(new Date(l.date), 'dd.MM'),
+                    student: l.student,
+                    grade: l.grade
+                  }))
+                }
+              >
+                <XAxis dataKey="date" />
+                <YAxis domain={[0, 5]} />
+                <Tooltip />
+                <Line type="monotone" dataKey="grade" stroke="#22c55e" strokeWidth={2} dot={{ r: 3 }} />
+              </LineChart>
+            </ResponsiveContainer>
+          )}
+
+          {chartType === 'activity-bar' && (
+            <ResponsiveContainer width="100%" height={350}>
+              <BarChart
+                data={students.map(s => {
+                  const count = lessons.filter(l => l.student === s.name).length;
+                  return { student: s.name, count };
+                })}
+                layout="vertical"
+                margin={{ top: 20, right: 30, left: 60, bottom: 20 }}
+              >
+                <XAxis type="number" allowDecimals={false} />
+                <YAxis dataKey="student" type="category" width={140} />
+                <Tooltip />
+                <Bar dataKey="count" fill="#facc15">
+                  <LabelList dataKey="count" position="right" fill="#78350f" />
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          )}
         </>
       )}
     </div>

@@ -399,3 +399,29 @@ export async function updateLessonGrade(id, grade) {
   if (!res.ok) throw new Error(data.error || 'Ошибка обновления оценки');
   return data;
 }
+export async function getMyGrades() {
+  const res = await fetch(`${API_URL}/students/my-grades`, {
+    headers: authHeader(),
+  });
+  return await safeJson(res);
+}
+
+export async function getStudentRanking() {
+  const res = await fetch(`${API_URL}/students/ranking`, {
+    headers: authHeader(),
+  });
+  return await safeJson(res);
+}
+// ✅ В api.js
+export async function fetchStudentGrades() {
+  const res = await fetch(`${API_URL}/students/my-grades`, {
+    headers: authHeader()
+  });
+
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`Ошибка загрузки оценок: ${text}`);
+  }
+
+  return await res.json(); // [{ date, grade, subject }]
+}

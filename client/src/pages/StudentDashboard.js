@@ -1,15 +1,21 @@
-// src/pages/StudentDashboard.js
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getStudentProfile } from '../api/api';
-import './StudentDashboard.css';
+import { getStudentProfile, fetchStudentGrades } from '../api/api';
 import ProfileSettingsModal from '../components/ProfileSettingsModal';
+import { isSameDay, subDays } from 'date-fns';
+import './StudentDashboard.css';
 
 function StudentDashboard({ onLogout }) {
   const [student, setStudent] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [xp, setXp] = useState(0);
+  const [level, setLevel] = useState(0);
+  const [streakDays, setStreakDays] = useState(0);
+  const [monthActivity, setMonthActivity] = useState(0);
+  const [medals, setMedals] = useState({});
   const navigate = useNavigate();
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false); 
+
   useEffect(() => {
     const userType = localStorage.getItem('userType');
     if (userType !== 'student') {
@@ -20,7 +26,45 @@ function StudentDashboard({ onLogout }) {
     const loadProfile = async () => {
       try {
         const profile = await getStudentProfile();
+        const grades = await fetchStudentGrades();
+        profile.grades = grades;
         setStudent(profile);
+
+        const totalXP = grades.reduce((acc, l) => {
+          if (l.grade === 5) return acc + 10;
+          if (l.grade === 4) return acc + 7;
+          if (l.grade === 3) return acc + 4;
+          return acc;
+        }, 0);
+        setXp(totalXP);
+        setLevel(Math.floor(totalXP / 50));
+
+        const gradeDates = grades.map(g => new Date(g.date)).sort((a, b) => a - b);
+        let streak = 0;
+        const today = new Date();
+        for (let i = 0; i < 365; i++) {
+          const checkDate = subDays(today, i);
+          if (gradeDates.some(d => isSameDay(d, checkDate))) {
+            streak++;
+          } else {
+            break;
+          }
+        }
+        setStreakDays(streak);
+
+        const currentMonth = new Date().getMonth();
+        const uniqueDays = new Set(
+          gradeDates.filter(d => d.getMonth() === currentMonth).map(d => d.toDateString())
+        );
+        setMonthActivity(uniqueDays.size);
+
+        const countByGrade = grades.reduce((acc, l) => {
+          if (!acc[l.grade]) acc[l.grade] = 0;
+          acc[l.grade]++;
+          return acc;
+        }, {});
+        setMedals(countByGrade);
+
       } catch (err) {
         console.error('Ошибка загрузки профиля:', err);
         localStorage.clear();
@@ -39,6 +83,13 @@ function StudentDashboard({ onLogout }) {
     navigate('/auth');
   };
 
+  const getAvatar = () => {
+    if (level >= 10) return '🧙‍♂️';
+    if (level >= 5) return '🧑‍🚀';
+    if (level >= 2) return '🎓';
+    return '👶';
+  };
+
   if (loading) return <div className="dashboard-loading">Загрузка...</div>;
 
   return (
@@ -54,33 +105,71 @@ function StudentDashboard({ onLogout }) {
       </header>
 
       <div className="dashboard-content">
-        <aside className="dashboard-sidebar">
-          <h2>Информация</h2>
-          <p><strong>Имя:</strong> {student.name}</p>
-          <p><strong>Предмет:</strong> {student.subject}</p>
-          <p><strong>Репетитор:</strong> {student.tutor_name || 'Не назначен'}</p>
-        </aside>
-        <button 
-            className="toggle-btn" 
-            onClick={() => navigate('/student-schedule')}
-            style={{ marginBottom: '20px' }}
-          >
-            📘 Посмотреть расписание
-          </button>
 
-        <main className="dashboard-main">
-          <h2>Добро пожаловать, {student.name}!</h2>
-          <p>Здесь появится ваше расписание, оценки и дневник 📘</p>
-        </main>
-      </div>
-       {/* Профиль модал */}
-       <ProfileSettingsModal
+  {/* Левая колонка: Инфо + прогресс */}
+  <aside className="dashboard-sidebar">
+    <h2>Информация</h2>
+    <p className="inline-info">
+      <span className="emoji-avatar-small">{getAvatar()}</span>
+      <strong style={{ fontSize: 16 }}>{student.name}</strong>
+    </p>
+    <p><strong>Репетитор:</strong> {student.tutor_name || 'Не назначен'}</p>
+
+    <h3 style={{ marginTop: 24 }}>📈 Прогресс</h3>
+    <div className="progress-bar-bg" title="🏆 Двигайся вперёд!">
+      <div
+        className="progress-bar-fill"
+        style={{ width: `${(xp % 50) * 2}%` }}
+      />
+    </div>
+    <p className="progress-caption">{xp % 50}/50 до следующего уровня</p>
+    <p style={{ marginTop: 4, fontSize: 14, color: '#6b7280' }}>Уровень {level}</p>
+  </aside>
+
+  {/* Центральный блок: Кнопки и приветствие */}
+  <main className="dashboard-main">
+  <h2>Добро пожаловать, {student.name}!</h2>
+  <p>Здесь вы найдёте оценки, графики, рейтинг и мотивацию 🏆</p>
+
+  <div className="nav-actions">
+    <button 
+      className="toggle-btn" 
+      onClick={() => navigate('/student-schedule')}
+    >
+      📘 Посмотреть расписание
+    </button>
+
+    <button 
+      className="toggle-btn" 
+      onClick={() => navigate('/student-journal')}
+    >
+      📊 Перейти в дневник
+    </button>
+  </div>
+</main>
+
+  {/* Правая колонка: Активность и ачивки */}
+  <aside className="dashboard-sidebar activity-right">
+    <h3>🔥 Активность</h3>
+    <p><strong>Streak:</strong> {streakDays} дней подряд</p>
+    <p><strong>Месяц:</strong> {monthActivity} активных дней</p>
+
+    <h3 style={{ marginTop: 16 }}>🏅 Ачивки</h3>
+    <ul className="medal-list">
+      {medals[5] && <li>🌟 Отличник: {medals[5]} × 5</li>}
+      {medals[4] && <li>🎖️ Хорошист: {medals[4]} × 4</li>}
+      {medals[3] && <li>📘 Троечник: {medals[3]} × 3</li>}
+      {!medals[3] && !medals[4] && !medals[5] && <li>⏳ Пока нет медалей</li>}
+    </ul>
+  </aside>
+</div>
+
+      <ProfileSettingsModal
         isOpen={isSettingsOpen}
         onClose={() => setIsSettingsOpen(false)}
         user={{ id: student?.id, role: 'student' }}
         initialData={student}
       />
-
     </div>
   );
 }

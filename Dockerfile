@@ -19,5 +19,6 @@ RUN git clone https://github.com/mayzer57/tutor-diary.git -b main . && \
 WORKDIR /opt/build/server
 RUN npm install
 
-# 6. Запускаем сервер через pm2
+EXPOSE 5001
+
 CMD ["pm2-runtime", "server.js"]

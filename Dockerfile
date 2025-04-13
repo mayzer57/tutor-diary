@@ -1,5 +1,5 @@
 # 1. Базовый образ
-FROM node:18
+FROM node:18  
 
 # 2. Рабочая директория
 WORKDIR /opt/build

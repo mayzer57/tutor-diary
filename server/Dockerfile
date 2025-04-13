@@ -1,7 +1,16 @@
 FROM node:18
-WORKDIR /opt/app
-COPY package*.json ./
-RUN npm install
+
+# Создаем рабочую папку
+WORKDIR /app
+
+# Копируем весь код
 COPY . .
+
+# Переходим в папку backend и устанавливаем зависимости
+RUN npm install --prefix server
+
+# Указываем порт
 EXPOSE 5001
-CMD ["node", "server.js"]
+
+# Стартуем сервер
+CMD ["node", "server/server.js"]

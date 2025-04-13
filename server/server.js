@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const path = require('path');
+
 require('dotenv').config();
 
 const app = express();
@@ -52,6 +52,14 @@ app.use('/api/auth', authRoutes);
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({ error: 'Internal Server Error' });
+});
+// 👉 Раздаём фронтенд как статику
+const path = require('path');
+app.use(express.static(path.join(__dirname, '..', 'client', 'build')));
+
+// 👉 Обрабатываем все неизвестные GET-запросы и возвращаем index.html
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'client', 'build', 'index.html'));
 });
 
 app.listen(PORT, () => {

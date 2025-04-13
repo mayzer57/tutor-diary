@@ -1,17 +1,19 @@
 FROM node:18
 
-# Создаем рабочую директорию
-WORKDIR /app
+WORKDIR /opt/build
 
-# Копируем весь код
-COPY . .
+# Клонируем проект
+RUN git clone https://github.com/mayzer57/tutor-diary.git -b main .
 
-# Установка зависимостей backend
-WORKDIR /app/server
+# Удаляем origin, чтобы не было конфликтов
+RUN git remote remove origin
+
+# Переходим в папку server и устанавливаем зависимости
+WORKDIR /opt/build/server
 RUN npm install
 
-# Открываем порт
+# Открываем порт (если нужно)
 EXPOSE 5001
 
-# Запуск сервера
+# Запускаем сервер
 CMD ["node", "server.js"]

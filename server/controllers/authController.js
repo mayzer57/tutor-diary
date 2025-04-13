@@ -1,5 +1,6 @@
 // server/controllers/authController.js
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
+
 const pool = require('../db');
 
 const changeUserPassword = async (req, res) => {

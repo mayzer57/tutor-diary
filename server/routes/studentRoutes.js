@@ -3,7 +3,8 @@ const router = express.Router();
 const pool = require('../db');
 const { check, validationResult } = require('express-validator');
 const jwt = require('jsonwebtoken');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
+
 const auth = require('../middleware/authMiddleware');
 
 // ✅ Получение всех учеников

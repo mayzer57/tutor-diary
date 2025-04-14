@@ -9,7 +9,9 @@ const PORT = process.env.PORT || 5001;
 // ✅ CORS конфиг
 const allowedOrigins = [
   'https://mayzer57-tutor-diary-4d45.twc1.net',
+  'https://mayzer57-tutor-diary-2e5c.twc1.net',
 ];
+
 
 
 app.use(cors({

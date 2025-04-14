@@ -353,7 +353,10 @@
   }
 }
 @media (max-width: 768px) {
-  .header-row,
+  .schedule-container {
+    padding: 16px;
+  }
+
   .week-header,
   .template-actions,
   .template-day__form {
@@ -372,6 +375,7 @@
 
   .day-box {
     flex: 1 1 100%;
+    padding: 10px;
   }
 
   .template-day {
@@ -382,5 +386,20 @@
   .template-day__form input,
   .template-day__form button {
     width: 100%;
+  }
+}
+
+@media (max-width: 600px) {
+  .student-lessons-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .student-title {
+    font-size: 22px;
+  }
+
+  .lesson-card {
+    padding: 14px;
+    font-size: 14px;
   }
 }

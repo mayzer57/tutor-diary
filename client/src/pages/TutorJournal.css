@@ -238,3 +238,70 @@ body {
 .chart {
   margin-top: 2rem;
 }
+@media (max-width: 768px) {
+  .filters-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .filters-row select,
+  .filters-row input,
+  .filters-row .react-datepicker-wrapper {
+    width: 100%;
+  }
+
+  .grade-table th,
+  .grade-table td {
+    font-size: 13px;
+    padding: 0.5rem 0.6rem;
+  }
+
+  .grade-table {
+    min-width: unset;
+  }
+
+  .header-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .header-row h2 {
+    font-size: 20px;
+    margin-bottom: 8px;
+  }
+
+  .mode-btn,
+  .active-mode-btn {
+    width: 100%;
+    margin-bottom: 8px;
+  }
+
+  .chart,
+  .recharts-wrapper {
+    max-width: 100% !important;
+    overflow-x: auto;
+  }
+
+  .grade-table thead {
+    font-size: 12px;
+  }
+
+  .grade-cell,
+  .average-cell {
+    font-size: 13px;
+  }
+}
+
+/* 📌 Sticky колонка с именем ученика */
+.grade-table thead th:first-child,
+.grade-table tbody td:first-child {
+  position: sticky;
+  left: 0;
+  background: #f3f4f6;
+  z-index: 2;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
+}
+
+

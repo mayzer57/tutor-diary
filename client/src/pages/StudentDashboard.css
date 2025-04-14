@@ -1,9 +1,10 @@
+/* 🌐 Базовый стиль */
 .student-dashboard {
   padding: 32px;
   max-width: 1200px;
   margin: auto;
   font-family: 'Segoe UI', sans-serif;
-  background: linear-gradient(to bottom right, #f0f9ff, #e0f2fe);
+  background: linear-gradient(to bottom right, #eff6ff, #e0f2fe);
   color: #1f2937;
   min-height: 100vh;
 }
@@ -21,12 +22,6 @@
   color: white;
 }
 
-.dashboard-header h1 {
-  margin: 0;
-  font-size: 24px;
-  font-weight: 600;
-}
-
 .header-controls {
   display: flex;
   gap: 14px;
@@ -37,7 +32,7 @@
   padding: 10px 16px;
   font-size: 14px;
   font-weight: 500;
-  border-radius: 8px;
+  border-radius: 10px;
   border: none;
   cursor: pointer;
   transition: all 0.25s ease;
@@ -51,86 +46,52 @@
   color: #1e3a8a;
 }
 
-.settings-btn:hover {
-  background-color: #dbeafe;
-  transform: translateY(-1px);
-}
-
 .logout-btn {
   background-color: #fee2e2;
   color: #991b1b;
 }
 
-.logout-btn:hover {
-  background-color: #fca5a5;
-  color: white;
-  transform: translateY(-1px);
-}
-
-/* 📦 Основной контент в 3 колонки */
+/* 📦 Контейнер */
 .dashboard-content {
-  display: grid;
-  grid-template-columns: 280px 1fr 280px;
+  display: flex;
   gap: 20px;
   align-items: flex-start;
 }
 
-/* ✅ Универсальный стиль блоков */
-.dashboard-sidebar,
+/* ✅ Блоки */
 .dashboard-main,
-.activity-block {
-  background: rgba(255, 255, 255, 0.65);
+.dashboard-sidebar {
+  background: #ffffff;
   border-radius: 16px;
   padding: 24px;
   box-shadow: 0 4px 18px rgba(0, 0, 0, 0.06);
   border: 1px solid rgba(255, 255, 255, 0.4);
 }
 
-/* 📋 Главный блок */
+/* Центральный блок */
+.dashboard-main {
+  flex: 1;
+  text-align: center;
+}
+
 .dashboard-main h2 {
-  margin-top: 0;
+  font-size: 22px;
+  font-weight: 600;
   margin-bottom: 12px;
 }
 
 .dashboard-main p {
-  margin-bottom: 24px;
   font-size: 15px;
   color: #374151;
+  margin-bottom: 24px;
 }
 
-/* 🧑 Аватар и имя */
-.avatar-block {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 16px;
+/* Левая/правая колонка */
+.dashboard-sidebar {
+  width: 280px;
 }
 
-.emoji-avatar {
-  font-size: 48px;
-  margin-bottom: 6px;
-  cursor: default;
-}
-
-.avatar-caption {
-  font-size: 14px;
-  font-weight: 500;
-  color: #374151;
-}
-
-.inline-info {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 6px;
-}
-
-.emoji-avatar-small {
-  font-size: 24px;
-  line-height: 1;
-}
-
-/* 📊 Прогресс */
+/* ⚡ Прогресс */
 .progress-bar-bg {
   background-color: #e5e7eb;
   border-radius: 10px;
@@ -152,11 +113,24 @@
   color: #6b7280;
 }
 
-.motivation-msg {
-  font-size: 13px;
-  font-style: italic;
-  color: #475569;
-  margin-top: 8px;
+/* Ачивки */
+.medal-list {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+  font-size: 14px;
+}
+
+.medal-list li {
+  margin: 6px 0;
+  padding-left: 20px;
+  position: relative;
+}
+
+.medal-list li::before {
+  content: '🏅';
+  position: absolute;
+  left: 0;
 }
 
 /* 🔘 Кнопки */
@@ -164,21 +138,37 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
-  margin-bottom: 0;
 }
 
-/* 🔥 Активность + Ачивки */
-.activity-block {
-  margin-top: 20px;
+.toggle-btn {
+  background: linear-gradient(to right, #6366f1, #3b82f6);
+  color: white;
+  font-weight: 600;
+  border: none;
+  padding: 14px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
-.medal-list {
-  margin: 0;
-  padding-left: 20px;
-  list-style-type: square;
-  font-size: 14px;
-  color: #111827;
+.toggle-btn:hover {
+  background: linear-gradient(to right, #4f46e5, #2563eb);
+  transform: translateY(-1px);
 }
+
+/* 🧑 Аватар */
+.inline-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+}
+
+.emoji-avatar-small {
+  font-size: 24px;
+}
+
+/* 📱 Мобила */
 @media (max-width: 768px) {
   .student-dashboard {
     padding: 16px;
@@ -189,143 +179,62 @@
     align-items: flex-start;
     gap: 12px;
     padding: 16px;
-    border-radius: 12px;
-  }
-
-  .dashboard-header h1 {
-    font-size: 20px;
   }
 
   .header-controls {
-    width: 100%;
-    display: flex;
     flex-direction: column;
-    gap: 10px;
-  }
-
-  .settings-btn,
-  .logout-btn {
     width: 100%;
-    justify-content: center;
   }
 
-  /* ✅ Правим порядок отображения */
   .dashboard-content {
     display: flex;
-    flex-direction: column;
-    gap: 16px;
+    flex-wrap: wrap;
+    gap: 14px;
+    flex-direction: column-reverse;
   }
 
-  /* Порядок: сначала main, потом flex-ряд из двух aside */
   .dashboard-main {
     order: 1;
     padding: 20px 16px;
     border-radius: 12px;
-    background-color: white;
   }
 
-  .dashboard-main h2 {
-    font-size: 18px;
-    text-align: center;
-    margin-bottom: 8px;
-  }
-
-  .dashboard-main p {
-    text-align: center;
-    font-size: 14px;
-    color: #374151;
-  }
-
-  .nav-actions {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-top: 16px;
-  }
-
-  .toggle-btn {
+  .dashboard-sidebar,
+  .activity-right {
     width: 100%;
-    padding: 12px;
-    font-size: 15px;
-    border-radius: 10px;
-    background-color: #3b82f6;
-    color: white;
-    font-weight: 500;
-    border: none;
-    transition: all 0.2s ease;
-  }
-
-  .toggle-btn:hover {
-    background-color: #2563eb;
-  }
-
-  /* ✅ Самое важное: flex-ряд из двух сайдбаров */
-  .dashboard-sidebar {
     padding: 16px;
     border-radius: 12px;
-    background-color: white;
-  }
-
-  .dashboard-sidebar h2,
-  .activity-right h3 {
-    font-size: 16px;
-    margin-bottom: 8px;
-  }
-
-  .inline-info {
-    flex-wrap: wrap;
-    font-size: 14px;
-    gap: 6px;
-  }
-
-  .emoji-avatar-small {
-    font-size: 20px;
-  }
-
-  .progress-bar-bg {
-    height: 16px;
-    border-radius: 10px;
-  }
-
-  .progress-caption {
-    font-size: 12px;
-    margin-top: 4px;
-  }
-
-  .medal-list {
-    padding-left: 16px;
-    font-size: 13px;
-    margin-top: 10px;
-  }
-
-  .dashboard-sidebar p,
-  .dashboard-sidebar li {
-    font-size: 13px;
-    line-height: 1.4;
-  }
-
-  /* 🚀 Вот это делает два блока рядом на мобилке */
-  .dashboard-content > .dashboard-sidebar {
-    width: 100%;
   }
 
   .dashboard-content > .dashboard-sidebar:nth-of-type(1),
-  .dashboard-content > .dashboard-sidebar:nth-of-type(2) {
+  .dashboard-content > .dashboard-sidebar.activity-right {
     display: inline-block;
     width: 48%;
     vertical-align: top;
   }
 
-  .dashboard-content {
-    flex-direction: column;
-  }
-
   @media (max-width: 600px) {
-    /* fallback на очень узких экранах — в колонку */
     .dashboard-content > .dashboard-sidebar:nth-of-type(1),
-    .dashboard-content > .dashboard-sidebar:nth-of-type(2) {
-      display: block;
+    .dashboard-content > .dashboard-sidebar.activity-right {
       width: 100%;
+      display: block;
     }
   }
+}
+
+/* 🎯 Анимация */
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dashboard-main,
+.dashboard-sidebar {
+  animation: fadeSlideIn 0.3s ease both;
 }

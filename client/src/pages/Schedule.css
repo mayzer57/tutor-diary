@@ -70,49 +70,71 @@
 .day-box {
   flex: 1 0 180px;
   min-height: 160px;
-  background: #f9fafb;
-  padding: 12px;
-  border-radius: 12px;
-  cursor: pointer;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  background: #ffffff;
+  padding: 14px;
+  border-radius: 14px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.04);
   transition: background 0.2s ease;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
 }
 
 .day-box:hover {
-  background: #f1f5f9;
+  background: #f9fbff;
 }
 
 .day-box h3 {
   font-size: 16px;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
+  color: #1e40af;
+  font-weight: 600;
 }
 
 /* 🧑‍🏫 Урок */
 .lesson-entry {
-  background: #ffffff;
+  background: #f8fafc;
   margin-top: 8px;
-  padding: 8px 10px;
-  border-radius: 8px;
-  border: 1px solid #e5e7eb;
+  padding: 10px;
+  border-radius: 10px;
+  border-left: 4px solid #3b82f6;
   font-size: 14px;
   color: #1f2937;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
   transition: background 0.2s ease;
 }
 
 .lesson-entry:hover {
-  background: #eef2ff;
+  background: #e0f2fe;
 }
 
 .hw {
   font-size: 13px;
   color: #6b7280;
-  margin-top: 4px;
+  margin-top: 6px;
 }
 
 .grade {
   font-weight: bold;
   color: #059669;
-  margin-top: 4px;
+  margin-top: 6px;
+}
+
+.file {
+  margin-top: 6px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.file a {
+  color: #2563eb;
+  text-decoration: underline;
+  font-weight: 500;
+}
+
+.file a:hover {
+  text-decoration: none;
 }
 
 /* 🔁 Кнопка клонирования */
@@ -140,26 +162,40 @@
   margin: 20px 0;
 }
 
-.apply-template-btn,
-.edit-template-link {
-  background: #e0f2fe;
-  color: #0c4a6e;
+.apply-template-btn {
+  background: #6366f1;
+  color: white;
   padding: 10px 18px;
   font-size: 15px;
   border-radius: 8px;
-  border: 1px solid #bae6fd;
-  text-align: center;
+  border: none;
   font-weight: 500;
-  display: inline-block;
+  cursor: pointer;
   transition: background 0.3s ease;
 }
 
-.edit-template-link:hover {
-  background: #bae6fd;
+.apply-template-btn:hover {
+  background: #4f46e5;
 }
 
-.apply-template-btn:hover,
+.edit-template-link {
+  background: transparent;
+  color: #2563eb;
+  padding: 8px 14px;
+  font-size: 14px;
+  border-radius: 6px;
+  border: 1px solid #c7d2fe;
+  text-align: center;
+  font-weight: 500;
+  display: inline-block;
+  transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
 
+.edit-template-link:hover {
+  background: #eff6ff;
+  color: #1d4ed8;
+  border-color: #93c5fd;
+}
 
 /* 🧱 Секция шаблонов */
 .template-table {
@@ -262,20 +298,7 @@
 .template-day__form button:hover {
   background: linear-gradient(90deg, #4f46e5, #2563eb);
 }
-.file {
-  margin-top: 6px;
-  font-size: 14px;
-  font-weight: 500;
-}
 
-.file a {
-  color: #2563eb;
-  text-decoration: underline;
-}
-
-.file a:hover {
-  text-decoration: none;
-}
 /* 🔷 Student Schedule */
 .student-title {
   font-size: 26px;
@@ -355,6 +378,7 @@
     font-size: 14px;
   }
 }
+
 @media (max-width: 768px) {
   .schedule-container {
     padding: 16px;
@@ -376,25 +400,16 @@
     text-align: center;
   }
 
-  /* 🟦 Обновлённый edit-template-link */
-  .edit-template-link {
-    background: #e0f2fe;
-    color: #0c4a6e;
-    padding: 10px 18px;
-    font-size: 15px;
-    border-radius: 8px;
-    border: 1px solid #bae6fd;
-    text-align: center;
-    font-weight: 500;
-    display: inline-block;
-    transition: background 0.3s ease;
+  .template-day {
+    padding: 16px 14px;
   }
 
-  .edit-template-link:hover {
-    background: #bae6fd;
+  .template-day__form select,
+  .template-day__form input,
+  .template-day__form button {
+    width: 100%;
   }
 
-  /* 📅 Уроки и дни как карточки */
   .day-box {
     flex: 1 1 100%;
     background-color: #ffffff;
@@ -434,15 +449,5 @@
 
   .file a {
     font-size: 13px;
-  }
-
-  .template-day {
-    padding: 16px 14px;
-  }
-
-  .template-day__form select,
-  .template-day__form input,
-  .template-day__form button {
-    width: 100%;
   }
 }

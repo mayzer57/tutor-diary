@@ -1,4 +1,5 @@
-const API_URL = 'http://localhost:5001/api';
+const API_URL = "https://mayzer57-tutor-diary-2e5c.twc1.net/api";
+
 
 // 🔐 Заголовок авторизации
 export const authHeader = () => {

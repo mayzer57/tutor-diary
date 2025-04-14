@@ -12,7 +12,7 @@ router.post('/change-password', async (req, res) => {
   }
 
   try {
-    const bcrypt = require('bcrypt');
+    const bcrypt = require('bcryptjs');
     const hashed = await bcrypt.hash(newPassword, 10);
     const pool = require('../db');
 

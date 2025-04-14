@@ -42,6 +42,7 @@ router.post('/register', [
 });
 
 // 🔐 Вход
+// 🔐 Вход
 router.post('/login', [
   check('email').isEmail().withMessage('Некорректный email'),
   check('password').notEmpty().withMessage('Пароль обязателен')
@@ -52,6 +53,8 @@ router.post('/login', [
   const { email, password } = req.body;
 
   try {
+    console.log('[LOGIN] body:', req.body); // 👈 логируем вход
+
     const result = await pool.query('SELECT * FROM tutors WHERE email = $1', [email]);
     if (result.rows.length === 0) return res.status(401).json({ error: 'Пользователь не найден' });
 
@@ -68,14 +71,15 @@ router.post('/login', [
     res.json({ 
       token, 
       userType: 'tutor',
-      user: { id: tutor.id, name: tutor.name, email: tutor.email } // 👈
+      user: { id: tutor.id, name: tutor.name, email: tutor.email }
     });
     
   } catch (err) {
-    console.error('❌ Ошибка входа:', err.message);
+    console.error('❌ Ошибка входа:', err); // 👈 логируем ошибку полностью
     res.status(500).json({ error: 'Ошибка входа' });
   }
 });
+
 
 // 🔍 Профиль
 router.get('/profile', auth, async (req, res) => {

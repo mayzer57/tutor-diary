@@ -209,38 +209,38 @@
     justify-content: center;
   }
 
+  /* ✅ Правим порядок отображения */
   .dashboard-content {
     display: flex;
     flex-direction: column;
     gap: 16px;
   }
 
-  .dashboard-sidebar,
-  .dashboard-main,
-  .activity-right {
-    padding: 16px;
+  /* Порядок: сначала main, потом flex-ряд из двух aside */
+  .dashboard-main {
+    order: 1;
+    padding: 20px 16px;
     border-radius: 12px;
+    background-color: white;
   }
 
   .dashboard-main h2 {
     font-size: 18px;
+    text-align: center;
+    margin-bottom: 8px;
   }
 
   .dashboard-main p {
+    text-align: center;
     font-size: 14px;
-  }
-
-  .progress-bar-bg {
-    height: 16px;
-  }
-
-  .progress-caption {
-    font-size: 12px;
+    color: #374151;
   }
 
   .nav-actions {
+    display: flex;
     flex-direction: column;
     gap: 10px;
+    margin-top: 16px;
   }
 
   .toggle-btn {
@@ -259,22 +259,73 @@
     background-color: #2563eb;
   }
 
+  /* ✅ Самое важное: flex-ряд из двух сайдбаров */
+  .dashboard-sidebar {
+    padding: 16px;
+    border-radius: 12px;
+    background-color: white;
+  }
+
+  .dashboard-sidebar h2,
+  .activity-right h3 {
+    font-size: 16px;
+    margin-bottom: 8px;
+  }
+
   .inline-info {
     flex-wrap: wrap;
     font-size: 14px;
+    gap: 6px;
   }
 
   .emoji-avatar-small {
     font-size: 20px;
   }
 
+  .progress-bar-bg {
+    height: 16px;
+    border-radius: 10px;
+  }
+
+  .progress-caption {
+    font-size: 12px;
+    margin-top: 4px;
+  }
+
   .medal-list {
     padding-left: 16px;
     font-size: 13px;
+    margin-top: 10px;
   }
 
-  .activity-right h3,
-  .dashboard-sidebar h2 {
-    font-size: 16px;
+  .dashboard-sidebar p,
+  .dashboard-sidebar li {
+    font-size: 13px;
+    line-height: 1.4;
+  }
+
+  /* 🚀 Вот это делает два блока рядом на мобилке */
+  .dashboard-content > .dashboard-sidebar {
+    width: 100%;
+  }
+
+  .dashboard-content > .dashboard-sidebar:nth-of-type(1),
+  .dashboard-content > .dashboard-sidebar:nth-of-type(2) {
+    display: inline-block;
+    width: 48%;
+    vertical-align: top;
+  }
+
+  .dashboard-content {
+    flex-direction: column;
+  }
+
+  @media (max-width: 600px) {
+    /* fallback на очень узких экранах — в колонку */
+    .dashboard-content > .dashboard-sidebar:nth-of-type(1),
+    .dashboard-content > .dashboard-sidebar:nth-of-type(2) {
+      display: block;
+      width: 100%;
+    }
   }
 }

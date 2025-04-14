@@ -142,21 +142,24 @@
 
 .apply-template-btn,
 .edit-template-link {
-  font-size: 16px;
+  background: #e0f2fe;
+  color: #0c4a6e;
   padding: 10px 18px;
+  font-size: 15px;
   border-radius: 8px;
-  text-decoration: none;
-  color: white;
-  background: #6366f1;
-  border: none;
-  cursor: pointer;
+  border: 1px solid #bae6fd;
+  text-align: center;
+  font-weight: 500;
+  display: inline-block;
   transition: background 0.3s ease;
 }
 
-.apply-template-btn:hover,
 .edit-template-link:hover {
-  background: #4f46e5;
+  background: #bae6fd;
 }
+
+.apply-template-btn:hover,
+
 
 /* 🧱 Секция шаблонов */
 .template-table {
@@ -373,9 +376,64 @@
     text-align: center;
   }
 
+  /* 🟦 Обновлённый edit-template-link */
+  .edit-template-link {
+    background: #e0f2fe;
+    color: #0c4a6e;
+    padding: 10px 18px;
+    font-size: 15px;
+    border-radius: 8px;
+    border: 1px solid #bae6fd;
+    text-align: center;
+    font-weight: 500;
+    display: inline-block;
+    transition: background 0.3s ease;
+  }
+
+  .edit-template-link:hover {
+    background: #bae6fd;
+  }
+
+  /* 📅 Уроки и дни как карточки */
   .day-box {
     flex: 1 1 100%;
+    background-color: #ffffff;
+    border-radius: 14px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+    padding: 14px;
+    transition: box-shadow 0.3s ease;
+  }
+
+  .day-box h3 {
+    font-size: 15px;
+    margin-bottom: 10px;
+    color: #1e40af;
+    font-weight: 600;
+  }
+
+  .lesson-entry {
+    background: #f8fafc;
+    border-radius: 10px;
     padding: 10px;
+    border-left: 4px solid #3b82f6;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    margin-bottom: 10px;
+    font-size: 14px;
+  }
+
+  .lesson-entry:hover {
+    background: #e0f2fe;
+  }
+
+  .lesson-entry .hw,
+  .lesson-entry .grade,
+  .lesson-entry .file {
+    font-size: 13px;
+    margin-top: 6px;
+  }
+
+  .file a {
+    font-size: 13px;
   }
 
   .template-day {
@@ -386,20 +444,5 @@
   .template-day__form input,
   .template-day__form button {
     width: 100%;
-  }
-}
-
-@media (max-width: 600px) {
-  .student-lessons-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .student-title {
-    font-size: 22px;
-  }
-
-  .lesson-card {
-    padding: 14px;
-    font-size: 14px;
   }
 }

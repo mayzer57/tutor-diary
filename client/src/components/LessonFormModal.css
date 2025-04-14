@@ -73,3 +73,58 @@
 .modal-buttons .delete-btn:hover {
   background-color: #c62828;
 }
+@media (max-width: 768px) {
+  .modal-overlay {
+    align-items: flex-end;
+    padding: 0 12px 24px;
+  }
+
+  .modal {
+    width: 100%;
+    max-width: unset;
+    border-radius: 16px 16px 0 0;
+    padding: 20px 16px;
+    box-shadow: 0 -6px 16px rgba(0, 0, 0, 0.1);
+    animation: slideUp 0.25s ease-out;
+  }
+
+  .modal h3 {
+    font-size: 1.2rem;
+    text-align: center;
+  }
+
+  .modal form {
+    gap: 10px;
+  }
+
+  .modal input,
+  .modal select {
+    font-size: 15px;
+    padding: 12px;
+    border-radius: 10px;
+  }
+
+  .modal-buttons {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .modal-buttons button {
+    width: 100%;
+    font-size: 15px;
+    padding: 12px;
+    border-radius: 10px;
+  }
+}
+
+/* 🧩 Анимация появления модалки */
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0%);
+    opacity: 1;
+  }
+}

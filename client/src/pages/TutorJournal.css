@@ -238,7 +238,40 @@ body {
 .chart {
   margin-top: 2rem;
 }
+/* 📱 Адаптация под мобильные устройства */
+
+.toggle-filters-btn {
+  display: none;
+  margin-bottom: 12px;
+  padding: 10px 14px;
+  font-size: 0.95rem;
+  background-color: var(--primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius);
+  box-shadow: var(--box-shadow);
+  cursor: pointer;
+}
+
 @media (max-width: 768px) {
+  /* 🔘 Кнопка показа фильтров на мобилке */
+  .toggle-filters-btn {
+    display: block;
+    width: 100%;
+  }
+
+  /* 📥 Фильтры — скрыты/отображаются */
+  .filters-row.hidden {
+    display: none;
+  }
+
+  .filters-row.visible {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  /* 📦 Обёртка фильтров */
   .filters-row {
     flex-direction: column;
     align-items: stretch;
@@ -251,6 +284,7 @@ body {
     width: 100%;
   }
 
+  /* 📊 Таблица */
   .grade-table th,
   .grade-table td {
     font-size: 13px;
@@ -261,6 +295,16 @@ body {
     min-width: unset;
   }
 
+  .grade-table thead {
+    font-size: 12px;
+  }
+
+  .grade-cell,
+  .average-cell {
+    font-size: 13px;
+  }
+
+  /* 🖼️ Хедер */
   .header-row {
     flex-direction: column;
     align-items: flex-start;
@@ -272,29 +316,26 @@ body {
     margin-bottom: 8px;
   }
 
+  /* 🔘 Переключатели таблица/диаграмма */
   .mode-btn,
   .active-mode-btn {
     width: 100%;
     margin-bottom: 8px;
   }
 
+  /* 📊 Графики (Recharts) */
   .chart,
   .recharts-wrapper {
     max-width: 100% !important;
     overflow-x: auto;
   }
 
-  .grade-table thead {
-    font-size: 12px;
-  }
-
-  .grade-cell,
-  .average-cell {
-    font-size: 13px;
+  .recharts-surface {
+    min-width: 100% !important;
   }
 }
 
-/* 📌 Sticky колонка с именем ученика */
+/* 📌 Sticky колонка "Ученик" */
 .grade-table thead th:first-child,
 .grade-table tbody td:first-child {
   position: sticky;

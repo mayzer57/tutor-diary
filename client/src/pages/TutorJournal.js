@@ -21,6 +21,8 @@ import {
 import './TutorJournal.css';
 
 function TutorJournal() {
+  const [filtersVisible, setFiltersVisible] = useState(false);
+
   const [lessons, setLessons] = useState([]);
   const [dates, setDates] = useState([]);
   const [sortBy, setSortBy] = useState({ field: 'student', asc: true });
@@ -209,8 +211,15 @@ const preselectedStudent = queryParams.get('student');
         <h2>📘 Электронный журнал</h2>
         <Link to="/dashboard" className="back-button">🏠 На главную</Link>
       </div>
+      <button
+  className="toggle-filters-btn"
+  onClick={() => setFiltersVisible(prev => !prev)}
+>
+  {filtersVisible ? '🔽 Скрыть фильтры' : '🔍 Показать фильтры'}
+</button>
 
-      <div className="filters-row">
+<div className={`filters-row ${filtersVisible ? 'visible' : 'hidden'}`}>
+
         <select
           value={period}
           onChange={(e) => {

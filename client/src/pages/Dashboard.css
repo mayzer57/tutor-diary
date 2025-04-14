@@ -107,9 +107,40 @@
 .dashboard-btn:hover {
   background-color: #4338ca;
 }
+/* 🔄 Modern rounded design & hover polish */
+
+.dashboard-header,
+.student-card,
+.dashboard-btn,
+.toggle-btn,
+.settings-btn,
+.logout-btn {
+  border-radius: 12px; /* smooth and modern */
+  transition: all 0.2s ease-in-out;
+}
+
+/* 🧱 Карточки учеников — больше глубины */
+.student-card {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+}
+
+.student-card:hover {
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+}
+
+/* 🎯 Hover-эффекты для кнопок */
+.dashboard-btn:hover,
+.toggle-btn:hover,
+.settings-btn:hover,
+.logout-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
 @media (max-width: 768px) {
   .dashboard-container {
     padding: 16px;
+    padding-bottom: 64px; /* безопасная зона */
   }
 
   .dashboard-header {
@@ -129,7 +160,10 @@
     gap: 10px;
   }
 
-  .dashboard-btn {
+  .dashboard-btn,
+  .toggle-btn,
+  .settings-btn,
+  .logout-btn {
     width: 100%;
     font-size: 15px;
     padding: 12px;
@@ -138,10 +172,15 @@
 
   .student-card {
     padding: 12px;
+    animation: fadeSlideIn 0.4s ease forwards;
+    opacity: 0;
+    transform: translateY(12px);
   }
+}
 
-  .toggle-btn {
-    width: 100%;
-    margin: 16px 0;
+@keyframes fadeSlideIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

@@ -105,7 +105,8 @@ function StudentDashboard({ onLogout }) {
      <header className="dashboard-header">
   <h1>👨‍🎓 Личный кабинет ученика</h1>
   <div className="header-controls">
-  <NotificationBell notifications={notifications} />
+  <NotificationBell studentId={student?.id} />
+
 
     <button className="settings-btn" onClick={() => setIsSettingsOpen(true)}>
       ⚙️ Настройки профиля

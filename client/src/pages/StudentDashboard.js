@@ -4,6 +4,7 @@ import { getStudentProfile, fetchStudentGrades } from '../api/api';
 import ProfileSettingsModal from '../components/ProfileSettingsModal';
 import { isSameDay, subDays } from 'date-fns';
 import './StudentDashboard.css';
+import NotificationBell from '../components/NotificationBell';
 
 function StudentDashboard({ onLogout }) {
   const [student, setStudent] = useState(null);
@@ -94,15 +95,17 @@ function StudentDashboard({ onLogout }) {
 
   return (
     <div className="student-dashboard">
-      <header className="dashboard-header">
-        <h1>👨‍🎓 Личный кабинет ученика</h1>
-        <div className="header-controls">
-          <button className="settings-btn" onClick={() => setIsSettingsOpen(true)}>
-            ⚙️ Настройки профиля
-          </button>
-          <button className="logout-btn" onClick={handleLogout}>Выйти</button>
-        </div>
-      </header>
+     <header className="dashboard-header">
+  <h1>👨‍🎓 Личный кабинет ученика</h1>
+  <div className="header-controls">
+    <NotificationBell studentId={student?.id} />
+    <button className="settings-btn" onClick={() => setIsSettingsOpen(true)}>
+      ⚙️ Настройки профиля
+    </button>
+    <button className="logout-btn" onClick={handleLogout}>Выйти</button>
+  </div>
+</header>
+
 
       <div className="dashboard-content">
 

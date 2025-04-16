@@ -130,7 +130,35 @@ router.patch('/:id', auth, async (req, res) => {
       return res.status(404).json({ error: 'Урок не найден' });
     }
 
-    res.json(result.rows[0]);
+    const updated = result.rows[0];
+
+    // получаем student_id по subject_id
+    const studentRes = await pool.query(
+      `SELECT student_id FROM student_subjects WHERE id = $1`,
+      [updated.subject_id]
+    );
+
+    if (studentRes.rows.length > 0) {
+      const student_id = studentRes.rows[0].student_id;
+
+      if (homework) {
+        await pool.query(
+          `INSERT INTO notifications (student_id, message)
+           VALUES ($1, $2)`,
+          [student_id, '📚 Новое домашнее задание от репетитора!']
+        );
+      }
+
+      if (grade !== undefined && grade !== null) {
+        await pool.query(
+          `INSERT INTO notifications (student_id, message)
+           VALUES ($1, $2)`,
+          [student_id, `✅ Ваша оценка за ${updated.date}: ${grade}`]
+        );
+      }
+    }
+
+    res.json(updated);
   } catch (err) {
     console.error('Ошибка при обновлении урока:', err.message);
     res.status(500).json({ error: 'Ошибка обновления' });

@@ -12,6 +12,8 @@ const allowedOrigins = [
   'https://mayzer57-tutor-diary-2e5c.twc1.net',
 ];
 
+const notificationRoutes = require('./routes/notificationRoutes');
+app.use('/api/notifications', notificationRoutes);
 
 
 app.use(cors({
@@ -64,4 +66,29 @@ app.get('*', (req, res) => {
 
 app.listen(PORT, () => {
   console.log(`🚀 Сервер запущен на http://localhost:${PORT}`);
+});
+const cron = require('node-cron');
+
+cron.schedule('*/30 * * * *', async () => {
+  console.log('[CRON] Проверка уроков на ближайшие 3 часа');
+
+  const now = new Date();
+  const in3Hours = new Date(now.getTime() + 3 * 60 * 60 * 1000);
+  const nowStr = now.toISOString().split('T')[0];
+  const hour = now.getHours();
+
+  const res = await db.query(`
+    SELECT l.id, l.date, l.time, l.student_id, s.name AS student
+    FROM lessons l
+    JOIN students s ON s.id = l.student_id
+    WHERE l.date = $1
+      AND EXTRACT(HOUR FROM l.time) = $2
+  `, [nowStr, in3Hours.getHours()]);
+
+  for (const lesson of res.rows) {
+    await db.query(
+      'INSERT INTO notifications (student_id, message) VALUES ($1, $2)',
+      [lesson.student_id, '🕒 Напоминание: через 3 часа начнётся занятие!']
+    );
+  }
 });

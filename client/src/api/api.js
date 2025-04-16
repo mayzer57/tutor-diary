@@ -426,3 +426,25 @@ export async function fetchStudentGrades() {
 
   return await res.json(); // [{ date, grade, subject }]
 }
+// 🔔 Получить уведомления ученика
+export async function fetchNotifications(studentId) {
+  const res = await fetch(`${API_URL}/notifications?student_id=${studentId}`, {
+    headers: authHeader(),
+  });
+
+  if (!res.ok) throw new Error('Ошибка загрузки уведомлений');
+  return await safeJson(res); // [{ id, student_id, message, created_at }]
+}
+
+// ➕ Добавить уведомление
+export async function createNotification(studentId, message) {
+  const res = await fetch(`${API_URL}/notifications`, {
+    method: 'POST',
+    headers: authHeader(),
+    body: JSON.stringify({ student_id: studentId, message }),
+  });
+
+  const data = await safeJson(res);
+  if (!res.ok) throw new Error(data.error || 'Ошибка создания уведомления');
+  return data;
+}

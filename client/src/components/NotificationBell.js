@@ -2,8 +2,6 @@ import { useState } from 'react';
 import './NotificationBell.css';
 
 function NotificationBell({ notifications = [] }) {
-    console.log('[🔔 studentId]', studentId);
-
   const [showDropdown, setShowDropdown] = useState(false);
 
   return (
@@ -32,4 +30,3 @@ function NotificationBell({ notifications = [] }) {
 }
 
 export default NotificationBell;
-

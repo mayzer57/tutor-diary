@@ -14,9 +14,9 @@ function groupByDate(notifications) {
 }
 
 function formatMessage(msg) {
-  if (msg.includes('домашнее задание')) return '📚 Назначено домашнее задание — проверьте дневник.';
+  if (msg.includes('домашнее')) return '📚 Назначено домашнее задание — проверьте дневник.';
   if (msg.includes('оценка')) return '✅ Получена новая оценка — посмотрите в дневнике.';
-  if (msg.includes('Напоминание')) return '⏰ У вас скоро урок — проверьте расписание.';
+  if (msg.includes('напоминание') || msg.includes('урок')) return '⏰ У вас скоро урок — проверьте расписание.';
   return msg;
 }
 
@@ -26,26 +26,39 @@ function NotificationBell({ studentId }) {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!studentId) return;
-  
-    fetch(`${API_URL}/notifications?student_id=${studentId}`, {
-      headers: authHeader(),
-    })
-      .then(res => res.json())
-      .then(data => {
-        const sorted = [...data].reverse();
-        setNotifications(sorted);
-      })
-      .catch((err) => {
-        console.warn('Ошибка загрузки уведомлений:', err.message);
-      });
+    if (!studentId) {
+      console.warn('[🔔] studentId отсутствует');
+      return;
+    }
+
+    if (!API_URL) {
+      console.error('[🔔] API_URL не задан');
+      return;
+    }
+
+    const load = async () => {
+      try {
+        const res = await fetch(`${API_URL}/notifications?student_id=${studentId}`, {
+          headers: authHeader(),
+        });
+
+        const data = await res.json();
+        console.log('[🔔] Уведомления загружены:', data);
+        setNotifications([...data].reverse());
+      } catch (err) {
+        console.error('❌ Ошибка загрузки уведомлений:', err.message);
+      }
+    };
+
+    load();
   }, [studentId]);
-  
 
   const handleClearAll = async () => {
-    if (!studentId) return;
     try {
-      await fetch(`/api/notifications/clear?student_id=${studentId}`, { method: 'DELETE' });
+      await fetch(`${API_URL}/notifications/clear?student_id=${studentId}`, {
+        method: 'DELETE',
+        headers: authHeader(),
+      });
       setNotifications([]);
     } catch (err) {
       console.error('Ошибка очистки уведомлений:', err.message);

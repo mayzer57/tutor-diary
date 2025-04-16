@@ -124,29 +124,18 @@ function Dashboard({ onLogout }) {
 
       {error && <div className="error-banner">{error}</div>}
 
-      <div style={{ marginBottom: '15px' }}>
-        <button
-          className="dashboard-btn"
-          onClick={() => setShowAddModal(true)}
-          style={{ marginRight: '10px' }}
-        >
-          ➕ Добавить ученика
-        </button>
+      <div className="dashboard-actions">
+  <button className="dashboard-btn" onClick={() => setShowAddModal(true)}>
+    ➕ Добавить ученика
+  </button>
+  <button className="dashboard-btn" onClick={() => navigate('/schedule')}>
+    Перейти к расписанию
+  </button>
+  <button className="dashboard-btn" onClick={() => navigate('/journal')}>
+    📘 Журнал
+  </button>
+</div>
 
-        <button
-          className="dashboard-btn"
-          onClick={() => navigate('/schedule')}
-        >
-          Перейти к расписанию
-        </button>
-        <button
-        className="dashboard-btn"
-        onClick={() => navigate('/journal')}
-        style={{ marginRight: '10px' }}
-      >
-        📘 Журнал
-      </button>
-      </div>
 
       {showAddModal && (
         <AddStudentModal

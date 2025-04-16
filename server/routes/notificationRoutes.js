@@ -50,5 +50,27 @@ router.delete('/clear', async (req, res) => {
     res.status(500).json({ error: 'Ошибка сервера' });
   }
 });
+router.patch('/:id/read', async (req, res) => {
+  const notifId = req.params.id;
+
+  try {
+    await db.query('UPDATE notifications SET read = TRUE WHERE id = $1', [notifId]);
+    res.send({ success: true });
+  } catch (err) {
+    console.error('Ошибка при обновлении уведомления:', err);
+    res.status(500).json({ error: 'Ошибка обновления уведомления' });
+  }
+});
+router.delete('/:id', async (req, res) => {
+  const notifId = req.params.id;
+
+  try {
+    await db.query('DELETE FROM notifications WHERE id = $1', [notifId]);
+    res.send({ success: true });
+  } catch (err) {
+    console.error('Ошибка удаления уведомления:', err);
+    res.status(500).json({ error: 'Ошибка удаления уведомления' });
+  }
+});
 
 module.exports = router;

@@ -14,9 +14,9 @@ function groupByDate(notifications) {
 }
 
 function formatMessage(msg) {
-  if (msg.includes('домашнее')) return '📚 Назначено домашнее задание — проверьте дневник.';
+  if (msg.includes('домашнее задание')) return '📚 Назначено домашнее задание — проверьте дневник.';
   if (msg.includes('оценка')) return '✅ Получена новая оценка — посмотрите в дневнике.';
-  if (msg.includes('напоминание') || msg.includes('урок')) return '⏰ У вас скоро урок — проверьте расписание.';
+  if (msg.includes('Напоминание')) return '⏰ У вас скоро урок — проверьте расписание.';
   return msg;
 }
 
@@ -25,43 +25,60 @@ function NotificationBell({ studentId }) {
   const [showDropdown, setShowDropdown] = useState(false);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (!studentId) {
-      console.warn('[🔔] studentId отсутствует');
-      return;
-    }
-
-    if (!API_URL) {
-      console.error('[🔔] API_URL не задан');
-      return;
-    }
-
-    const load = async () => {
-      try {
-        const res = await fetch(`${API_URL}/notifications?student_id=${studentId}`, {
-          headers: authHeader(),
-        });
-
-        const data = await res.json();
-        console.log('[🔔] Уведомления загружены:', data);
-        setNotifications([...data].reverse());
-      } catch (err) {
-        console.error('❌ Ошибка загрузки уведомлений:', err.message);
-      }
-    };
-
-    load();
-  }, [studentId]);
-
-  const handleClearAll = async () => {
+  const loadNotifications = async () => {
+    if (!studentId) return;
     try {
-      await fetch(`${API_URL}/notifications/clear?student_id=${studentId}`, {
-        method: 'DELETE',
+      const res = await fetch(`${API_URL}/notifications?student_id=${studentId}`, {
         headers: authHeader(),
       });
+      const data = await res.json();
+      setNotifications(data.reverse());
+    } catch (err) {
+      console.warn('Ошибка загрузки уведомлений:', err.message);
+    }
+  };
+
+  useEffect(() => {
+    loadNotifications();
+  }, [studentId]);
+
+  // ⬇ при открытии - пометить все непрочитанные
+  useEffect(() => {
+    if (showDropdown) {
+      const unread = notifications.filter(n => !n.read);
+      unread.forEach(n => {
+        fetch(`${API_URL}/notifications/${n.id}/read`, {
+          method: 'PATCH',
+          headers: authHeader(),
+        }).catch(() => {});
+      });
+
+      setNotifications(prev =>
+        prev.map(n => ({ ...n, read: true }))
+      );
+    }
+  }, [showDropdown]);
+
+  const handleClearAll = async () => {
+    if (!studentId) return;
+    try {
+      await fetch(`${API_URL}/notifications/clear?student_id=${studentId}`, { method: 'DELETE' });
       setNotifications([]);
     } catch (err) {
       console.error('Ошибка очистки уведомлений:', err.message);
+    }
+  };
+
+  const handleDelete = async (id, e) => {
+    e.stopPropagation();
+    try {
+      await fetch(`${API_URL}/notifications/${id}`, {
+        method: 'DELETE',
+        headers: authHeader(),
+      });
+      setNotifications(prev => prev.filter(n => n.id !== id));
+    } catch (err) {
+      console.error('Ошибка удаления уведомления:', err.message);
     }
   };
 
@@ -97,13 +114,20 @@ function NotificationBell({ studentId }) {
               <div key={date}>
                 <p>{date === new Date().toLocaleDateString('ru-RU') ? 'Сегодня' : date}</p>
                 <ul>
-                  {list.map((n, idx) => (
+                  {list.map((n) => (
                     <li
-                      key={idx}
+                      key={n.id}
                       onClick={() => handleNotificationClick(n)}
-                      className="unread"
+                      className={n.read ? 'read' : 'unread'}
                     >
                       <span>{formatMessage(n.message)}</span>
+                      <button
+                        className="notif-delete-btn"
+                        onClick={(e) => handleDelete(n.id, e)}
+                        title="Удалить"
+                      >
+                        ✖
+                      </button>
                       <small>{new Date(n.created_at).toLocaleTimeString('ru-RU')}</small>
                     </li>
                   ))}

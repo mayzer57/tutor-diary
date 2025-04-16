@@ -452,3 +452,26 @@ export async function createNotification(studentId, message) {
   if (!res.ok) throw new Error(data.error || 'Ошибка создания уведомления');
   return data;
 }
+// ✅ Обновить уведомление как прочитанное
+// 📌 Пометить уведомление как прочитанное
+export async function markNotificationAsRead(id) {
+  const res = await fetch(`${API_URL}/notifications/${id}/read`, {
+    method: 'PATCH',
+    headers: authHeader(),
+  });
+
+  if (!res.ok) throw new Error('Ошибка при пометке уведомления');
+  return await res.json();
+}
+
+// ❌ Удалить одно уведомление
+export async function deleteNotification(id) {
+  const res = await fetch(`${API_URL}/notifications/${id}`, {
+    method: 'DELETE',
+    headers: authHeader(),
+  });
+
+  if (!res.ok) throw new Error('Ошибка при удалении уведомления');
+  return await res.json();
+}
+

@@ -1,131 +1,144 @@
 .notification-bell {
-    position: relative;
+  position: relative;
+}
+
+/* Кнопка уведомлений */
+.notif-btn {
+  background-color: #fef9c3;
+  color: #92400e;
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+}
+
+/* Обёртка */
+.notif-dropdown {
+  position: absolute;
+  top: 48px;
+  right: 0;
+  background: white;
+  width: 320px;
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+  padding: 12px;
+  z-index: 100;
+  animation: fadeIn 0.3s ease-out;
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+/* Заголовок + кнопка очистки */
+.notif-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 600;
+  font-size: 16px;
+  margin-bottom: 10px;
+  padding: 4px;
+}
+
+.clear-btn {
+  background: transparent;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  color: #dc2626;
+}
+
+/* Список */
+.notif-dropdown ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.notif-dropdown li {
+  position: relative;
+  margin-bottom: 10px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  transition: background 0.2s ease;
+  cursor: pointer;
+}
+
+/* Непрочитанные */
+.notif-dropdown li.unread {
+  background-color: #fff7ed;
+  font-weight: 600;
+}
+
+/* Прочитанные */
+.notif-dropdown li.read {
+  background-color: #f1f5f9;
+  color: #555;
+}
+
+/* Сообщение */
+.notif-dropdown li span {
+  display: block;
+  font-size: 15px;
+  color: #1f2937;
+}
+
+/* Время */
+.notif-dropdown small {
+  display: block;
+  color: #6b7280;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+/* Кнопка удаления */
+.notif-delete-btn {
+  position: absolute;
+  right: 6px;
+  top: 6px;
+  background: transparent;
+  border: none;
+  font-size: 13px;
+  color: #dc2626;
+  cursor: pointer;
+  padding: 2px;
+}
+
+.notif-delete-btn:hover {
+  color: #991b1b;
+}
+
+/* Анимация */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
   }
-  
-  /* Кнопка уведомлений */
-  .notif-btn {
-    background-color: #fef9c3;
-    color: #92400e;
-    padding: 10px 16px;
-    border-radius: 10px;
-    font-weight: 500;
-    border: none;
-    cursor: pointer;
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
-  
-  /* Обёртка */
+}
+
+/* 📱 Адаптация под мобильные */
+@media (max-width: 480px) {
   .notif-dropdown {
-    position: absolute;
-    top: 48px;
-    right: 0;
-    background: white;
-    width: 320px;
-    border-radius: 12px;
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
-    padding: 12px;
-    z-index: 100;
-    animation: fadeIn 0.3s ease-out;
-    max-height: 500px;
-    overflow-y: auto;
+    right: 50%;
+    transform: translateX(50%);
+    width: 90vw;
+    max-height: 60vh;
   }
-  
-  /* Заголовок + кнопка очистки */
-  .notif-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-weight: 600;
-    font-size: 16px;
-    margin-bottom: 10px;
-    padding: 4px;
+
+  .notif-btn {
+    padding: 8px 12px;
+    font-size: 14px;
   }
-  
-  .clear-btn {
-    background: transparent;
-    border: none;
-    font-size: 18px;
-    cursor: pointer;
-    color: #dc2626;
-  }
-  
-  /* Список */
-  .notif-dropdown ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-  }
-  
-  .notif-dropdown li {
-    margin-bottom: 10px;
-    padding: 8px 10px;
-    border-radius: 8px;
-    transition: background 0.2s ease;
-    background-color: #f9fafb;
-  }
-  
-  .notif-dropdown li:hover {
-    background-color: #f3f4f6;
-  }
-  
-  /* Непрочитанные */
-  .notif-dropdown li.unread {
-    background-color: #fff7ed;
-    font-weight: 600;
-  }
-  
-  /* Прочитанные */
-  .notif-dropdown li.read {
-    background-color: #f1f5f9;
-    color: #555;
-  }
-  
-  /* Сообщение */
+
   .notif-dropdown li span {
-    display: block;
-    font-size: 15px;
-    color: #1f2937;
+    font-size: 14px;
   }
-  
-  /* Время */
+
   .notif-dropdown small {
-    display: block;
-    color: #6b7280;
-    font-size: 12px;
-    margin-top: 4px;
+    font-size: 11px;
   }
-  
-  /* Анимация */
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-      transform: translateY(-8px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-  
-  /* 📱 Адаптация под мобильные */
-  @media (max-width: 480px) {
-    .notif-dropdown {
-      right: 50%;
-      transform: translateX(50%);
-      width: 90vw;
-      max-height: 60vh;
-    }
-  
-    .notif-btn {
-      padding: 8px 12px;
-      font-size: 14px;
-    }
-  
-    .notif-dropdown li span {
-      font-size: 14px;
-    }
-  
-    .notif-dropdown small {
-      font-size: 11px;
-    }
-  }
-  
+}

@@ -30,7 +30,8 @@ function StudentDashboard({ onLogout }) {
       try {
         const profile = await getStudentProfile();
         const grades = await fetchStudentGrades();
-        const notifs = await getStudentNotifications(); // 👈 уведомления
+        const notifs = await getStudentNotifications(profile.id); // 👈 передаём ID
+
     
         profile.grades = grades;
         setStudent(profile);

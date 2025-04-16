@@ -428,14 +428,15 @@ export async function fetchStudentGrades() {
 }
 // 🔔 Получить уведомления ученика
 // 🔔 Получить уведомления ученика
-export async function getStudentNotifications() {
-  const res = await fetch(`${API_URL}/students/notifications`, {
+export async function getStudentNotifications(studentId) {
+  const res = await fetch(`${API_URL}/notifications?student_id=${studentId}`, {
     headers: authHeader(),
   });
 
   if (!res.ok) throw new Error('Ошибка загрузки уведомлений');
   return await res.json(); // [{ id, message, created_at }]
 }
+
 
 
 // ➕ Добавить уведомление

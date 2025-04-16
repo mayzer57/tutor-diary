@@ -2,10 +2,9 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getStudentProfile, fetchStudentGrades } from '../api/api';
 import ProfileSettingsModal from '../components/ProfileSettingsModal';
+import NotificationBell from '../components/NotificationBell';
 import { isSameDay, subDays } from 'date-fns';
 import './StudentDashboard.css';
-import NotificationBell from '../components/NotificationBell';
-import { getStudentNotifications } from '../api/api';
 
 function StudentDashboard({ onLogout }) {
   const [student, setStudent] = useState(null);
@@ -17,7 +16,6 @@ function StudentDashboard({ onLogout }) {
   const [monthActivity, setMonthActivity] = useState(0);
   const [medals, setMedals] = useState({});
   const navigate = useNavigate();
-  const [notifications, setNotifications] = useState([]);
 
   useEffect(() => {
     const userType = localStorage.getItem('userType');
@@ -30,13 +28,10 @@ function StudentDashboard({ onLogout }) {
       try {
         const profile = await getStudentProfile();
         const grades = await fetchStudentGrades();
-        const notifs = await getStudentNotifications(profile.id); // 👈 передаём ID
 
-    
         profile.grades = grades;
         setStudent(profile);
-        setNotifications(notifs); // 👈 сохранить уведомления
-    
+
         const totalXP = grades.reduce((acc, l) => {
           if (l.grade === 5) return acc + 10;
           if (l.grade === 4) return acc + 7;
@@ -45,7 +40,7 @@ function StudentDashboard({ onLogout }) {
         }, 0);
         setXp(totalXP);
         setLevel(Math.floor(totalXP / 50));
-    
+
         const gradeDates = grades.map(g => new Date(g.date)).sort((a, b) => a - b);
         let streak = 0;
         const today = new Date();
@@ -58,20 +53,20 @@ function StudentDashboard({ onLogout }) {
           }
         }
         setStreakDays(streak);
-    
+
         const currentMonth = new Date().getMonth();
         const uniqueDays = new Set(
           gradeDates.filter(d => d.getMonth() === currentMonth).map(d => d.toDateString())
         );
         setMonthActivity(uniqueDays.size);
-    
+
         const countByGrade = grades.reduce((acc, l) => {
           if (!acc[l.grade]) acc[l.grade] = 0;
           acc[l.grade]++;
           return acc;
         }, {});
         setMedals(countByGrade);
-    
+
       } catch (err) {
         console.error('Ошибка загрузки профиля:', err);
         localStorage.clear();
@@ -80,7 +75,6 @@ function StudentDashboard({ onLogout }) {
         setLoading(false);
       }
     };
-    
 
     loadProfile();
   }, [navigate]);
@@ -102,79 +96,63 @@ function StudentDashboard({ onLogout }) {
 
   return (
     <div className="student-dashboard">
-     <header className="dashboard-header">
-  <h1>👨‍🎓 Личный кабинет ученика</h1>
-  <div className="header-controls">
-  <NotificationBell studentId={student?.id} />
-
-
-    <button className="settings-btn" onClick={() => setIsSettingsOpen(true)}>
-      ⚙️ Настройки профиля
-    </button>
-    <button className="logout-btn" onClick={handleLogout}>Выйти</button>
-  </div>
-</header>
-
+      <header className="dashboard-header">
+        <h1>👨‍🎓 Личный кабинет ученика</h1>
+        <div className="header-controls">
+          <NotificationBell studentId={student?.id} />
+          <button className="settings-btn" onClick={() => setIsSettingsOpen(true)}>⚙️ Настройки профиля</button>
+          <button className="logout-btn" onClick={handleLogout}>Выйти</button>
+        </div>
+      </header>
 
       <div className="dashboard-content">
+        <aside className="dashboard-sidebar">
+          <h2>Информация</h2>
+          <p className="inline-info">
+            <span className="emoji-avatar-small">{getAvatar()}</span>
+            <strong style={{ fontSize: 16 }}>{student.name}</strong>
+          </p>
+          <p><strong>Репетитор:</strong> {student.tutor_name || 'Не назначен'}</p>
 
-  {/* Левая колонка: Инфо + прогресс */}
-  <aside className="dashboard-sidebar">
-    <h2>Информация</h2>
-    <p className="inline-info">
-      <span className="emoji-avatar-small">{getAvatar()}</span>
-      <strong style={{ fontSize: 16 }}>{student.name}</strong>
-    </p>
-    <p><strong>Репетитор:</strong> {student.tutor_name || 'Не назначен'}</p>
+          <h3 style={{ marginTop: 24 }}>📈 Прогресс</h3>
+          <div className="progress-bar-bg" title="🏆 Двигайся вперёд!">
+            <div
+              className="progress-bar-fill"
+              style={{ width: `${(xp % 50) * 2}%` }}
+            />
+          </div>
+          <p className="progress-caption">{xp % 50}/50 до следующего уровня</p>
+          <p style={{ marginTop: 4, fontSize: 14, color: '#6b7280' }}>Уровень {level}</p>
+        </aside>
 
-    <h3 style={{ marginTop: 24 }}>📈 Прогресс</h3>
-    <div className="progress-bar-bg" title="🏆 Двигайся вперёд!">
-      <div
-        className="progress-bar-fill"
-        style={{ width: `${(xp % 50) * 2}%` }}
-      />
-    </div>
-    <p className="progress-caption">{xp % 50}/50 до следующего уровня</p>
-    <p style={{ marginTop: 4, fontSize: 14, color: '#6b7280' }}>Уровень {level}</p>
-  </aside>
+        <main className="dashboard-main">
+          <h2>Добро пожаловать, {student.name}!</h2>
+          <p>Здесь вы найдёте оценки, графики, рейтинг и мотивацию 🏆</p>
 
-  {/* Центральный блок: Кнопки и приветствие */}
-  <main className="dashboard-main">
-  <h2>Добро пожаловать, {student.name}!</h2>
-  <p>Здесь вы найдёте оценки, графики, рейтинг и мотивацию 🏆</p>
+          <div className="nav-actions">
+            <button className="toggle-btn" onClick={() => navigate('/student-schedule')}>
+              📘 Посмотреть расписание
+            </button>
+            <button className="toggle-btn" onClick={() => navigate('/student-journal')}>
+              📊 Перейти в дневник
+            </button>
+          </div>
+        </main>
 
-  <div className="nav-actions">
-    <button 
-      className="toggle-btn" 
-      onClick={() => navigate('/student-schedule')}
-    >
-      📘 Посмотреть расписание
-    </button>
+        <aside className="dashboard-sidebar activity-right">
+          <h3>🔥 Активность</h3>
+          <p><strong>Streak:</strong> {streakDays} дней подряд</p>
+          <p><strong>Месяц:</strong> {monthActivity} активных дней</p>
 
-    <button 
-      className="toggle-btn" 
-      onClick={() => navigate('/student-journal')}
-    >
-      📊 Перейти в дневник
-    </button>
-  </div>
-</main>
-
-  {/* Правая колонка: Активность и ачивки */}
-  <aside className="dashboard-sidebar activity-right">
-    <h3>🔥 Активность</h3>
-    <p><strong>Streak:</strong> {streakDays} дней подряд</p>
-    <p><strong>Месяц:</strong> {monthActivity} активных дней</p>
-
-    <h3 style={{ marginTop: 16 }}>🏅 Ачивки</h3>
-    <ul className="medal-list">
-      {medals[5] && <li>🌟 Отличник: {medals[5]} × 5</li>}
-      {medals[4] && <li>🎖️ Хорошист: {medals[4]} × 4</li>}
-      {medals[3] && <li>📘 Троечник: {medals[3]} × 3</li>}
-      {!medals[3] && !medals[4] && !medals[5] && <li>⏳ Пока нет медалей</li>}
-    </ul>
-  </aside>
-</div>
+          <h3 style={{ marginTop: 16 }}>🏅 Ачивки</h3>
+          <ul className="medal-list">
+            {medals[5] && <li>🌟 Отличник: {medals[5]} × 5</li>}
+            {medals[4] && <li>🎖️ Хорошист: {medals[4]} × 4</li>}
+            {medals[3] && <li>📘 Троечник: {medals[3]} × 3</li>}
+            {!medals[3] && !medals[4] && !medals[5] && <li>⏳ Пока нет медалей</li>}
+          </ul>
+        </aside>
+      </div>
 
       <ProfileSettingsModal
         isOpen={isSettingsOpen}

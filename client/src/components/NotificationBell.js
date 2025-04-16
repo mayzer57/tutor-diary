@@ -12,6 +12,13 @@ function groupByDate(notifications) {
   return groups;
 }
 
+function formatMessage(msg) {
+  if (msg.includes('домашнее задание')) return '📚 Назначено домашнее задание — проверьте дневник.';
+  if (msg.includes('оценка')) return '✅ Получена новая оценка — посмотрите в дневнике.';
+  if (msg.includes('Напоминание')) return '⏰ У вас скоро урок — проверьте расписание.';
+  return msg;
+}
+
 function NotificationBell({ studentId }) {
   const [notifications, setNotifications] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
@@ -22,7 +29,6 @@ function NotificationBell({ studentId }) {
     fetch(`/api/notifications?student_id=${studentId}`)
       .then(res => res.json())
       .then(data => {
-        // Пока все как непрочитанные (можно потом добавить статус read)
         const sorted = [...data].reverse(); // новые сверху
         setNotifications(sorted);
       })
@@ -42,10 +48,13 @@ function NotificationBell({ studentId }) {
   };
 
   const handleNotificationClick = (notif) => {
-    if (notif.message.includes('расписании')) {
+    const text = notif.message.toLowerCase();
+    if (text.includes('расписание') || text.includes('урок')) {
       navigate('/student-schedule');
-      setShowDropdown(false);
+    } else if (text.includes('оценка') || text.includes('домашнее')) {
+      navigate('/student-journal');
     }
+    setShowDropdown(false);
   };
 
   const grouped = groupByDate(notifications);
@@ -74,9 +83,9 @@ function NotificationBell({ studentId }) {
                     <li
                       key={idx}
                       onClick={() => handleNotificationClick(n)}
-                      className={`unread`}
+                      className="unread"
                     >
-                      <span>{n.message}</span>
+                      <span>{formatMessage(n.message)}</span>
                       <small>{new Date(n.created_at).toLocaleTimeString('ru-RU')}</small>
                     </li>
                   ))}

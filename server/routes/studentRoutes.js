@@ -284,4 +284,22 @@ router.get('/ranking', auth, async (req, res) => {
     res.status(500).json({ error: 'Ошибка при получении рейтинга' });
   }
 });
+// 🔔 Уведомления ученика
+router.get('/notifications', auth, async (req, res) => {
+  try {
+    const result = await pool.query(
+      `SELECT id, message, created_at
+       FROM notifications
+       WHERE student_id = $1
+       ORDER BY created_at DESC
+       LIMIT 50`,
+      [req.student.id]
+    );
+    res.json(result.rows);
+  } catch (err) {
+    console.error('Ошибка при получении уведомлений:', err.message);
+    res.status(500).json({ error: 'Ошибка при получении уведомлений' });
+  }
+});
+
 module.exports = router;

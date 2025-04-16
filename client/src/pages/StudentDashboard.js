@@ -5,6 +5,7 @@ import ProfileSettingsModal from '../components/ProfileSettingsModal';
 import { isSameDay, subDays } from 'date-fns';
 import './StudentDashboard.css';
 import NotificationBell from '../components/NotificationBell';
+import { getStudentNotifications } from '../api/api';
 
 function StudentDashboard({ onLogout }) {
   const [student, setStudent] = useState(null);
@@ -16,6 +17,7 @@ function StudentDashboard({ onLogout }) {
   const [monthActivity, setMonthActivity] = useState(0);
   const [medals, setMedals] = useState({});
   const navigate = useNavigate();
+  const [notifications, setNotifications] = useState([]);
 
   useEffect(() => {
     const userType = localStorage.getItem('userType');
@@ -28,9 +30,12 @@ function StudentDashboard({ onLogout }) {
       try {
         const profile = await getStudentProfile();
         const grades = await fetchStudentGrades();
+        const notifs = await getStudentNotifications(); // 👈 уведомления
+    
         profile.grades = grades;
         setStudent(profile);
-
+        setNotifications(notifs); // 👈 сохранить уведомления
+    
         const totalXP = grades.reduce((acc, l) => {
           if (l.grade === 5) return acc + 10;
           if (l.grade === 4) return acc + 7;
@@ -39,7 +44,7 @@ function StudentDashboard({ onLogout }) {
         }, 0);
         setXp(totalXP);
         setLevel(Math.floor(totalXP / 50));
-
+    
         const gradeDates = grades.map(g => new Date(g.date)).sort((a, b) => a - b);
         let streak = 0;
         const today = new Date();
@@ -52,20 +57,20 @@ function StudentDashboard({ onLogout }) {
           }
         }
         setStreakDays(streak);
-
+    
         const currentMonth = new Date().getMonth();
         const uniqueDays = new Set(
           gradeDates.filter(d => d.getMonth() === currentMonth).map(d => d.toDateString())
         );
         setMonthActivity(uniqueDays.size);
-
+    
         const countByGrade = grades.reduce((acc, l) => {
           if (!acc[l.grade]) acc[l.grade] = 0;
           acc[l.grade]++;
           return acc;
         }, {});
         setMedals(countByGrade);
-
+    
       } catch (err) {
         console.error('Ошибка загрузки профиля:', err);
         localStorage.clear();
@@ -74,6 +79,7 @@ function StudentDashboard({ onLogout }) {
         setLoading(false);
       }
     };
+    
 
     loadProfile();
   }, [navigate]);
@@ -98,7 +104,8 @@ function StudentDashboard({ onLogout }) {
      <header className="dashboard-header">
   <h1>👨‍🎓 Личный кабинет ученика</h1>
   <div className="header-controls">
-    <NotificationBell studentId={student?.id} />
+  <NotificationBell notifications={notifications} />
+
     <button className="settings-btn" onClick={() => setIsSettingsOpen(true)}>
       ⚙️ Настройки профиля
     </button>

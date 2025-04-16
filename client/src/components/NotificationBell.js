@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import './NotificationBell.css';
 import { useNavigate } from 'react-router-dom';
+import { API_URL, authHeader } from '../api/api';
 
 function groupByDate(notifications) {
   const groups = {};
@@ -26,16 +27,20 @@ function NotificationBell({ studentId }) {
 
   useEffect(() => {
     if (!studentId) return;
-    fetch(`/api/notifications?student_id=${studentId}`)
+  
+    fetch(`${API_URL}/notifications?student_id=${studentId}`, {
+      headers: authHeader(),
+    })
       .then(res => res.json())
       .then(data => {
-        const sorted = [...data].reverse(); // новые сверху
+        const sorted = [...data].reverse();
         setNotifications(sorted);
       })
       .catch((err) => {
         console.warn('Ошибка загрузки уведомлений:', err.message);
       });
   }, [studentId]);
+  
 
   const handleClearAll = async () => {
     if (!studentId) return;

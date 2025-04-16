@@ -6,6 +6,7 @@ import NotificationBell from '../components/NotificationBell';
 import { isSameDay, subDays } from 'date-fns';
 import './StudentDashboard.css';
 
+
 function StudentDashboard({ onLogout }) {
   const [student, setStudent] = useState(null);
   const [loading, setLoading] = useState(true);

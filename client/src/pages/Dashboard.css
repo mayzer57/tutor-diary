@@ -1,75 +1,72 @@
-/* 📱 Унифицированная шапка репетитора */
+.dashboard-container {
+  padding: 24px;
+  max-width: 1100px;
+  margin: auto;
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #f9fafb;
+  color: #1f2937;
+  min-height: 100vh;
+}
+
+/* 🧠 Шапка */
 .dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   background: linear-gradient(to right, #3b82f6, #60a5fa);
   color: white;
+  padding: 20px 28px;
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+  margin-bottom: 28px;
 }
 
-/* 📱 Адаптация на мобильных */
-@media (max-width: 768px) {
-  .dashboard-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
-    padding: 20px;
-    border-radius: 16px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-  }
-
-  .dashboard-header h1 {
-    font-size: 18px;
-    margin-bottom: 8px;
-    color: white; /* 👈 фикс цвета заголовка на фоне */
-  }
-
-  .header-controls {
-    flex-direction: column;
-    width: 100%;
-    gap: 10px;
-  }
-
-  .dashboard-btn,
-  .toggle-btn,
-  .settings-btn,
-  .logout-btn {
-    width: 100%;
-    font-size: 15px;
-    padding: 11px 16px;
-    margin: 4px 0;
-    border-radius: 12px;
-    font-weight: 500;
-    transition: background 0.2s ease, transform 0.2s ease;
-  }
-
-  .dashboard-btn,
-  .toggle-btn {
-    background: #6366f1;
-    color: white;
-  }
-
-  .toggle-btn:hover {
-    background: #4f46e5;
-  }
-
-  .settings-btn {
-    background: #f1f5f9;
-    color: #1f2937;
-  }
-
-  .settings-btn:hover {
-    background: #e5e7eb;
-  }
-
-  .logout-btn {
-    background: #fee2e2;
-    color: #991b1b;
-  }
-
-  .logout-btn:hover {
-    background: #fecaca;
-  }
+.dashboard-header h1 {
+  font-size: 22px;
+  font-weight: 600;
+  margin: 0;
 }
 
+/* 📦 Контейнер кнопок */
+.header-controls {
+  display: flex;
+  gap: 14px;
+}
 
+/* ⚙️ Настройки */
+.settings-btn {
+  background-color: #eff6ff;
+  color: #1e3a8a;
+  font-weight: 500;
+  padding: 10px 16px;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.settings-btn:hover {
+  background-color: #dbeafe;
+}
+
+/* 🚪 Выход */
+.logout-btn {
+  background-color: #fee2e2;
+  color: #991b1b;
+  font-weight: 500;
+  padding: 10px 16px;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.logout-btn:hover {
+  background-color: #fecaca;
+}
+
+/* ➕ Другие кнопки */
+.dashboard-btn,
 .toggle-btn {
   background: linear-gradient(to right, #6366f1, #3b82f6);
   color: white;
@@ -81,14 +78,9 @@
   transition: all 0.3s ease;
 }
 
+.dashboard-btn:hover,
 .toggle-btn:hover {
   background: linear-gradient(to right, #4f46e5, #2563eb);
-  transform: translateY(-1px);
-}
-
-.settings-btn:hover,
-.logout-btn:hover,
-.dashboard-btn:hover {
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
@@ -117,22 +109,6 @@
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
 }
 
-.dashboard-btn {
-  background-color: #4f46e5;
-  color: white;
-  border: none;
-  border-radius: 12px;
-  padding: 10px 16px;
-  font-size: 14px;
-  cursor: pointer;
-  margin-right: 10px;
-  transition: background-color 0.2s ease-in-out;
-}
-
-.dashboard-btn:hover {
-  background-color: #4338ca;
-}
-
 /* 🎯 Анимация */
 @keyframes fadeSlideIn {
   from {
@@ -157,14 +133,14 @@
     align-items: flex-start;
     gap: 12px;
     padding: 20px;
-    background: linear-gradient(to right, #eff6ff, #dbeafe);
-    border-radius: 14px;
+    border-radius: 16px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
   }
 
   .dashboard-header h1 {
     font-size: 18px;
     margin-bottom: 8px;
+    color: white;
   }
 
   .header-controls {
@@ -182,19 +158,8 @@
     padding: 11px 16px;
     margin: 4px 0;
     border-radius: 12px;
-    border: none;
     font-weight: 500;
     transition: background 0.2s ease, transform 0.2s ease;
-  }
-
-  .dashboard-btn,
-  .toggle-btn {
-    background: #6366f1;
-    color: white;
-  }
-
-  .toggle-btn:hover {
-    background: #4f46e5;
   }
 
   .settings-btn {

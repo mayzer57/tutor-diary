@@ -116,8 +116,9 @@ function Dashboard({ onLogout }) {
       <header className="dashboard-header">
         <h1>📘 Панель репетитора {user && `- ${user.name}`}</h1>
         <div className="header-controls">
-          <button className="dashboard-btn" onClick={() => setIsSettingsOpen(true)}>⚙️ Настройки профиля</button>
-          <button className="dashboard-btn" onClick={handleLogout}>Выйти</button>
+        <button className="settings-btn" onClick={() => setIsSettingsOpen(true)}>⚙️ Настройки профиля</button>
+<button className="logout-btn" onClick={handleLogout}>Выйти</button>
+
         </div>
       </header>
 

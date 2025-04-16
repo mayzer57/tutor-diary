@@ -11,11 +11,6 @@ const allowedOrigins = [
   'https://mayzer57-tutor-diary-4d45.twc1.net',
   'https://mayzer57-tutor-diary-2e5c.twc1.net',
 ];
-
-const notificationRoutes = require('./routes/notificationRoutes');
-app.use('/api/notifications', notificationRoutes);
-
-
 app.use(cors({
   origin: function (origin, callback) {
     if (!origin || allowedOrigins.includes(origin)) {
@@ -26,6 +21,11 @@ app.use(cors({
   },
   credentials: true,
 }));
+const notificationRoutes = require('./routes/notificationRoutes');
+app.use('/api/notifications', notificationRoutes);
+
+
+
 
 // JSON + кэш
 app.use(express.json());

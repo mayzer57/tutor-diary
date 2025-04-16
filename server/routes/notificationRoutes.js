@@ -37,5 +37,18 @@ router.post('/', async (req, res) => {
     res.status(500).json({ error: 'Ошибка сервера' });
   }
 });
+// Удаление всех уведомлений студента
+router.delete('/clear', async (req, res) => {
+  const { student_id } = req.query;
+  if (!student_id) return res.status(400).json({ error: 'student_id обязателен' });
+
+  try {
+    await db.query('DELETE FROM notifications WHERE student_id = $1', [student_id]);
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Ошибка удаления уведомлений:', err);
+    res.status(500).json({ error: 'Ошибка сервера' });
+  }
+});
 
 module.exports = router;

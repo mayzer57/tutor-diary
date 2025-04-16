@@ -1,33 +1,54 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import './NotificationBell.css';
-import { format, isToday, isYesterday, parseISO } from 'date-fns';
-import { ru } from 'date-fns/locale';
 import { useNavigate } from 'react-router-dom';
 
-function NotificationBell({ notifications = [] }) {
+function groupByDate(notifications) {
+  const groups = {};
+  for (const n of notifications) {
+    const dateKey = new Date(n.created_at).toLocaleDateString('ru-RU');
+    if (!groups[dateKey]) groups[dateKey] = [];
+    groups[dateKey].push(n);
+  }
+  return groups;
+}
+
+function NotificationBell({ studentId }) {
+  const [notifications, setNotifications] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const navigate = useNavigate();
 
-  // 🧠 группировка по дате
-  const grouped = notifications.reduce((acc, n) => {
-    const date = parseISO(n.created_at);
-    let label = format(date, 'dd.MM.yyyy');
+  useEffect(() => {
+    if (!studentId) return;
+    fetch(`/api/notifications?student_id=${studentId}`)
+      .then(res => res.json())
+      .then(data => {
+        // Пока все как непрочитанные (можно потом добавить статус read)
+        const sorted = [...data].reverse(); // новые сверху
+        setNotifications(sorted);
+      })
+      .catch((err) => {
+        console.warn('Ошибка загрузки уведомлений:', err.message);
+      });
+  }, [studentId]);
 
-    if (isToday(date)) label = 'Сегодня';
-    else if (isYesterday(date)) label = 'Вчера';
-
-    if (!acc[label]) acc[label] = [];
-    acc[label].push(n);
-    return acc;
-  }, {});
-
-  // 📌 формат сообщения
-  const formatMessage = (msg = '') => {
-    if (msg.includes('домашнее задание')) return '📚 Вам назначено домашнее задание. Проверьте дневник.';
-    if (msg.includes('оценка')) return '✅ Получена новая оценка. Откройте дневник.';
-    if (msg.includes('Назначен новый урок')) return '📅 Скоро урок! Посмотрите в расписании.';
-    return msg;
+  const handleClearAll = async () => {
+    if (!studentId) return;
+    try {
+      await fetch(`/api/notifications/clear?student_id=${studentId}`, { method: 'DELETE' });
+      setNotifications([]);
+    } catch (err) {
+      console.error('Ошибка очистки уведомлений:', err.message);
+    }
   };
+
+  const handleNotificationClick = (notif) => {
+    if (notif.message.includes('расписании')) {
+      navigate('/student-schedule');
+      setShowDropdown(false);
+    }
+  };
+
+  const grouped = groupByDate(notifications);
 
   return (
     <div className="notification-bell">
@@ -37,23 +58,25 @@ function NotificationBell({ notifications = [] }) {
 
       {showDropdown && (
         <div className="notif-dropdown">
+          <div className="notif-header">
+            <span>Уведомления</span>
+            <button className="clear-btn" onClick={handleClearAll}>🗑</button>
+          </div>
+
           {notifications.length === 0 ? (
             <p>Нет уведомлений</p>
           ) : (
-            Object.entries(grouped).map(([date, items], idx) => (
-              <div key={idx}>
-                <p style={{ fontWeight: 'bold', marginBottom: 8 }}>{date}</p>
+            Object.entries(grouped).map(([date, list]) => (
+              <div key={date}>
+                <p>{date === new Date().toLocaleDateString('ru-RU') ? 'Сегодня' : date}</p>
                 <ul>
-                  {items.map((n, i) => (
+                  {list.map((n, idx) => (
                     <li
-                      key={i}
-                      onClick={() => {
-                        if (n.message.includes('урок')) navigate('/student-schedule');
-                        if (n.message.includes('оценка') || n.message.includes('домашнее')) navigate('/student-journal');
-                      }}
-                      style={{ cursor: 'pointer' }}
+                      key={idx}
+                      onClick={() => handleNotificationClick(n)}
+                      className={`unread`}
                     >
-                      <span>{formatMessage(n.message)}</span>
+                      <span>{n.message}</span>
                       <small>{new Date(n.created_at).toLocaleTimeString('ru-RU')}</small>
                     </li>
                   ))}

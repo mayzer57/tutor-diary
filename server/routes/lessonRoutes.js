@@ -80,6 +80,7 @@ router.get('/student', auth, async (req, res) => {
 });
 
 // ➕ Добавление нового урока
+// ➕ Добавление нового урока + уведомление
 router.post('/', auth, async (req, res) => {
   const { subject_id, date, time, homework, homework_file, grade } = req.body;
 
@@ -104,13 +105,32 @@ router.post('/', auth, async (req, res) => {
       [req.tutor.id, subject_id, date, time, homework || '', homework_file || '', grade || null]
     );
 
-    res.status(201).json(result.rows[0]);
+    const createdLesson = result.rows[0];
 
+    // ✅ Получить student_id по subject_id
+    const studentRes = await pool.query(
+      `SELECT student_id FROM student_subjects WHERE id = $1`,
+      [subject_id]
+    );
+
+    if (studentRes.rows.length > 0) {
+      const student_id = studentRes.rows[0].student_id;
+
+      // 🔔 Создать уведомление о новом уроке
+      await pool.query(
+        `INSERT INTO notifications (student_id, message)
+         VALUES ($1, $2)`,
+        [student_id, `📅 Назначен новый урок на ${date} в ${time.slice(0, 5)}`]
+      );
+    }
+
+    res.status(201).json(createdLesson);
   } catch (err) {
     console.error('❌ Ошибка при добавлении урока:', err.message);
     res.status(500).json({ error: 'Ошибка при добавлении урока' });
   }
 });
+
 
 // ✏️ Обновление урока
 router.patch('/:id', auth, async (req, res) => {
@@ -261,6 +281,7 @@ router.delete('/templates/:id', auth, async (req, res) => {
 });
 
 // 📅 Применить шаблон на неделю
+// 📅 Применить шаблон на неделю + уведомления
 router.post('/apply-template', auth, async (req, res) => {
   const { start } = req.body;
 
@@ -285,10 +306,27 @@ router.post('/apply-template', auth, async (req, res) => {
 
       if (check.rows.length > 0) continue;
 
+      // 👇 Вставляем урок
       await pool.query(`
         INSERT INTO lessons (tutor_id, subject_id, date, time, homework, homework_file, grade)
         VALUES ($1, $2, $3, $4, '', '', NULL)
       `, [req.tutor.id, t.subject_id, dateStr, t.time]);
+
+      // 👇 Получаем student_id для уведомления
+      const studentRes = await pool.query(
+        `SELECT student_id FROM student_subjects WHERE id = $1`,
+        [t.subject_id]
+      );
+
+      if (studentRes.rows.length > 0) {
+        const student_id = studentRes.rows[0].student_id;
+
+        await pool.query(
+          `INSERT INTO notifications (student_id, message)
+           VALUES ($1, $2)`,
+          [student_id, `📅 Назначен новый урок по шаблону на ${dateStr} в ${t.time.slice(0, 5)}`]
+        );
+      }
 
       inserted++;
     }
@@ -299,6 +337,7 @@ router.post('/apply-template', auth, async (req, res) => {
     res.status(500).json({ error: 'Ошибка применения шаблона' });
   }
 });
+
 // 📊 Новый маршрут: Получить все оценки
 // 📊 Получить оценки за период с фильтрами и пагинацией
 // 📊 Получить оценки за период с фильтрами и пагинацией

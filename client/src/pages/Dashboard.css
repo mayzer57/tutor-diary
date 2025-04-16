@@ -8,95 +8,108 @@
   min-height: 100vh;
 }
 
+/* 🧠 Шапка */
 .dashboard-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #e0f2fe;
-  padding: 18px 24px;
-  border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
-  margin-bottom: 24px;
+  background: linear-gradient(to right, #3b82f6, #60a5fa);
+  padding: 20px 28px;
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+  margin-bottom: 28px;
+  color: white;
 }
 
 .dashboard-header h1 {
   font-size: 22px;
   font-weight: 600;
   margin: 0;
-  color: #1e3a8a;
 }
 
+/* 🔘 Кнопки */
 .header-controls {
   display: flex;
-  gap: 12px;
+  gap: 14px;
 }
 
 .settings-btn,
 .logout-btn,
 .toggle-btn {
-  padding: 10px 14px;
+  padding: 10px 16px;
   font-size: 14px;
-  border-radius: 6px;
+  font-weight: 500;
+  border-radius: 12px;
   border: none;
   cursor: pointer;
-  transition: 0.2s ease;
+  transition: all 0.25s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .settings-btn {
-  background-color: #dbeafe;
+  background-color: #eff6ff;
   color: #1e3a8a;
 }
 
-.settings-btn:hover {
-  background-color: #bfdbfe;
-}
-
 .logout-btn {
-  background-color: #fecaca;
+  background-color: #fee2e2;
   color: #991b1b;
 }
 
-.logout-btn:hover {
-  background-color: #f87171;
-  color: white;
-}
-
 .toggle-btn {
-  background-color: #6366f1;
+  background: linear-gradient(to right, #6366f1, #3b82f6);
   color: white;
-  margin: 20px 0;
+  font-weight: 600;
+  border: none;
+  padding: 14px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
 .toggle-btn:hover {
-  background-color: #4f46e5;
+  background: linear-gradient(to right, #4f46e5, #2563eb);
+  transform: translateY(-1px);
 }
 
+.settings-btn:hover,
+.logout-btn:hover,
+.dashboard-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* ❗ Ошибки */
 .error-banner {
   color: #991b1b;
   background: #fee2e2;
   padding: 10px 12px;
-  border-radius: 6px;
+  border-radius: 12px;
   margin-bottom: 16px;
 }
 
-/* Дополнительно для карточек учеников, если есть */
+/* 📦 Карточки учеников */
 .student-card {
   background-color: #ffffff;
-  border-radius: 10px;
+  border-radius: 16px;
   padding: 16px;
-  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
   margin-bottom: 12px;
   transition: box-shadow 0.2s ease;
+  animation: fadeSlideIn 0.3s ease both;
 }
 
 .student-card:hover {
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
 }
+
 .dashboard-btn {
   background-color: #4f46e5;
   color: white;
   border: none;
-  border-radius: 6px;
+  border-radius: 12px;
   padding: 10px 16px;
   font-size: 14px;
   cursor: pointer;
@@ -107,36 +120,20 @@
 .dashboard-btn:hover {
   background-color: #4338ca;
 }
-/* 🔄 Modern rounded design & hover polish */
 
-.dashboard-header,
-.student-card,
-.dashboard-btn,
-.toggle-btn,
-.settings-btn,
-.logout-btn {
-  border-radius: 12px; /* smooth and modern */
-  transition: all 0.2s ease-in-out;
+/* 🎯 Анимация */
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-/* 🧱 Карточки учеников — больше глубины */
-.student-card {
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
-}
-
-.student-card:hover {
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
-}
-
-/* 🎯 Hover-эффекты для кнопок */
-.dashboard-btn:hover,
-.toggle-btn:hover,
-.settings-btn:hover,
-.logout-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-}
-
+/* 📱 Мобильная адаптация */
 @media (max-width: 768px) {
   .dashboard-container {
     padding: 16px;
@@ -155,7 +152,6 @@
 
   .dashboard-header h1 {
     font-size: 18px;
-    color: #1e3a8a;
     margin-bottom: 8px;
   }
 
@@ -173,7 +169,7 @@
     font-size: 15px;
     padding: 11px 16px;
     margin: 4px 0;
-    border-radius: 10px;
+    border-radius: 12px;
     border: none;
     font-weight: 500;
     transition: background 0.2s ease, transform 0.2s ease;
@@ -207,19 +203,14 @@
     background: #fecaca;
   }
 
-  /* cards */
   .student-card {
     padding: 12px;
-    animation: fadeSlideIn 0.4s ease forwards;
-    opacity: 0;
-    transform: translateY(12px);
     border-radius: 12px;
     border: 1px solid #e5e7eb;
     background: #ffffff;
     box-shadow: 0 2px 6px rgba(0,0,0,0.04);
   }
 
-  /* текст в списке */
   .student-card p {
     font-size: 14px;
     color: #4b5563;
@@ -255,12 +246,5 @@
 
   .student-card .btn-edit:hover {
     background: #eab308;
-  }
-}
-
-@keyframes fadeSlideIn {
-  to {
-    opacity: 1;
-    transform: translateY(0);
   }
 }

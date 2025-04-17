@@ -28,9 +28,10 @@ router.post('/', async (req, res) => {
 
   try {
     await db.query(
-      'INSERT INTO notifications (student_id, message) VALUES ($1, $2)',
+      'INSERT INTO notifications (student_id, message, read) VALUES ($1, $2, FALSE)',
       [student_id, message]
     );
+    
     res.status(201).json({ message: 'Уведомление создано' });
   } catch (err) {
     console.error('Ошибка добавления уведомления:', err);

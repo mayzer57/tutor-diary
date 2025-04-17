@@ -118,10 +118,11 @@ router.post('/', auth, async (req, res) => {
 
       // 🔔 Создать уведомление о новом уроке
       await pool.query(
-        `INSERT INTO notifications (student_id, message)
-         VALUES ($1, $2)`,
+        `INSERT INTO notifications (student_id, message, read)
+         VALUES ($1, $2, FALSE)`,
         [student_id, `📅 Назначен новый урок на ${date} в ${time.slice(0, 5)}`]
       );
+      
     }
 
     res.status(201).json(createdLesson);
@@ -163,19 +164,21 @@ router.patch('/:id', auth, async (req, res) => {
 
       if (homework) {
         await pool.query(
-          `INSERT INTO notifications (student_id, message)
-           VALUES ($1, $2)`,
+          `INSERT INTO notifications (student_id, message, read)
+           VALUES ($1, $2, FALSE)`,
           [student_id, '📚 Новое домашнее задание от репетитора!']
         );
       }
+      
 
       if (grade !== undefined && grade !== null) {
         await pool.query(
-          `INSERT INTO notifications (student_id, message)
-           VALUES ($1, $2)`,
+          `INSERT INTO notifications (student_id, message, read)
+           VALUES ($1, $2, FALSE)`,
           [student_id, `✅ Ваша оценка за ${updated.date}: ${grade}`]
         );
       }
+      
     }
 
     res.json(updated);
@@ -322,10 +325,11 @@ router.post('/apply-template', auth, async (req, res) => {
         const student_id = studentRes.rows[0].student_id;
 
         await pool.query(
-          `INSERT INTO notifications (student_id, message)
-           VALUES ($1, $2)`,
+          `INSERT INTO notifications (student_id, message, read)
+           VALUES ($1, $2, FALSE)`,
           [student_id, `📅 Назначен новый урок по шаблону на ${dateStr} в ${t.time.slice(0, 5)}`]
         );
+        
       }
 
       inserted++;

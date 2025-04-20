@@ -84,11 +84,13 @@ function NotificationBell({ studentId }) {
 
   const handleNotificationClick = (notif) => {
     const text = notif.message.toLowerCase();
-    if (text.includes('расписание') || text.includes('урок')) {
+  
+    if (text.includes('домашнее') || text.includes('расписание') || text.includes('урок')) {
       navigate('/student-schedule');
-    } else if (text.includes('оценка') || text.includes('домашнее')) {
+    } else if (text.includes('оценка')) {
       navigate('/student-journal');
     }
+  
     setShowDropdown(false);
   };
 

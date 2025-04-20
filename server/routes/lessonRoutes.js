@@ -89,6 +89,7 @@ router.post('/', auth, async (req, res) => {
   }
 
   try {
+    // Проверка на существующий урок
     const checkExisting = await pool.query(
       `SELECT 1 FROM lessons 
        WHERE tutor_id = $1 AND subject_id = $2 AND date = $3 AND time = $4`,
@@ -96,18 +97,21 @@ router.post('/', auth, async (req, res) => {
     );
 
     if (checkExisting.rows.length > 0) {
+      console.log('[INFO] Урок уже существует — не создаём');
       return res.status(409).json({ error: 'Урок уже существует' });
     }
 
+    // Вставка урока
     const result = await pool.query(
       `INSERT INTO lessons (tutor_id, subject_id, date, time, homework, homework_file, grade)
-       VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
+       VALUES ($1, $2, $3, $4, $5, $6, $7)
+       RETURNING *`,
       [req.tutor.id, subject_id, date, time, homework || '', homework_file || '', grade || null]
     );
 
     const createdLesson = result.rows[0];
 
-    // ✅ Получить student_id по subject_id
+    // Получить student_id по subject_id
     const studentRes = await pool.query(
       `SELECT student_id FROM student_subjects WHERE id = $1`,
       [subject_id]
@@ -116,13 +120,16 @@ router.post('/', auth, async (req, res) => {
     if (studentRes.rows.length > 0) {
       const student_id = studentRes.rows[0].student_id;
 
-      // 🔔 Создать уведомление о новом уроке
+      const message = `📅 Назначен новый урок на ${date} в ${time.slice(0, 5)}`;
+      console.log(`[NOTIFY] Уведомление создаётся для ученика ${student_id}: ${message}`);
+
       await pool.query(
         `INSERT INTO notifications (student_id, message, read)
          VALUES ($1, $2, FALSE)`,
-        [student_id, `📅 Назначен новый урок на ${date} в ${time.slice(0, 5)}`]
+        [student_id, message]
       );
-      
+    } else {
+      console.warn('[WARN] Не удалось найти student_id для subject_id:', subject_id);
     }
 
     res.status(201).json(createdLesson);

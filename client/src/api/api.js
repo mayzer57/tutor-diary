@@ -486,9 +486,24 @@ export async function sendChatMessage(formData) {
   const res = await fetch(`${API_URL}/chat`, {
     method: 'POST',
     headers: {
-      Authorization: authHeader().Authorization, // ⚠️ только токен
+      Authorization: authHeader().Authorization, // ⚠️ только токен, без Content-Type!
     },
     body: formData,
   });
-  return await res.json();
+
+  const data = await safeJson(res);
+  if (!res.ok) throw new Error(data.error || 'Ошибка отправки сообщения');
+  return data;
+}
+export async function getChatListForTutor() {
+  const res = await fetch(`${API_URL}/chat/chats`, {
+    headers: authHeader(),
+  });
+
+  if (!res.ok) {
+    const errText = await res.text();
+    throw new Error(`Ошибка загрузки чатов: ${errText}`);
+  }
+
+  return await res.json(); // [{ student_id, name, last_message_at }]
 }

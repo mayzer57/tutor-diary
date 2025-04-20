@@ -45,6 +45,8 @@ const userRoutes = require('./routes/userRoutes');
 const lessonRoutes = require('./routes/lessonRoutes');
 const chatRoutes = require('./routes/chatRoutes');
 app.use('/api/chat', chatRoutes);
+app.use('/uploads', express.static('uploads'));
+
 app.use('/api/lessons', lessonRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/tutors', tutorRoutes);

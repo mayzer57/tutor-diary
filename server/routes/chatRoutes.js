@@ -2,12 +2,17 @@ const express = require('express');
 const router = express.Router();
 const db = require('../db');
 const auth = require('../middleware/authMiddleware');
+const multer = require('multer');
 
+// 📂 Хранилище для файлов (в папке /uploads)
+const upload = multer({ dest: 'uploads/' });
 
-// Получить все сообщения между репетитором и учеником
+// 📩 Получить все сообщения между репетитором и учеником
 router.get('/', async (req, res) => {
   const { student_id, tutor_id } = req.query;
-  if (!student_id || !tutor_id) return res.status(400).json({ error: 'Оба ID обязательны' });
+  if (!student_id || !tutor_id) {
+    return res.status(400).json({ error: 'Оба ID обязательны' });
+  }
 
   try {
     const messages = await db.query(`
@@ -26,22 +31,25 @@ router.get('/', async (req, res) => {
   }
 });
 
-// Отправка сообщения
-router.post('/', async (req, res) => {
-  const { sender_type, sender_id, receiver_id, message, file_url } = req.body;
-
+// ✉️ Отправка сообщения (с возможным файлом)
+router.post('/', upload.single('file'), async (req, res) => {
   try {
+    const { sender_type, sender_id, receiver_id, message } = req.body;
+    const file_url = req.file ? `/uploads/${req.file.filename}` : null;
+
     await db.query(`
       INSERT INTO messages (sender_type, sender_id, receiver_id, message, file_url)
       VALUES ($1, $2, $3, $4, $5)
-    `, [sender_type, sender_id, receiver_id, message || null, file_url || null]);
+    `, [sender_type, sender_id, receiver_id, message || null, file_url]);
 
     res.status(201).json({ success: true });
   } catch (err) {
-    console.error(err);
+    console.error('Ошибка отправки сообщения:', err.message);
     res.status(500).json({ error: 'Ошибка отправки сообщения' });
   }
 });
+
+// 📜 Список всех чатов репетитора
 router.get('/chats', auth, async (req, res) => {
   try {
     const result = await db.query(`

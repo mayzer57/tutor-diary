@@ -8,6 +8,7 @@ import TutorSchedule from './pages/TutorSchedule';
 import StudentSchedule from './pages/StudentSchedule';
 import ScheduleTemplate from './pages/ScheduleTemplate';
 import TutorJournal from './pages/TutorJournal';
+import ChatPage from './pages/ChatPage';
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userType, setUserType] = useState(null);

@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../db');
-const auth = require('../middleware/auth');
+const auth = require('../middleware/authMiddleware');
+
 
 // Получить все сообщения между репетитором и учеником
 router.get('/', async (req, res) => {

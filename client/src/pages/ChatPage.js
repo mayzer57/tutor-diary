@@ -11,6 +11,10 @@ function ChatPage() {
   const [loading, setLoading] = useState(false);
   const scrollRef = useRef(null);
 
+  const userType = localStorage.getItem('userType');
+  const user = JSON.parse(localStorage.getItem('user'));
+  const receiverId = userType === 'student' ? tutorId : studentId;
+
   const loadMessages = async () => {
     try {
       const data = await getChatMessages(studentId, tutorId);
@@ -27,9 +31,7 @@ function ChatPage() {
   }, []);
 
   useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    }
+    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
   }, [messages]);
 
   const handleSend = async () => {
@@ -38,12 +40,9 @@ function ChatPage() {
     try {
       setLoading(true);
       const formData = new FormData();
-      const userType = localStorage.getItem('userType');
-      const user = JSON.parse(localStorage.getItem('user'));
-
       formData.append('sender_type', userType);
       formData.append('sender_id', user.id);
-      formData.append('receiver_id', userType === 'student' ? tutorId : studentId);
+      formData.append('receiver_id', receiverId);
       formData.append('message', text);
       if (file) formData.append('file', file);
 
@@ -70,7 +69,12 @@ function ChatPage() {
       <div className="chat-messages" ref={scrollRef}>
         {messages.map((msg, i) => (
           <div key={i} className={`chat-bubble ${msg.sender_type}`}>
-            {/* <strong>{msg.sender_type === 'student' ? '👨‍🎓 Ученик' : '👨‍🏫 Репетитор'}</strong> */}
+            <div className="chat-meta">
+              <span className="chat-avatar">
+                {msg.sender_type === 'student' ? '🎓' : '🧑‍🏫'}
+              </span>
+              <span className="chat-status online" title="Онлайн"></span>
+            </div>
             {msg.message && <p>{msg.message}</p>}
             {msg.file_url && (
               <a href={msg.file_url} target="_blank" rel="noopener noreferrer">📎 Файл</a>
@@ -92,7 +96,6 @@ function ChatPage() {
         <input
           id="file-upload"
           type="file"
-          style={{ display: 'none' }}
           onChange={e => setFile(e.target.files[0])}
         />
 
@@ -100,6 +103,13 @@ function ChatPage() {
           {loading ? '⏳' : '📤'}
         </button>
       </div>
+
+      {file && (
+        <div className="chat-file-preview">
+          <span>📁 {file.name}</span>
+          <button onClick={() => setFile(null)}>✖️</button>
+        </div>
+      )}
     </div>
   );
 }

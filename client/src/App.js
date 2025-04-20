@@ -59,7 +59,17 @@ function App() {
             )
           }
         />
-<Route path="/chat/:studentId/:tutorId" element={<ChatPage />} />
+<Route
+  path="/chat/:studentId/:tutorId"
+  element={
+    isAuthenticated && (userType === 'tutor' || userType === 'student') ? (
+      <ChatPage />
+    ) : (
+      <Navigate to="/auth" replace />
+    )
+  }
+/>
+
         {/* Панель репетитора */}
         <Route
         path="/journal"

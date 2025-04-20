@@ -4,11 +4,12 @@ import { getChatMessages, sendChatMessage } from '../api/api';
 import './ChatPage.css';
 
 function ChatPage() {
-  const { studentId, tutorId } = useParams(); // получаем из URL
+  const { studentId, tutorId } = useParams();
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState('');
   const [file, setFile] = useState(null);
-  const scrollRef = useRef();
+  const [loading, setLoading] = useState(false);
+  const scrollRef = useRef(null);
 
   const loadMessages = async () => {
     try {
@@ -21,22 +22,47 @@ function ChatPage() {
 
   useEffect(() => {
     loadMessages();
-    const intv = setInterval(loadMessages, 5000); // автообновление
+    const intv = setInterval(loadMessages, 5000);
     return () => clearInterval(intv);
   }, []);
 
-  const handleSend = async () => {
-    const formData = new FormData();
-    formData.append('sender_type', localStorage.getItem('userType'));
-    formData.append('sender_id', JSON.parse(localStorage.getItem('user')).id);
-    formData.append('receiver_id', localStorage.getItem('userType') === 'student' ? tutorId : studentId);
-    formData.append('message', text);
-    if (file) formData.append('file', file);
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, [messages]);
 
-    await sendChatMessage(formData);
-    setText('');
-    setFile(null);
-    loadMessages();
+  const handleSend = async () => {
+    if (!text.trim() && !file) return;
+
+    try {
+      setLoading(true);
+      const formData = new FormData();
+      const userType = localStorage.getItem('userType');
+      const user = JSON.parse(localStorage.getItem('user'));
+
+      formData.append('sender_type', userType);
+      formData.append('sender_id', user.id);
+      formData.append('receiver_id', userType === 'student' ? tutorId : studentId);
+      formData.append('message', text);
+      if (file) formData.append('file', file);
+
+      await sendChatMessage(formData);
+      setText('');
+      setFile(null);
+      loadMessages();
+    } catch (err) {
+      alert('Ошибка отправки сообщения');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSend();
+    }
   };
 
   return (
@@ -44,6 +70,7 @@ function ChatPage() {
       <div className="chat-messages" ref={scrollRef}>
         {messages.map((msg, i) => (
           <div key={i} className={`chat-bubble ${msg.sender_type}`}>
+            {/* <strong>{msg.sender_type === 'student' ? '👨‍🎓 Ученик' : '👨‍🏫 Репетитор'}</strong> */}
             {msg.message && <p>{msg.message}</p>}
             {msg.file_url && (
               <a href={msg.file_url} target="_blank" rel="noopener noreferrer">📎 Файл</a>
@@ -51,10 +78,27 @@ function ChatPage() {
           </div>
         ))}
       </div>
+
       <div className="chat-input">
-        <input type="text" value={text} onChange={e => setText(e.target.value)} placeholder="Введите сообщение..." />
-        <input type="file" onChange={e => setFile(e.target.files[0])} />
-        <button onClick={handleSend}>📤</button>
+        <input
+          type="text"
+          value={text}
+          onChange={e => setText(e.target.value)}
+          onKeyDown={handleKeyDown}
+          placeholder="Введите сообщение..."
+        />
+
+        <label htmlFor="file-upload" title="Прикрепить файл">📎</label>
+        <input
+          id="file-upload"
+          type="file"
+          style={{ display: 'none' }}
+          onChange={e => setFile(e.target.files[0])}
+        />
+
+        <button onClick={handleSend} disabled={loading}>
+          {loading ? '⏳' : '📤'}
+        </button>
       </div>
     </div>
   );

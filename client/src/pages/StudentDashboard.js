@@ -104,10 +104,12 @@ function StudentDashboard({ onLogout }) {
   <button className="settings-btn" onClick={() => setIsSettingsOpen(true)}>⚙️ Настройки профиля</button>
   <button
   className="settings-btn"
+  disabled={!student?.id || !student?.tutor_id}
   onClick={() => navigate(`/chat/${student.id}/${student.tutor_id}`)}
 >
   💬 Чат
 </button>
+
   <button className="logout-btn" onClick={handleLogout}>Выйти</button>
 </div>
       </header>

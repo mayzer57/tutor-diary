@@ -40,5 +40,28 @@ router.post('/', async (req, res) => {
     res.status(500).json({ error: 'Ошибка отправки сообщения' });
   }
 });
+router.get('/chats', auth, async (req, res) => {
+  try {
+    const result = await db.query(`
+      SELECT 
+        s.id AS student_id,
+        s.name,
+        MAX(m.created_at) AS last_message_at
+      FROM students s
+      LEFT JOIN messages m ON 
+        (m.sender_type = 'student' AND m.sender_id = s.id AND m.receiver_id = $1)
+        OR 
+        (m.sender_type = 'tutor' AND m.sender_id = $1 AND m.receiver_id = s.id)
+      WHERE s.tutor_id = $1
+      GROUP BY s.id, s.name
+      ORDER BY last_message_at DESC NULLS LAST
+    `, [req.tutor.id]);
+
+    res.json(result.rows);
+  } catch (err) {
+    console.error('Ошибка загрузки чатов:', err.message);
+    res.status(500).json({ error: 'Ошибка загрузки чатов' });
+  }
+});
 
 module.exports = router;

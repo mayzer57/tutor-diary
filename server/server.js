@@ -43,7 +43,8 @@ const tutorRoutes = require('./routes/tutorRoutes');
 const studentRoutes = require('./routes/studentRoutes');
 const userRoutes = require('./routes/userRoutes');
 const lessonRoutes = require('./routes/lessonRoutes');
-
+const chatRoutes = require('./routes/chatRoutes');
+app.use('/api/chat', chatRoutes);
 app.use('/api/lessons', lessonRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/tutors', tutorRoutes);

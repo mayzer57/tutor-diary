@@ -475,3 +475,20 @@ export async function deleteNotification(id) {
   return await res.json();
 }
 
+export async function getChatMessages(studentId, tutorId) {
+  const res = await fetch(`${API_URL}/chat?student_id=${studentId}&tutor_id=${tutorId}`, {
+    headers: authHeader(),
+  });
+  return await res.json();
+}
+
+export async function sendChatMessage(formData) {
+  const res = await fetch(`${API_URL}/chat`, {
+    method: 'POST',
+    headers: {
+      Authorization: authHeader().Authorization, // ⚠️ только токен
+    },
+    body: formData,
+  });
+  return await res.json();
+}

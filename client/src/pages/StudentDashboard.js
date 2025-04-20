@@ -100,10 +100,11 @@ function StudentDashboard({ onLogout }) {
       <header className="dashboard-header">
         <h1>👨‍🎓 Личный кабинет ученика</h1>
         <div className="header-controls">
-          <NotificationBell studentId={student?.id} />
-          <button className="settings-btn" onClick={() => setIsSettingsOpen(true)}>⚙️ Настройки профиля</button>
-          <button className="logout-btn" onClick={handleLogout}>Выйти</button>
-        </div>
+  <NotificationBell studentId={student?.id} />
+  <button className="settings-btn" onClick={() => setIsSettingsOpen(true)}>⚙️ Настройки профиля</button>
+  <button className="settings-btn" onClick={() => navigate('/chat')}>💬 Чат</button>
+  <button className="logout-btn" onClick={handleLogout}>Выйти</button>
+</div>
       </header>
 
       <div className="dashboard-content">

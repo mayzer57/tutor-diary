@@ -56,7 +56,7 @@ function App() {
             )
           }
         />
-
+<Route path="/chat/:studentId/:tutorId" element={<ChatPage />} />
         {/* Панель репетитора */}
         <Route
         path="/journal"

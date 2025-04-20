@@ -116,10 +116,10 @@ function Dashboard({ onLogout }) {
       <header className="dashboard-header">
         <h1>📘 Панель репетитора {user && `- ${user.name}`}</h1>
         <div className="header-controls">
-        <button className="settings-btn" onClick={() => setIsSettingsOpen(true)}>⚙️ Настройки профиля</button>
-<button className="logout-btn" onClick={handleLogout}>Выйти</button>
-
-        </div>
+  <button className="settings-btn" onClick={() => setIsSettingsOpen(true)}>⚙️ Настройки профиля</button>
+  <button className="settings-btn" onClick={() => navigate('/chat')}>💬 Чат</button>
+  <button className="logout-btn" onClick={handleLogout}>Выйти</button>
+</div>
       </header>
 
       {error && <div className="error-banner">{error}</div>}

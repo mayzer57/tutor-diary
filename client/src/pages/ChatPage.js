@@ -1,6 +1,7 @@
+// 📄 ChatPage.js
 import { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { getChatMessages, sendChatMessage } from '../api/api';
+import { getChatMessages, sendChatMessage, authHeader, API_URL } from '../api/api';
 import './ChatPage.css';
 
 function ChatPage() {
@@ -19,6 +20,16 @@ function ChatPage() {
     try {
       const data = await getChatMessages(studentId, tutorId);
       setMessages(data);
+
+      // 📌 Авто-пометка как прочитанное
+      await fetch(`${API_URL}/chat/mark-as-read`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...authHeader(),
+        },
+        body: JSON.stringify({ student_id: studentId, tutor_id: tutorId }),
+      });
     } catch (err) {
       console.error('Ошибка загрузки чата', err);
     }
@@ -49,7 +60,9 @@ function ChatPage() {
       await sendChatMessage(formData);
       setText('');
       setFile(null);
-      loadMessages();
+      document.getElementById('file-upload').value = null;
+
+      await loadMessages();
     } catch (err) {
       alert('Ошибка отправки сообщения');
     } finally {
@@ -75,9 +88,14 @@ function ChatPage() {
               </span>
               <span className="chat-status online" title="Онлайн"></span>
             </div>
+
             {msg.message && <p>{msg.message}</p>}
             {msg.file_url && (
               <a href={msg.file_url} target="_blank" rel="noopener noreferrer">📎 Файл</a>
+            )}
+
+            {msg.read && msg.sender_type === userType && (
+              <span className="chat-read-status">✅</span>
             )}
           </div>
         ))}

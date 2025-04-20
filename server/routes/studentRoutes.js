@@ -137,11 +137,11 @@ router.get('/me', auth, async (req, res) => {
 
   try {
     const studentInfo = await pool.query(`
-      SELECT s.id, s.name, s.login, t.name as tutor_name
+      SELECT s.id, s.name, s.login, s.tutor_id, t.name as tutor_name
       FROM students s
       JOIN tutors t ON s.tutor_id = t.id
       WHERE s.id = $1
-    `, [req.student.id]);
+    `, [req.student.id]); // <-- ✅ теперь вернёт tutor_id
 
     if (studentInfo.rows.length === 0)
       return res.status(404).json({ error: 'Ученик не найден' });
@@ -162,6 +162,7 @@ router.get('/me', auth, async (req, res) => {
     res.status(500).json({ error: 'Ошибка загрузки профиля' });
   }
 });
+
 
 // ✅ Обновление ученика
 router.patch('/:id', auth, async (req, res) => {

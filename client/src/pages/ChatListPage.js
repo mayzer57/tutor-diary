@@ -1,18 +1,20 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getStudents } from '../api/api';
+import { getChatListForTutor } from '../api/api'; // 💬 Получаем список чатов с unread_count
 import './ChatListPage.css';
 
 function ChatListPage() {
-  const [students, setStudents] = useState([]);
+  const [chatList, setChatList] = useState([]);
   const navigate = useNavigate();
   const tutor = JSON.parse(localStorage.getItem('user'));
 
   useEffect(() => {
-    getStudents().then(setStudents).catch(console.error);
+    getChatListForTutor()
+      .then(setChatList)
+      .catch(console.error);
   }, []);
 
-  const handleStartChat = (studentId) => {
+  const handleOpenChat = (studentId) => {
     navigate(`/chat/${studentId}/${tutor.id}`);
   };
 
@@ -20,27 +22,15 @@ function ChatListPage() {
     <div className="chat-list-page">
       <h2>💬 Ваши переписки</h2>
       <ul className="chat-list">
-  {students.map((s) => (
-    <li key={s.id}>
-      <span onClick={() => handleStartChat(s.id)}>
-        <span className="chat-icon">{s.has_messages ? '📨' : '🆕'}</span>
-        👨‍🎓 {s.name}
-      </span>
-      {!s.has_messages && (
-        <button
-          className="start-chat-btn"
-          onClick={(e) => {
-            e.stopPropagation();
-            handleStartChat(s.id);
-          }}
-        >
-          ✉️ Написать
-        </button>
-      )}
-    </li>
-  ))}
-</ul>
-
+        {chatList.map((s) => (
+          <li key={s.student_id} onClick={() => handleOpenChat(s.student_id)}>
+            👨‍🎓 {s.name}
+            {s.unread_count > 0 && (
+              <span className="unread-badge">{s.unread_count}</span>
+            )}
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }

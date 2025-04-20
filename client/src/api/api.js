@@ -495,6 +495,7 @@ export async function sendChatMessage(formData) {
   if (!res.ok) throw new Error(data.error || 'Ошибка отправки сообщения');
   return data;
 }
+// 🔄 Получить список чатов репетитора с непрочитанными
 export async function getChatListForTutor() {
   const res = await fetch(`${API_URL}/chat/chats`, {
     headers: authHeader(),
@@ -505,5 +506,21 @@ export async function getChatListForTutor() {
     throw new Error(`Ошибка загрузки чатов: ${errText}`);
   }
 
-  return await res.json(); // [{ student_id, name, last_message_at }]
+  return await res.json(); // [{ student_id, name, last_message_at, unread_count }]
 }
+
+export async function markMessagesAsRead(student_id, tutor_id) {
+  const res = await fetch(`${API_URL}/chat/mark-as-read`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      ...authHeader(),
+    },
+    body: JSON.stringify({ student_id, tutor_id }),
+  });
+
+  const data = await safeJson(res);
+  if (!res.ok) throw new Error(data.error || 'Ошибка при пометке сообщений');
+  return data;
+}
+

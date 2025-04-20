@@ -56,7 +56,11 @@ router.get('/chats', auth, async (req, res) => {
       SELECT 
         s.id AS student_id,
         s.name,
-        MAX(m.created_at) AS last_message_at
+        MAX(m.created_at) AS last_message_at,
+        COUNT(CASE 
+          WHEN m.sender_type = 'student' AND m.receiver_id = $1 AND m.read = FALSE 
+          THEN 1 END
+        ) AS unread_count
       FROM students s
       LEFT JOIN messages m ON 
         (m.sender_type = 'student' AND m.sender_id = s.id AND m.receiver_id = $1)
@@ -71,6 +75,24 @@ router.get('/chats', auth, async (req, res) => {
   } catch (err) {
     console.error('Ошибка загрузки чатов:', err.message);
     res.status(500).json({ error: 'Ошибка загрузки чатов' });
+  }
+});
+router.post('/mark-as-read', auth, async (req, res) => {
+  const { student_id, tutor_id } = req.body;
+
+  try {
+    await db.query(`
+      UPDATE messages 
+      SET read = TRUE
+      WHERE sender_type = 'student'
+        AND sender_id = $1
+        AND receiver_id = $2
+    `, [student_id, tutor_id]);
+
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Ошибка пометки как прочитано:', err.message);
+    res.status(500).json({ error: 'Ошибка пометки' });
   }
 });
 

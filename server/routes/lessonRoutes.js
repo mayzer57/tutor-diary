@@ -427,12 +427,30 @@ router.patch('/:id/grade', auth, async (req, res) => {
       `UPDATE lessons SET grade = $1 WHERE id = $2 RETURNING *`,
       [grade, id]
     );
-
+    
     if (result.rows.length === 0) {
       return res.status(404).json({ error: 'Урок не найден' });
     }
-
-    res.json(result.rows[0]);
+    
+    const updated = result.rows[0];
+    
+    // Найти student_id для уведомления
+    const studentRes = await pool.query(`
+      SELECT ss.student_id 
+      FROM student_subjects ss
+      JOIN lessons l ON ss.id = l.subject_id
+      WHERE l.id = $1
+    `, [id]);
+    
+    if (studentRes.rows.length > 0) {
+      const student_id = studentRes.rows[0].student_id;
+      await pool.query(`
+        INSERT INTO notifications (student_id, message, read)
+        VALUES ($1, $2, FALSE)
+      `, [student_id, `✅ Ваша оценка за ${updated.date}: ${grade}`]);
+    }
+    
+    res.json(updated);
   } catch (err) {
     console.error('❌ Ошибка при обновлении оценки:', err.message);
     res.status(500).json({ error: 'Ошибка при обновлении оценки' });

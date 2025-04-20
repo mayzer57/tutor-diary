@@ -11,7 +11,20 @@ const auth = require('../middleware/authMiddleware');
 router.get('/', auth, async (req, res) => {
   try {
     const result = await pool.query(`
-      SELECT s.id AS student_id, s.name, s.login, ss.id AS subject_id, ss.subject
+      SELECT 
+        s.id AS student_id, 
+        s.name, 
+        s.login, 
+        ss.id AS subject_id, 
+        ss.subject,
+        EXISTS (
+          SELECT 1 FROM messages m
+          WHERE (
+            (m.sender_type = 'student' AND m.sender_id = s.id AND m.receiver_id = $1)
+            OR
+            (m.sender_type = 'tutor' AND m.sender_id = $1 AND m.receiver_id = s.id)
+          )
+        ) AS has_messages
       FROM students s
       LEFT JOIN student_subjects ss ON ss.student_id = s.id
       WHERE s.tutor_id = $1
@@ -24,6 +37,7 @@ router.get('/', auth, async (req, res) => {
           id: row.student_id,
           name: row.name,
           login: row.login,
+          has_messages: row.has_messages,
           subjects: []
         };
       }
@@ -42,6 +56,7 @@ router.get('/', auth, async (req, res) => {
     res.status(500).json({ error: 'Ошибка загрузки учеников' });
   }
 });
+
 
 // ✅ Добавление ученика
 router.post('/', auth, [

@@ -9,6 +9,8 @@ import StudentSchedule from './pages/StudentSchedule';
 import ScheduleTemplate from './pages/ScheduleTemplate';
 import TutorJournal from './pages/TutorJournal';
 import ChatPage from './pages/ChatPage';
+import ChatListPage from './pages/ChatListPage';
+
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userType, setUserType] = useState(null);
@@ -99,6 +101,16 @@ function App() {
             )
           }
         />
+        <Route
+  path="/chat"
+  element={
+    isAuthenticated && userType === 'tutor' ? (
+      <ChatListPage />
+    ) : (
+      <Navigate to="/auth" replace />
+    )
+  }
+/>
         {/* Панель ученика */}
         <Route
           path="/student-dashboard"

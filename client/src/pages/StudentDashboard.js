@@ -102,7 +102,12 @@ function StudentDashboard({ onLogout }) {
         <div className="header-controls">
   <NotificationBell studentId={student?.id} />
   <button className="settings-btn" onClick={() => setIsSettingsOpen(true)}>⚙️ Настройки профиля</button>
-  <button className="settings-btn" onClick={() => navigate('/chat')}>💬 Чат</button>
+  <button
+  className="settings-btn"
+  onClick={() => navigate(`/chat/${student.id}/${student.tutor_id}`)}
+>
+  💬 Чат
+</button>
   <button className="logout-btn" onClick={handleLogout}>Выйти</button>
 </div>
       </header>

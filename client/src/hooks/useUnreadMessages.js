@@ -2,9 +2,9 @@ import { useEffect, useState } from 'react';
 import { getUnreadCount } from '../api/api';
 
 export function useUnreadMessages() {
-  const [unreadCount, setUnreadCount] = useState(0);
+  const [unreadCount, setUnreadCount] = useState(0);  
 
-  useEffect(() => {
+  useEffect(() => { 
     const fetchCount = async () => {
       try {
         const count = await getUnreadCount();
@@ -19,5 +19,5 @@ export function useUnreadMessages() {
     return () => clearInterval(interval);
   }, []);
 
-  return unreadCount;
+  return unreadCount ;
 }

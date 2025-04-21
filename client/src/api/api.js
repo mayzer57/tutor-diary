@@ -524,13 +524,16 @@ export async function markMessagesAsRead(student_id, tutor_id) {
   return data;
 }
 // 🔢 Получить количество непрочитанных сообщений
+// ✅ в src/api/api.js
 export async function getUnreadCount() {
   const res = await fetch(`${API_URL}/chat/unread-count`, {
     headers: authHeader(),
   });
-  if (!res.ok) return 0;
-  const data = await res.json();
-  return data.count || 0;
+
+  const data = await safeJson(res);
+  if (!res.ok) throw new Error(data.error || 'Ошибка получения количества непрочитанных');
+  return data.count;
 }
+
 
 

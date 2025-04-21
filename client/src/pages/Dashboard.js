@@ -17,7 +17,7 @@ function Dashboard({ onLogout }) {
   const [showStudents, setShowStudents] = useState(true);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const navigate = useNavigate();
-
+  const unread = useUnreadMessages();
   const [user, setUser] = useState(() => {
     const data = localStorage.getItem('user');
     try {
@@ -117,7 +117,7 @@ function Dashboard({ onLogout }) {
         <h1>📘 Панель репетитора {user && `- ${user.name}`}</h1>
         <div className="header-controls">
   <button className="settings-btn" onClick={() => setIsSettingsOpen(true)}>⚙️ Настройки профиля</button>
-  const unread = useUnreadMessages();
+
 
 <button className="settings-btn" onClick={() => navigate('/chat')}>
   📘 Чат

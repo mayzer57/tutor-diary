@@ -17,7 +17,7 @@ function StudentDashboard({ onLogout }) {
   const [monthActivity, setMonthActivity] = useState(0);
   const [medals, setMedals] = useState({});
   const navigate = useNavigate();
-
+  const unread = useUnreadMessages();
   useEffect(() => {
     const userType = localStorage.getItem('userType');
     if (userType !== 'student') {
@@ -102,7 +102,7 @@ function StudentDashboard({ onLogout }) {
         <div className="header-controls">
   <NotificationBell studentId={student?.id} />
   <button className="settings-btn" onClick={() => setIsSettingsOpen(true)}>⚙️ Настройки профиля</button>
-  const unread = useUnreadMessages();
+
   <button
   className="settings-btn"
   onClick={() => navigate(`/chat/${student.id}/${student.tutor_id}`)}

@@ -83,14 +83,24 @@ function ChatPage() {
 
   return (
     <div className="chat-container">
-      {userType === 'tutor' && (
-        <div style={{ padding: '12px 20px' }}>
-          <button className="back-btn" onClick={() => navigate('/chat')}>
-            ← Назад к списку чатов
-          </button>
-        </div>
-      )}
-
+    {/* Репетитор */}
+    {userType === 'tutor' && (
+      <div style={{ padding: '12px 20px' }}>
+        <button className="back-btn" onClick={() => navigate('/chat')}>
+          ← Назад к списку чатов
+        </button>
+      </div>
+    )}
+  
+    {/* Ученик */}
+    {userType === 'student' && (
+      <div style={{ padding: '12px 20px' }}>
+        <button className="back-btn" onClick={() => navigate('/student-dashboard')}>
+          ← Вернуться в кабинет
+        </button>
+      </div>
+    )}
+  
       <div className="chat-messages" ref={scrollRef}>
         {messages.map((msg, i) => (
           <div key={i} className={`chat-bubble ${msg.sender_type}`}>

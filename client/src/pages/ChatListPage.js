@@ -7,7 +7,10 @@ function ChatListPage() {
   const [chatList, setChatList] = useState([]);
   const navigate = useNavigate();
   const tutor = JSON.parse(localStorage.getItem('user'));
-
+  const handleBackToMenu = () => {
+    navigate('/dashboard');
+  };
+  
   useEffect(() => {
     getChatListForTutor()
       .then(setChatList)
@@ -20,6 +23,10 @@ function ChatListPage() {
 
   return (
     <div className="chat-list-page">
+      <button className="back-btn" onClick={handleBackToMenu}>
+  ← Назад в меню
+</button>
+
       <h2>💬 Ваши переписки</h2>
       <ul className="chat-list">
         {chatList.map((s) => (

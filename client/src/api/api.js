@@ -523,4 +523,14 @@ export async function markMessagesAsRead(student_id, tutor_id) {
   if (!res.ok) throw new Error(data.error || 'Ошибка при пометке сообщений');
   return data;
 }
+// 🔢 Получить количество непрочитанных сообщений
+export async function getUnreadCount() {
+  const res = await fetch(`${API_URL}/chat/unread-count`, {
+    headers: authHeader(),
+  });
+  if (!res.ok) return 0;
+  const data = await res.json();
+  return data.count || 0;
+}
+
 

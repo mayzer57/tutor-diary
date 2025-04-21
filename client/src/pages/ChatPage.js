@@ -1,11 +1,11 @@
-// 📄 ChatPage.js
 import { useEffect, useRef, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { getChatMessages, sendChatMessage, authHeader, API_URL } from '../api/api';
 import './ChatPage.css';
 
 function ChatPage() {
   const { studentId, tutorId } = useParams();
+  const navigate = useNavigate();
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState('');
   const [file, setFile] = useState(null);
@@ -21,7 +21,7 @@ function ChatPage() {
       const data = await getChatMessages(studentId, tutorId);
       setMessages(data);
 
-      // 📌 Авто-пометка как прочитанное
+      // 🟢 Авто-пометка как прочитано
       await fetch(`${API_URL}/chat/mark-as-read`, {
         method: 'POST',
         headers: {
@@ -79,6 +79,14 @@ function ChatPage() {
 
   return (
     <div className="chat-container">
+      {userType === 'tutor' && (
+        <div style={{ padding: '12px 20px' }}>
+          <button className="back-btn" onClick={() => navigate('/chat')}>
+            ← Назад к списку чатов
+          </button>
+        </div>
+      )}
+
       <div className="chat-messages" ref={scrollRef}>
         {messages.map((msg, i) => (
           <div key={i} className={`chat-bubble ${msg.sender_type}`}>
@@ -90,8 +98,15 @@ function ChatPage() {
             </div>
 
             {msg.message && <p>{msg.message}</p>}
+
             {msg.file_url && (
-              <a href={msg.file_url} target="_blank" rel="noopener noreferrer">📎 Файл</a>
+              <a
+                href={`${API_URL}${msg.file_url}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                📎 Файл
+              </a>
             )}
 
             {msg.read && msg.sender_type === userType && (

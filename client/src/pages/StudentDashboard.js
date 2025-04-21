@@ -5,7 +5,7 @@ import ProfileSettingsModal from '../components/ProfileSettingsModal';
 import NotificationBell from '../components/NotificationBell';
 import { isSameDay, subDays } from 'date-fns';
 import './StudentDashboard.css';
-
+import { useUnreadMessages } from '../hooks/useUnreadMessages';
 
 function StudentDashboard({ onLogout }) {
   const [student, setStudent] = useState(null);
@@ -102,15 +102,15 @@ function StudentDashboard({ onLogout }) {
         <div className="header-controls">
   <NotificationBell studentId={student?.id} />
   <button className="settings-btn" onClick={() => setIsSettingsOpen(true)}>⚙️ Настройки профиля</button>
+  const unread = useUnreadMessages();
   <button
   className="settings-btn"
-  onClick={() => {
-    console.log('Chat clicked', student.id, student.tutor_id);
-    navigate(`/chat/${student.id}/${student.tutor_id}`);
-  }}
+  onClick={() => navigate(`/chat/${student.id}/${student.tutor_id}`)}
 >
-  💬 Чат
+  📘 Чат
+  {unread > 0 && <span className="chat-badge">{unread}</span>}
 </button>
+
 
   <button className="logout-btn" onClick={handleLogout}>Выйти</button>
 </div>

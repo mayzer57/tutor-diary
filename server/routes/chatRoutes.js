@@ -95,5 +95,26 @@ router.post('/mark-as-read', auth, async (req, res) => {
     res.status(500).json({ error: 'Ошибка пометки' });
   }
 });
+// 📩 Получить кол-во непрочитанных сообщений
+router.get('/unread-count', auth, async (req, res) => {
+  try {
+    const user = req.tutor || req.student;
+
+    if (!user) return res.status(403).json({ error: 'Нет доступа' });
+
+    const userType = req.tutor ? 'tutor' : 'student';
+    const result = await db.query(
+      `SELECT COUNT(*) FROM messages
+       WHERE receiver_id = $1 AND sender_type != $2 AND read = FALSE`,
+      [user.id, userType]
+    );
+
+    const count = parseInt(result.rows[0].count, 10);
+    res.json(count);
+  } catch (err) {
+    console.error('❌ Ошибка получения количества непрочитанных:', err.message);
+    res.status(500).json({ error: 'Ошибка сервера' });
+  }
+});
 
 module.exports = router;

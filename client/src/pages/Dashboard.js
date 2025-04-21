@@ -7,7 +7,7 @@ import ProfileSettingsModal from '../components/ProfileSettingsModal';
 import EditStudentModal from '../components/EditStudentModal';
 import AddStudentModal from '../components/AddStudentModal';
 import './Dashboard.css';
-
+import { useUnreadMessages } from '../hooks/useUnreadMessages';
 function Dashboard({ onLogout }) {
   const [students, setStudents] = useState([]);
   const [error, setError] = useState(null);
@@ -117,7 +117,12 @@ function Dashboard({ onLogout }) {
         <h1>📘 Панель репетитора {user && `- ${user.name}`}</h1>
         <div className="header-controls">
   <button className="settings-btn" onClick={() => setIsSettingsOpen(true)}>⚙️ Настройки профиля</button>
-  <button className="settings-btn" onClick={() => navigate('/chat')}>💬 Чат</button>
+  const unread = useUnreadMessages();
+
+<button className="settings-btn" onClick={() => navigate('/chat')}>
+  📘 Чат
+  {unread > 0 && <span className="chat-badge">{unread}</span>}
+</button>
   <button className="logout-btn" onClick={handleLogout}>Выйти</button>
 </div>
       </header>

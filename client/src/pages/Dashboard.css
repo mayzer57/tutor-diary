@@ -126,6 +126,19 @@
   flex-wrap: wrap;
   margin-bottom: 20px;
 }
+/* 📁 styles/ChatBadge.css или просто в Dashboard.css */
+.chat-badge {
+  background: #ef4444;
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+  padding: 2px 8px;
+  border-radius: 999px;
+  margin-left: 6px;
+  display: inline-block;
+  vertical-align: top;
+}
+
 
 /* 📱 Мобильная адаптация */
 @media (max-width: 768px) {

@@ -5,7 +5,20 @@ const auth = require('../middleware/authMiddleware');
 const multer = require('multer');
 
 // 📂 Хранилище для файлов (в папке /uploads)
-const upload = multer({ dest: 'uploads/' });
+const path = require('path');
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, path.join(__dirname, '..', 'uploads'));
+  },
+  filename: function (req, file, cb) {
+    const uniqueName = `${Date.now()}-${file.originalname}`;
+    cb(null, uniqueName);
+  }
+});
+
+const upload = multer({ storage });
+
 
 // 📩 Получить все сообщения между репетитором и учеником
 router.get('/', async (req, res) => {

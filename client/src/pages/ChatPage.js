@@ -104,11 +104,8 @@ function ChatPage() {
             {msg.message && <p>{msg.message}</p>}
 
             {msg.file_url && (
-              <a
-                href={`${API_URL}${msg.file_url}`}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
+             <a href={`${window.location.origin}${msg.file_url}`} target="_blank" rel="noopener noreferrer">
+
                 📎 Файл
               </a>
             )}

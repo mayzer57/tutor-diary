@@ -17,7 +17,8 @@ function Dashboard({ onLogout }) {
   const [showStudents, setShowStudents] = useState(true);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const navigate = useNavigate();
-  const unread = useUnreadMessages();
+  const [unread] = useUnreadMessages(); // ✅ правильно
+
   const [user, setUser] = useState(() => {
     const data = localStorage.getItem('user');
     try {

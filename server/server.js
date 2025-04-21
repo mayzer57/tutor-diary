@@ -61,7 +61,7 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'Internal Server Error' });
 });
 // 👉 Раздаём фронтенд как статику
-const path = require('path');
+
 app.use(express.static(path.join(__dirname, '..', 'client', 'build')));
 
 // 👉 Обрабатываем все неизвестные GET-запросы и возвращаем index.html

@@ -80,14 +80,19 @@ router.get('/chats', auth, async (req, res) => {
 router.post('/mark-as-read', auth, async (req, res) => {
   const { student_id, tutor_id } = req.body;
 
+  const isTutor = !!req.tutor;
+  const userType = isTutor ? 'tutor' : 'student';
+  const opponentType = userType === 'student' ? 'tutor' : 'student';
+  const selfId = isTutor ? req.tutor.id : req.student.id;
+
   try {
     await db.query(`
       UPDATE messages 
       SET read = TRUE
-      WHERE sender_type = 'student'
-        AND sender_id = $1
-        AND receiver_id = $2
-    `, [student_id, tutor_id]);
+      WHERE sender_type = $1
+        AND sender_id = $2
+        AND receiver_id = $3
+    `, [opponentType, userType === 'student' ? tutor_id : student_id, selfId]);
 
     res.json({ success: true });
   } catch (err) {
@@ -95,6 +100,7 @@ router.post('/mark-as-read', auth, async (req, res) => {
     res.status(500).json({ error: 'Ошибка пометки' });
   }
 });
+
 // 📩 Получить кол-во непрочитанных сообщений
 router.get('/unread-count', auth, async (req, res) => {
   const { id } = req.tutor || req.student;

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getChatMessages, sendChatMessage, authHeader, API_URL } from '../api/api';
 import './ChatPage.css';
+import { useUnreadMessages } from '../hooks/useUnreadMessages';
 
 function ChatPage() {
   const { studentId, tutorId } = useParams();
@@ -11,6 +12,7 @@ function ChatPage() {
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const scrollRef = useRef(null);
+  const [unread, refetchUnread] = useUnreadMessages();
 
   const userType = localStorage.getItem('userType');
   const user = JSON.parse(localStorage.getItem('user'));
@@ -30,6 +32,8 @@ function ChatPage() {
         },
         body: JSON.stringify({ student_id: studentId, tutor_id: tutorId }),
       });
+      refetchUnread(); // <--- 🎯 добавь это после mark-as-read
+      
     } catch (err) {
       console.error('Ошибка загрузки чата', err);
     }

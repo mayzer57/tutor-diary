@@ -32,8 +32,8 @@ function ChatPage() {
         },
         body: JSON.stringify({ student_id: studentId, tutor_id: tutorId }),
       });
-      refetchUnread(); // <--- 🎯 добавь это после mark-as-read
-      
+
+      refetchUnread();
     } catch (err) {
       console.error('Ошибка загрузки чата', err);
     }
@@ -83,24 +83,22 @@ function ChatPage() {
 
   return (
     <div className="chat-container">
-    {/* Репетитор */}
-    {userType === 'tutor' && (
-      <div style={{ padding: '12px 20px' }}>
-        <button className="back-btn" onClick={() => navigate('/chat')}>
-          ← Назад к списку чатов
-        </button>
-      </div>
-    )}
-  
-    {/* Ученик */}
-    {userType === 'student' && (
-      <div style={{ padding: '12px 20px' }}>
-        <button className="back-btn" onClick={() => navigate('/student-dashboard')}>
-          ← Вернуться в кабинет
-        </button>
-      </div>
-    )}
-  
+      {/* Кнопка Назад */}
+      {userType === 'tutor' && (
+        <div style={{ padding: '12px 20px' }}>
+          <button className="back-btn" onClick={() => navigate('/chat')}>
+            ← Назад к списку чатов
+          </button>
+        </div>
+      )}
+      {userType === 'student' && (
+        <div style={{ padding: '12px 20px' }}>
+          <button className="back-btn" onClick={() => navigate('/student-dashboard')}>
+            ← Вернуться в кабинет
+          </button>
+        </div>
+      )}
+
       <div className="chat-messages" ref={scrollRef}>
         {messages.map((msg, i) => (
           <div key={i} className={`chat-bubble ${msg.sender_type}`}>
@@ -114,8 +112,11 @@ function ChatPage() {
             {msg.message && <p>{msg.message}</p>}
 
             {msg.file_url && (
-             <a href={`${window.location.origin}${msg.file_url}`} target="_blank" rel="noopener noreferrer">
-
+              <a
+                href={`${API_URL.replace('/api', '')}${msg.file_url}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 📎 Файл
               </a>
             )}

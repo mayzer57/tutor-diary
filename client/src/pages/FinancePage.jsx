@@ -7,8 +7,9 @@ import {
   CartesianGrid, LabelList
 } from 'recharts';
 import './FinancePage.css';
-
+import { useNavigate } from 'react-router-dom';
 function FinancePage() {
+  const navigate = useNavigate();
   const [period, setPeriod] = useState('month');
   const [customStart, setCustomStart] = useState('');
   const [customEnd, setCustomEnd] = useState('');
@@ -66,7 +67,13 @@ function FinancePage() {
 
   return (
     <div className="finance-page">
-      <h2>💰 Финансы</h2>
+      
+      <div className="finance-header">
+  <button onClick={() => navigate('/dashboard')} className="back-button">
+    ← Назад
+  </button>
+  <h2>💰 Финансы</h2>
+</div>
 
       <div className="filters">
         <select value={period} onChange={(e) => setPeriod(e.target.value)}>

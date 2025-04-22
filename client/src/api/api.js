@@ -546,14 +546,18 @@ export async function getUnreadCount() {
 }
 
 // 📊 Финансовая статистика репетитора
-export async function getFinanceStats({ start, end, period }) {
+export async function getFinanceStats({ start, end, period, student, subject }) {
   const params = new URLSearchParams();
+
   if (start && end) {
     params.append('start', start);
     params.append('end', end);
   } else if (period) {
     params.append('period', period);
   }
+
+  if (student) params.append('student', student);
+  if (subject) params.append('subject', subject);
 
   const res = await fetch(`${API_URL}/finance/summary?${params.toString()}`, {
     headers: authHeader(),

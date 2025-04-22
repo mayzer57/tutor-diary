@@ -127,7 +127,26 @@
   .finance-summary div {
     font-size: 16px;
   }
+  .finance-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
   
+  .back-button {
+    background-color: #f3f4f6;
+    border: none;
+    padding: 8px 14px;
+    font-size: 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+  
+  .back-button:hover {
+    background-color: #e5e7eb;
+  }
   @media (max-width: 768px) {
     .filters {
       flex-direction: column;

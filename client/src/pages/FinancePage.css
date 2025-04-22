@@ -63,3 +63,22 @@
     margin-top: 4px;
     color: #4b5563;
   }
+  .finance-page {
+    padding: 2rem;
+    max-width: 900px;
+    margin: auto;
+  }
+  
+  .filters {
+    margin-bottom: 1rem;
+  }
+  
+  .finance-summary {
+    margin-bottom: 2rem;
+    font-size: 1.1rem;
+  }
+  
+  .chart-container {
+    width: 100%;
+    overflow-x: auto;
+  }

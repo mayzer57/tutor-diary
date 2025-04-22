@@ -60,6 +60,10 @@ function FinancePage() {
     loadFinance();
   }, [period, customStart, customEnd, studentFilter, subjectFilter, chartType]);
 
+  const allSubjects = [...new Set(
+    students.flatMap(s => s.subjects?.map(sub => typeof sub === 'string' ? sub : sub.name) || [])
+  )];
+
   return (
     <div className="finance-page">
       <h2>💰 Финансы</h2>
@@ -79,17 +83,21 @@ function FinancePage() {
           </>
         )}
 
-        <input
-          placeholder="Ученик"
-          value={studentFilter}
-          onChange={e => setStudentFilter(e.target.value)}
-        />
-        <input
-          placeholder="Предмет"
-          value={subjectFilter}
-          onChange={e => setSubjectFilter(e.target.value)}
-        />
-        <select value={chartType} onChange={e => setChartType(e.target.value)}>
+        <select value={studentFilter} onChange={(e) => setStudentFilter(e.target.value)}>
+          <option value="">Все ученики</option>
+          {students.map((s) => (
+            <option key={s.id} value={s.name}>{s.name}</option>
+          ))}
+        </select>
+
+        <select value={subjectFilter} onChange={(e) => setSubjectFilter(e.target.value)}>
+          <option value="">Все предметы</option>
+          {allSubjects.map((sub, i) => (
+            <option key={i} value={sub}>{sub}</option>
+          ))}
+        </select>
+
+        <select value={chartType} onChange={(e) => setChartType(e.target.value)}>
           <option value="line">📈 Линия</option>
           <option value="bar">📊 Бары</option>
         </select>

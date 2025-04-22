@@ -97,7 +97,42 @@
     padding: 0.4em;
     font-size: 0.9em;
   }
+  .finance-page {
+    padding: 20px;
+    max-width: 100%;
+  }
   
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  
+  .filters select,
+  .filters input {
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    flex: 1 1 180px;
+  }
+  
+  .finance-summary {
+    margin-bottom: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  
+  .finance-summary div {
+    font-size: 16px;
+  }
+  
+  @media (max-width: 768px) {
+    .filters {
+      flex-direction: column;
+    }
+  }
   @media (max-width: 600px) {
     .filters {
       flex-direction: column;

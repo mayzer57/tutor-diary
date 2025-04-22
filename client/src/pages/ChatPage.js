@@ -83,7 +83,7 @@ function ChatPage() {
 
   return (
     <div className="chat-container">
-      {/* Кнопка Назад */}
+      {/* 🔙 Кнопка назад для репетитора */}
       {userType === 'tutor' && (
         <div style={{ padding: '12px 20px' }}>
           <button className="back-btn" onClick={() => navigate('/chat')}>
@@ -91,6 +91,8 @@ function ChatPage() {
           </button>
         </div>
       )}
+  
+      {/* 🔙 Кнопка назад для ученика */}
       {userType === 'student' && (
         <div style={{ padding: '12px 20px' }}>
           <button className="back-btn" onClick={() => navigate('/student-dashboard')}>
@@ -98,7 +100,8 @@ function ChatPage() {
           </button>
         </div>
       )}
-
+  
+      {/* 💬 Сообщения */}
       <div className="chat-messages" ref={scrollRef}>
         {messages.map((msg, i) => (
           <div key={i} className={`chat-bubble ${msg.sender_type}`}>
@@ -108,9 +111,9 @@ function ChatPage() {
               </span>
               <span className="chat-status online" title="Онлайн"></span>
             </div>
-
+  
             {msg.message && <p>{msg.message}</p>}
-
+  
             {msg.file_url && (
               <a
                 href={`${API_URL.replace('/api', '')}${msg.file_url}`}
@@ -120,15 +123,23 @@ function ChatPage() {
                 📎 Файл
               </a>
             )}
-
+  
             {msg.read && msg.sender_type === userType && (
               <span className="chat-read-status">✅</span>
             )}
           </div>
         ))}
       </div>
-
+  
+      {/* ✍️ Инпут с кнопками в Telegram-стиле */}
       <div className="chat-input">
+        <label htmlFor="file-upload" title="Прикрепить файл">📎</label>
+        <input
+          id="file-upload"
+          type="file"
+          onChange={e => setFile(e.target.files[0])}
+        />
+  
         <input
           type="text"
           value={text}
@@ -136,19 +147,13 @@ function ChatPage() {
           onKeyDown={handleKeyDown}
           placeholder="Введите сообщение..."
         />
-
-        <label htmlFor="file-upload" title="Прикрепить файл">📎</label>
-        <input
-          id="file-upload"
-          type="file"
-          onChange={e => setFile(e.target.files[0])}
-        />
-
+  
         <button onClick={handleSend} disabled={loading}>
           {loading ? '⏳' : '📤'}
         </button>
       </div>
-
+  
+      {/* 📁 Превью прикрепленного файла */}
       {file && (
         <div className="chat-file-preview">
           <span>📁 {file.name}</span>

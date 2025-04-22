@@ -20,14 +20,17 @@ router.get('/summary', auth, async (req, res) => {
     endDate = now;
     switch (period) {
       case 'week':
-        startDate = new Date(now.setDate(now.getDate() - 7));
+        startDate = new Date(now);
+        startDate.setDate(startDate.getDate() - 7);
         break;
       case 'year':
-        startDate = new Date(now.setFullYear(now.getFullYear() - 1));
+        startDate = new Date(now);
+        startDate.setFullYear(startDate.getFullYear() - 1);
         break;
       case 'month':
       default:
-        startDate = new Date(now.setMonth(now.getMonth() - 1));
+        startDate = new Date(now);
+        startDate.setMonth(startDate.getMonth() - 1);
         break;
     }
   }
@@ -44,7 +47,7 @@ router.get('/summary', auth, async (req, res) => {
         COALESCE(SUM(price), 0) AS total_earned,
         COALESCE(AVG(price), 0) AS avg_price
       FROM lessons
-      WHERE tutor_id = $1 AND completed = TRUE AND date BETWEEN $2 AND $3
+      WHERE tutor_id = $1 AND conducted = TRUE AND date BETWEEN $2 AND $3
     `,
       [tutorId, from, to]
     );
@@ -54,7 +57,7 @@ router.get('/summary', auth, async (req, res) => {
       `
       SELECT date, SUM(price) as day_total
       FROM lessons
-      WHERE tutor_id = $1 AND completed = TRUE AND date BETWEEN $2 AND $3
+      WHERE tutor_id = $1 AND conducted = TRUE AND date BETWEEN $2 AND $3
       GROUP BY date
       ORDER BY date ASC
     `,

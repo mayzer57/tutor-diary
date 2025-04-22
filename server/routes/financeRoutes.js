@@ -3,7 +3,7 @@ const router = express.Router();
 const pool = require('../db');
 const auth = require('../middleware/authMiddleware');
 
-// 📊 Получить финансы репетитора с debug-режимом и точной фильтрацией
+// 📊 Финансовая аналитика по всей неделе/месяцу/году
 router.get('/summary', auth, async (req, res) => {
   const { period = 'month', start, end, debug = false } = req.query;
   const tutorId = req.tutor?.id;
@@ -17,21 +17,37 @@ router.get('/summary', auth, async (req, res) => {
     startDate = new Date(start);
     endDate = new Date(end);
   } else {
-    endDate = now;
     switch (period) {
-      case 'week':
+      case 'week': {
+        const day = now.getDay(); // 0 (вс) -> 6 (сб)
+        const diffToMonday = (day === 0 ? -6 : 1) - day;
         startDate = new Date(now);
-        startDate.setDate(startDate.getDate() - 7);
+        startDate.setDate(now.getDate() + diffToMonday);
+        startDate.setHours(0, 0, 0, 0);
+
+        endDate = new Date(startDate);
+        endDate.setDate(startDate.getDate() + 6);
         break;
-      case 'year':
+      }
+
+      case 'month': {
+        startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+        endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0); // последний день месяца
+        break;
+      }
+
+      case 'year': {
+        startDate = new Date(now.getFullYear(), 0, 1);
+        endDate = new Date(now.getFullYear(), 11, 31);
+        break;
+      }
+
+      default: {
         startDate = new Date(now);
-        startDate.setFullYear(startDate.getFullYear() - 1);
+        startDate.setMonth(now.getMonth() - 1);
+        endDate = now;
         break;
-      case 'month':
-      default:
-        startDate = new Date(now);
-        startDate.setMonth(startDate.getMonth() - 1);
-        break;
+      }
     }
   }
 
@@ -39,7 +55,6 @@ router.get('/summary', auth, async (req, res) => {
   const to = endDate.toISOString().split('T')[0];
 
   try {
-    // 📥 Суммарные данные
     const summaryRes = await pool.query(`
       SELECT 
         COUNT(*) AS lessons_count,
@@ -49,7 +64,6 @@ router.get('/summary', auth, async (req, res) => {
       WHERE tutor_id = $1 AND conducted = TRUE AND date BETWEEN $2 AND $3
     `, [tutorId, from, to]);
 
-    // 📊 Группировка по дням
     const chartRes = await pool.query(`
       SELECT date, SUM(price) as day_total
       FROM lessons
@@ -58,7 +72,6 @@ router.get('/summary', auth, async (req, res) => {
       ORDER BY date ASC
     `, [tutorId, from, to]);
 
-    // 🧪 Debug: показать все проведённые уроки
     let debugLessons = [];
     if (debug === 'true') {
       const debugRes = await pool.query(`

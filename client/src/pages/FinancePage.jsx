@@ -22,26 +22,16 @@ function FinancePage() {
   const [chartData, setChartData] = useState([]);
 
   const loadFinance = async () => {
-    let start = '', end = '';
-
-    if (period === 'custom' && customStart && customEnd) {
-      start = customStart;
-      end = customEnd;
-    } else {
-      const now = new Date();
-      const today = now.toISOString().split('T')[0];
-
-      let from = new Date();
-      if (period === 'week') from.setDate(now.getDate() - 7);
-      else if (period === 'month') from.setMonth(now.getMonth() - 1);
-      else if (period === 'year') from.setFullYear(now.getFullYear() - 1);
-
-      start = from.toISOString().split('T')[0];
-      end = today;
-    }
-
     try {
-      const data = await getFinanceStats({ start, end });
+      let query = {};
+  
+      if (period === 'custom' && customStart && customEnd) {
+        query = { start: customStart, end: customEnd };
+      } else {
+        query = { period }; // 👈 передаём только ключевое слово
+      }
+  
+      const data = await getFinanceStats(query);
       setSummary(data.summary || null);
       setChartData(
         (data.chart || []).map(d => ({

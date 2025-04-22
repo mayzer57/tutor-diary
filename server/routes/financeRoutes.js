@@ -3,7 +3,7 @@ const router = express.Router();
 const pool = require('../db');
 const auth = require('../middleware/authMiddleware');
 
-// 📊 Получить финансы репетитора
+// 📊 Получить финансы репетитора (только по проведённым урокам)
 router.get('/summary', auth, async (req, res) => {
   const { period = 'month', start, end } = req.query;
   const tutorId = req.tutor?.id;
@@ -39,7 +39,6 @@ router.get('/summary', auth, async (req, res) => {
   const to = endDate.toISOString().split('T')[0];
 
   try {
-    // 📥 Общие данные
     const summaryRes = await pool.query(
       `
       SELECT 
@@ -52,7 +51,6 @@ router.get('/summary', auth, async (req, res) => {
       [tutorId, from, to]
     );
 
-    // 📊 Данные по дням для графика
     const chartRes = await pool.query(
       `
       SELECT date, SUM(price) as day_total

@@ -547,20 +547,16 @@ export async function getUnreadCount() {
 
 // 📊 Финансовая статистика репетитора
 export async function getFinanceStats({ start, end }) {
-  if (!start || !end) {
-    throw new Error('⛔ Неверный диапазон дат');
-  }
-
   const params = new URLSearchParams();
-  params.append('start', start);
-  params.append('end', end);
+  if (start) params.append('start', start);
+  if (end) params.append('end', end);
 
-  const res = await fetch(`${API_URL}/finance?${params.toString()}`, {
+  const res = await fetch(`${API_URL}/finance/summary?${params.toString()}`, {
     headers: authHeader(),
   });
 
   if (!res.ok) throw new Error('Ошибка при получении финансовой статистики');
-  return await safeJson(res); // безопасно
+  return await res.json();
 }
 
 

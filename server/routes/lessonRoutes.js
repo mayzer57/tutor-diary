@@ -275,12 +275,14 @@ router.get('/templates', auth, async (req, res) => {
 
 // ➕ Добавить шаблон
 router.post('/templates', auth, async (req, res) => {
-  const { subject_id, weekday, time } = req.body;
+  const { subject_id, weekday, time, price } = req.body;
+
   const result = await pool.query(`
-    INSERT INTO lesson_templates (tutor_id, subject_id, weekday, time)
-    VALUES ($1, $2, $3, $4)
+    INSERT INTO lesson_templates (tutor_id, subject_id, weekday, time, price)
+    VALUES ($1, $2, $3, $4, $5)
     RETURNING *
-  `, [req.tutor.id, subject_id, weekday, time]);
+  `, [req.tutor.id, subject_id, weekday, time, price ?? null]);
+
   res.status(201).json(result.rows[0]);
 });
 

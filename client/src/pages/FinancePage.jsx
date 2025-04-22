@@ -1,17 +1,11 @@
 import { useEffect, useState } from 'react';
-import { getFinanceStats } from '../api/api';
+import { getFinanceStats, getStudents } from '../api/api';
 import { format } from 'date-fns';
 import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-  CartesianGrid,
-  LabelList
+  LineChart, Line, BarChart, Bar,
+  XAxis, YAxis, Tooltip, ResponsiveContainer,
+  CartesianGrid, LabelList
 } from 'recharts';
-
 import './FinancePage.css';
 
 function FinancePage() {
@@ -20,17 +14,30 @@ function FinancePage() {
   const [customEnd, setCustomEnd] = useState('');
   const [summary, setSummary] = useState(null);
   const [chartData, setChartData] = useState([]);
+  const [students, setStudents] = useState([]);
+  const [studentFilter, setStudentFilter] = useState('');
+  const [subjectFilter, setSubjectFilter] = useState('');
+  const [chartType, setChartType] = useState('line');
+
+  const loadStudents = async () => {
+    try {
+      const data = await getStudents();
+      setStudents(data);
+    } catch (err) {
+      console.error('Ошибка загрузки учеников:', err.message);
+    }
+  };
 
   const loadFinance = async () => {
     try {
-      let query = {};
-  
+      const query = { period };
       if (period === 'custom' && customStart && customEnd) {
-        query = { start: customStart, end: customEnd };
-      } else {
-        query = { period }; // 👈 передаём только ключевое слово
+        query.start = customStart;
+        query.end = customEnd;
       }
-  
+      if (studentFilter) query.student = studentFilter;
+      if (subjectFilter) query.subject = subjectFilter;
+
       const data = await getFinanceStats(query);
       setSummary(data.summary || null);
       setChartData(
@@ -46,8 +53,12 @@ function FinancePage() {
   };
 
   useEffect(() => {
+    loadStudents();
+  }, []);
+
+  useEffect(() => {
     loadFinance();
-  }, [period, customStart, customEnd]);
+  }, [period, customStart, customEnd, studentFilter, subjectFilter, chartType]);
 
   return (
     <div className="finance-page">
@@ -55,10 +66,10 @@ function FinancePage() {
 
       <div className="filters">
         <select value={period} onChange={(e) => setPeriod(e.target.value)}>
-          <option value="week">Последняя неделя</option>
-          <option value="month">Месяц</option>
-          <option value="year">Год</option>
-          <option value="custom">Выбрать период</option>
+          <option value="week">Текущая неделя</option>
+          <option value="month">Текущий месяц</option>
+          <option value="year">Текущий год</option>
+          <option value="custom">Свой период</option>
         </select>
 
         {period === 'custom' && (
@@ -67,11 +78,26 @@ function FinancePage() {
             <input type="date" value={customEnd} onChange={(e) => setCustomEnd(e.target.value)} />
           </>
         )}
+
+        <input
+          placeholder="Ученик"
+          value={studentFilter}
+          onChange={e => setStudentFilter(e.target.value)}
+        />
+        <input
+          placeholder="Предмет"
+          value={subjectFilter}
+          onChange={e => setSubjectFilter(e.target.value)}
+        />
+        <select value={chartType} onChange={e => setChartType(e.target.value)}>
+          <option value="line">📈 Линия</option>
+          <option value="bar">📊 Бары</option>
+        </select>
       </div>
 
       {summary && (
         <div className="finance-summary">
-          <div>📅 Уроков проведено: <strong>{summary.lessons_count}</strong></div>
+          <div>📅 Проведено: <strong>{summary.lessons_count}</strong></div>
           <div>💵 Заработано: <strong>{Number(summary.total_earned).toFixed(2)} ₽</strong></div>
           <div>💸 Средняя цена: <strong>{Number(summary.avg_price).toFixed(2)} ₽</strong></div>
         </div>
@@ -79,15 +105,25 @@ function FinancePage() {
 
       {chartData.length > 0 && (
         <ResponsiveContainer width="100%" height={400}>
-          <LineChart data={chartData} margin={{ top: 30, right: 30, left: 20, bottom: 20 }}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="date" />
-            <YAxis allowDecimals={false} />
-            <Tooltip />
-            <Line type="monotone" dataKey="day_total" stroke="#4caf50" strokeWidth={2} dot={{ r: 3 }} fill="#d1fae5">
+          {chartType === 'line' ? (
+            <LineChart data={chartData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="date" />
+              <YAxis allowDecimals={false} />
+              <Tooltip />
+              <Line type="monotone" dataKey="day_total" stroke="#4caf50" strokeWidth={2} dot={{ r: 3 }} />
               <LabelList dataKey="day_total" position="top" fill="#166534" />
-            </Line>
-          </LineChart>
+            </LineChart>
+          ) : (
+            <BarChart data={chartData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="date" />
+              <YAxis allowDecimals={false} />
+              <Tooltip />
+              <Bar dataKey="day_total" fill="#4caf50" />
+              <LabelList dataKey="day_total" position="top" fill="#166534" />
+            </BarChart>
+          )}
         </ResponsiveContainer>
       )}
     </div>

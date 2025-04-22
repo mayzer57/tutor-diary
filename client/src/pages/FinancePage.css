@@ -82,3 +82,24 @@
     width: 100%;
     overflow-x: auto;
   }
+  .finance-page {
+    padding: 1rem;
+  }
+  
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  
+  .filters input,
+  .filters select {
+    padding: 0.4em;
+    font-size: 0.9em;
+  }
+  
+  @media (max-width: 600px) {
+    .filters {
+      flex-direction: column;
+    }
+  }

@@ -1,19 +1,18 @@
 import { useEffect, useState } from 'react';
-import { Line } from 'react-chartjs-2';
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Tooltip,
-  Legend
-} from 'chart.js';
-import { format } from 'date-fns';
-import './FinancePage.css';
 import { getFinanceStats } from '../api/api';
+import { format } from 'date-fns';
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+  LabelList
+} from 'recharts';
 
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Tooltip, Legend);
+import './FinancePage.css';
 
 function FinancePage() {
   const [period, setPeriod] = useState('month');
@@ -44,7 +43,13 @@ function FinancePage() {
     try {
       const data = await getFinanceStats({ start, end });
       setSummary(data.summary || null);
-      setChartData(data.chart || []);
+      setChartData(
+        (data.chart || []).map(d => ({
+          ...d,
+          date: format(new Date(d.date), 'dd.MM'),
+          day_total: Number(d.day_total)
+        }))
+      );
     } catch (err) {
       console.error('❌ Ошибка загрузки финансов:', err.message);
     }
@@ -53,22 +58,6 @@ function FinancePage() {
   useEffect(() => {
     loadFinance();
   }, [period, customStart, customEnd]);
-
-  const lineChartData = {
-    labels: chartData.map(d => format(new Date(d.date), 'dd.MM')),
-    datasets: [
-      {
-        label: 'Заработано ₽',
-        data: chartData.map(d => d.day_total),
-        borderColor: '#4caf50',
-        backgroundColor: 'rgba(76, 175, 80, 0.2)',
-        tension: 0.4,
-        fill: true,
-        pointRadius: 4,
-        pointHoverRadius: 6
-      }
-    ]
-  };
 
   return (
     <div className="finance-page">
@@ -99,9 +88,17 @@ function FinancePage() {
       )}
 
       {chartData.length > 0 && (
-        <div className="chart-container">
-          <Line data={lineChartData} />
-        </div>
+        <ResponsiveContainer width="100%" height={400}>
+          <LineChart data={chartData} margin={{ top: 30, right: 30, left: 20, bottom: 20 }}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="date" />
+            <YAxis allowDecimals={false} />
+            <Tooltip />
+            <Line type="monotone" dataKey="day_total" stroke="#4caf50" strokeWidth={2} dot={{ r: 3 }} fill="#d1fae5">
+              <LabelList dataKey="day_total" position="top" fill="#166534" />
+            </Line>
+          </LineChart>
+        </ResponsiveContainer>
       )}
     </div>
   );

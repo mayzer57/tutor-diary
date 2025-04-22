@@ -1,159 +1,92 @@
 .finance-page {
-    max-width: 700px;
-    margin: 40px auto;
-    background: #fff;
-    padding: 24px;
-    border-radius: 14px;
-    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.05);
-    font-family: 'Segoe UI', sans-serif;
-  }
-  
+  max-width: 900px;
+  margin: 40px auto;
+  background: #fff;
+  padding: 24px;
+  border-radius: 14px;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.05);
+  font-family: 'Segoe UI', sans-serif;
+}
+
+/* 🔁 Адаптивные фильтры */
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.filters select,
+.filters input[type="date"],
+.filters input[type="text"] {
+  padding: 10px;
+  font-size: 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  flex: 1 1 180px;
+  min-width: 150px;
+}
+
+.finance-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 30px;
+  font-size: 16px;
+}
+
+.finance-summary strong {
+  color: #1f2937;
+}
+
+/* 📊 График */
+.chart-container {
+  width: 100%;
+  overflow-x: auto;
+}
+
+/* 🔙 Кнопка Назад */
+.finance-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.back-button {
+  background-color: #f3f4f6;
+  border: none;
+  padding: 8px 14px;
+  font-size: 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.back-button:hover {
+  background-color: #e5e7eb;
+}
+
+/* 📱 Мобильная адаптация */
+@media (max-width: 768px) {
   .filters {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-bottom: 20px;
-  }
-  
-  .filters select,
-  .filters input[type="date"] {
-    padding: 8px 12px;
-    border: 1px solid #d1d5db;
-    border-radius: 6px;
-    font-size: 14px;
-  }
-  
-  .finance-summary {
-    display: flex;
     flex-direction: column;
-    gap: 8px;
-    margin-bottom: 30px;
-    font-size: 16px;
+    gap: 12px;
   }
-  
-  .finance-summary strong {
-    color: #1f2937;
-  }
-  
-  .chart {
-    display: flex;
-    align-items: flex-end;
-    gap: 8px;
-    height: 160px;
-    padding: 10px 0;
-    border-top: 1px solid #eee;
-  }
-  
-  .chart-bar {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 30px;
-  }
-  
-  .chart-bar .bar {
-    width: 100%;
-    background: #3b82f6;
-    border-radius: 6px 6px 0 0;
-    transition: height 0.3s ease;
-  }
-  
-  .chart-bar .bar-date {
-    font-size: 11px;
-    margin-top: 4px;
-    color: #4b5563;
-  }
-  .finance-page {
-    padding: 2rem;
-    max-width: 900px;
-    margin: auto;
-  }
-  
-  .filters {
-    margin-bottom: 1rem;
-  }
-  
-  .finance-summary {
-    margin-bottom: 2rem;
-    font-size: 1.1rem;
-  }
-  
-  .chart-container {
-    width: 100%;
-    overflow-x: auto;
-  }
-  .finance-page {
-    padding: 1rem;
-  }
-  
-  .filters {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-  }
-  
-  .filters input,
-  .filters select {
-    padding: 0.4em;
-    font-size: 0.9em;
-  }
-  .finance-page {
-    padding: 20px;
-    max-width: 100%;
-  }
-  
-  .filters {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-bottom: 16px;
-  }
-  
+
   .filters select,
   .filters input {
-    padding: 8px;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-    flex: 1 1 180px;
+    width: 100%;
   }
-  
+
   .finance-summary {
-    margin-bottom: 20px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 16px;
+    flex-direction: column;
+    gap: 12px;
   }
-  
-  .finance-summary div {
-    font-size: 16px;
-  }
+
   .finance-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 20px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
   }
-  
-  .back-button {
-    background-color: #f3f4f6;
-    border: none;
-    padding: 8px 14px;
-    font-size: 14px;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-  }
-  
-  .back-button:hover {
-    background-color: #e5e7eb;
-  }
-  @media (max-width: 768px) {
-    .filters {
-      flex-direction: column;
-    }
-  }
-  @media (max-width: 600px) {
-    .filters {
-      flex-direction: column;
-    }
-  }
+}

@@ -130,12 +130,12 @@ function Dashboard({ onLogout }) {
 
       {error && <div className="error-banner">{error}</div>}
 
-      <div className="dashboard-actions">
+      <div className="dashboard-grid">
   <button className="dashboard-btn" onClick={() => setShowAddModal(true)}>
     ➕ Добавить ученика
   </button>
   <button className="dashboard-btn" onClick={() => navigate('/schedule')}>
-    Перейти к расписанию
+    📅 Расписание
   </button>
   <button className="dashboard-btn" onClick={() => navigate('/journal')}>
     📘 Журнал

@@ -27,13 +27,11 @@
   margin: 0;
 }
 
-/* 📦 Контейнер кнопок */
 .header-controls {
   display: flex;
   gap: 14px;
 }
 
-/* ⚙️ Настройки */
 .settings-btn {
   background-color: #eff6ff;
   color: #1e3a8a;
@@ -44,12 +42,10 @@
   cursor: pointer;
   transition: 0.2s ease;
 }
-
 .settings-btn:hover {
   background-color: #dbeafe;
 }
 
-/* 🚪 Выход */
 .logout-btn {
   background-color: #fee2e2;
   color: #991b1b;
@@ -60,12 +56,18 @@
   cursor: pointer;
   transition: 0.2s ease;
 }
-
 .logout-btn:hover {
   background-color: #fecaca;
 }
 
-/* ➕ Другие кнопки */
+/* 🔘 Кнопки действий */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
 .dashboard-btn,
 .toggle-btn {
   background: linear-gradient(to right, #6366f1, #3b82f6);
@@ -77,7 +79,6 @@
   cursor: pointer;
   transition: all 0.3s ease;
 }
-
 .dashboard-btn:hover,
 .toggle-btn:hover {
   background: linear-gradient(to right, #4f46e5, #2563eb);
@@ -85,7 +86,6 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
-/* ❗ Ошибки */
 .error-banner {
   color: #991b1b;
   background: #fee2e2;
@@ -94,7 +94,7 @@
   margin-bottom: 16px;
 }
 
-/* 📦 Карточки учеников */
+/* 📦 Карточка ученика */
 .student-card {
   background-color: #ffffff;
   border-radius: 16px;
@@ -104,12 +104,10 @@
   transition: box-shadow 0.2s ease;
   animation: fadeSlideIn 0.3s ease both;
 }
-
 .student-card:hover {
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
 }
 
-/* 🎯 Анимация */
 @keyframes fadeSlideIn {
   from {
     opacity: 0;
@@ -120,13 +118,7 @@
     transform: translateY(0);
   }
 }
-.dashboard-actions {
-  display: flex;
-  gap: 14px;
-  flex-wrap: wrap;
-  margin-bottom: 20px;
-}
-/* 📁 styles/ChatBadge.css или просто в Dashboard.css */
+
 .chat-badge {
   background: #ef4444;
   color: white;
@@ -138,7 +130,6 @@
   display: inline-block;
   vertical-align: top;
 }
-
 
 /* 📱 Мобильная адаптация */
 @media (max-width: 768px) {
@@ -174,29 +165,15 @@
   .logout-btn {
     width: 100%;
     font-size: 15px;
-    padding: 11px 16px;
+    padding: 12px 16px;
     margin: 4px 0;
     border-radius: 12px;
     font-weight: 500;
     transition: background 0.2s ease, transform 0.2s ease;
   }
 
-  .settings-btn {
-    background: #f1f5f9;
-    color: #1f2937;
-  }
-
-  .settings-btn:hover {
-    background: #e5e7eb;
-  }
-
-  .logout-btn {
-    background: #fee2e2;
-    color: #991b1b;
-  }
-
-  .logout-btn:hover {
-    background: #fecaca;
+  .dashboard-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 
   .student-card {

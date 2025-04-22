@@ -10,7 +10,7 @@ import ScheduleTemplate from './pages/ScheduleTemplate';
 import TutorJournal from './pages/TutorJournal';
 import ChatPage from './pages/ChatPage';
 import ChatListPage from './pages/ChatListPage';
-
+import FinancePage from './pages/FinancePage';
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userType, setUserType] = useState(null);
@@ -59,6 +59,7 @@ function App() {
             )
           }
         />
+        <Route path="/finance" element={<FinancePage />} />
 <Route
   path="/chat/:studentId/:tutorId"
   element={

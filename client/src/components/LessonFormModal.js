@@ -9,14 +9,16 @@ function LessonFormModal({ isOpen, onClose, initialData = null, selectedDate }) 
 
   const [form, setForm] = useState({
     student_id: '',
+    subject_id: '',
     date: '',
     time: '',
     homework: '',
     homework_file: '',
     grade: '',
+    price: '',
+    conducted: false,
   });
 
-  // 🔄 Загрузка учеников
   useEffect(() => {
     const loadStudents = async () => {
       try {
@@ -29,7 +31,6 @@ function LessonFormModal({ isOpen, onClose, initialData = null, selectedDate }) 
     if (isOpen) loadStudents();
   }, [isOpen]);
 
-  // 🎯 Заполнение формы при открытии модалки
   useEffect(() => {
     if (!isOpen) return;
 
@@ -56,23 +57,29 @@ function LessonFormModal({ isOpen, onClose, initialData = null, selectedDate }) 
         homework: initialData.homework || '',
         homework_file: initialData.homework_file || '',
         grade: initialData.grade ?? '',
+        price: initialData.price ?? '',
+        conducted: initialData.conducted ?? false,
       });
     } else {
       setForm({
         student_id: '',
+        subject_id: '',
         date: format(new Date(selectedDate), 'yyyy-MM-dd') || '',
         time: '',
         homework: '',
         homework_file: '',
         grade: '',
+        price: '',
+        conducted: false,
       });
     }
-  }, [initialData, selectedDate, isOpen]);
+  }, [initialData, selectedDate, isOpen, students]);
 
   const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
     setForm(prev => ({
       ...prev,
-      [e.target.name]: e.target.value
+      [name]: type === 'checkbox' ? checked : value
     }));
   };
 
@@ -83,6 +90,8 @@ function LessonFormModal({ isOpen, onClose, initialData = null, selectedDate }) 
     const payload = {
       ...form,
       grade: form.grade === '' ? null : Number(form.grade),
+      price: form.price === '' ? null : Number(form.price),
+      conducted: !!form.conducted,
     };
 
     try {
@@ -92,7 +101,7 @@ function LessonFormModal({ isOpen, onClose, initialData = null, selectedDate }) 
         await addLesson(payload);
       }
 
-      await new Promise((r) => setTimeout(r, 100)); // 🔄 Небольшая задержка
+      await new Promise((r) => setTimeout(r, 100));
       onClose(true);
     } catch (err) {
       console.error('Ошибка при сохранении урока:', err.message);
@@ -125,43 +134,41 @@ function LessonFormModal({ isOpen, onClose, initialData = null, selectedDate }) 
       <div className="modal">
         <h3>{initialData?.id ? 'Редактировать урок' : 'Добавить урок'}</h3>
         <form onSubmit={handleSubmit}>
-        <label>Ученик:</label>
-        <select
-          value={form.student_id || ''}
-          onChange={(e) => {
-            const student_id = e.target.value;
-            setForm((prev) => ({
-              ...prev,
-              student_id,
-              subject_id: '' // сбрасываем выбранный предмет при смене ученика
-            }));
-          }}
-          required
-        >
-          <option value="">Выберите ученика</option>
-          {students.map((s) => (
-            <option key={s.id} value={s.id}>{s.name}</option>
-          ))}
-        </select>
+          <label>Ученик:</label>
+          <select
+            value={form.student_id || ''}
+            onChange={(e) => {
+              const student_id = e.target.value;
+              setForm((prev) => ({
+                ...prev,
+                student_id,
+                subject_id: ''
+              }));
+            }}
+            required
+          >
+            <option value="">Выберите ученика</option>
+            {students.map((s) => (
+              <option key={s.id} value={s.id}>{s.name}</option>
+            ))}
+          </select>
 
-        {form.student_id && (
-          <>
-            <label>Предмет:</label>
-            <select
-              name="subject_id"
-              value={form.subject_id || ''}
-              onChange={handleChange}
-              required
-            >
-              <option value="">Выберите предмет</option>
-              {(students.find(s => String(s.id) === String(form.student_id))?.subjects || []).map(sub => (
-                <option key={sub.id} value={sub.id}>
-                  {sub.name}
-                </option>
-              ))}
-            </select>
-          </>
-        )}
+          {form.student_id && (
+            <>
+              <label>Предмет:</label>
+              <select
+                name="subject_id"
+                value={form.subject_id || ''}
+                onChange={handleChange}
+                required
+              >
+                <option value="">Выберите предмет</option>
+                {(students.find(s => String(s.id) === String(form.student_id))?.subjects || []).map(sub => (
+                  <option key={sub.id} value={sub.id}>{sub.name}</option>
+                ))}
+              </select>
+            </>
+          )}
 
           <label>Время:</label>
           <input
@@ -197,6 +204,25 @@ function LessonFormModal({ isOpen, onClose, initialData = null, selectedDate }) 
             min={1}
             max={5}
           />
+
+          <label>Цена (₽):</label>
+          <input
+            type="number"
+            name="price"
+            value={form.price}
+            onChange={handleChange}
+            min={0}
+          />
+
+          <label>
+            <input
+              type="checkbox"
+              name="conducted"
+              checked={form.conducted}
+              onChange={handleChange}
+            />
+            Проведено
+          </label>
 
           <div className="modal-buttons">
             <button type="submit" disabled={isSaving}>

@@ -8,14 +8,12 @@ const WEEKDAYS = ['Понедельник', 'Вторник', 'Среда', 'Ч�
 function ScheduleTemplate() {
   const [students, setStudents] = useState([]);
   const [templates, setTemplates] = useState([]);
-  const [templatesData, setTemplatesData] = useState({
-    0: { student_id: '', subject_id: '', time: '' },
-    1: { student_id: '', subject_id: '', time: '' },
-    2: { student_id: '', subject_id: '', time: '' },
-    3: { student_id: '', subject_id: '', time: '' },
-    4: { student_id: '', subject_id: '', time: '' },
-    5: { student_id: '', subject_id: '', time: '' },
-    6: { student_id: '', subject_id: '', time: '' },
+  const [templatesData, setTemplatesData] = useState(() => {
+    const init = {};
+    for (let i = 0; i < 7; i++) {
+      init[i] = { student_id: '', subject_id: '', time: '', price: '' };
+    }
+    return init;
   });
 
   const navigate = useNavigate();
@@ -51,7 +49,7 @@ function ScheduleTemplate() {
       await addTemplate({ ...data, weekday });
       setTemplatesData(prev => ({
         ...prev,
-        [weekday]: { student_id: '', subject_id: '', time: '' }
+        [weekday]: { student_id: '', subject_id: '', time: '', price: '' }
       }));
       await loadAll();
     } catch (err) {
@@ -85,7 +83,7 @@ function ScheduleTemplate() {
             {templatesForDay.map(t => (
               <div key={t.id} className="template-day__entry">
                 <div className="template-day__info">
-                  ⏰ {t.time} — 👤 {t.student_name} 📘 {t.subject_name}
+                  ⏰ {t.time} — 👤 {t.student_name} 📘 {t.subject_name} 💰 {t.price || '—'}
                 </div>
                 <button className="template-day__delete" onClick={() => handleDelete(t.id)}>❌</button>
               </div>
@@ -109,8 +107,10 @@ function ScheduleTemplate() {
                 required
               >
                 <option value="">📘 Предмет</option>
-                {(students.find(s => s.id === parseInt(templatesData[index].student_id))?.subjects || []).map(sub => (
-                  <option key={sub.id} value={sub.id}>{typeof sub === 'string' ? sub : sub.name}</option>
+                {(students.find(s => String(s.id) === String(templatesData[index].student_id))?.subjects || []).map(sub => (
+                  <option key={sub.id} value={sub.id}>
+                    {typeof sub === 'string' ? sub : sub.name}
+                  </option>
                 ))}
               </select>
 
@@ -119,6 +119,14 @@ function ScheduleTemplate() {
                 value={templatesData[index].time}
                 onChange={(e) => handleTemplateChange(index, 'time', e.target.value)}
                 required
+              />
+
+              <input
+                type="number"
+                placeholder="Цена ₽"
+                value={templatesData[index].price}
+                onChange={(e) => handleTemplateChange(index, 'price', e.target.value)}
+                style={{ width: '80px' }}
               />
 
               <button type="submit">➕</button>

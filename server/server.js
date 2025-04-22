@@ -54,7 +54,8 @@ app.use('/api/users', userRoutes);
 app.use('/api/tutors', tutorRoutes);
 app.use('/api/students', studentRoutes);
 app.use('/api/auth', authRoutes);
-
+const financeRoutes = require('./routes/financeRoutes');
+app.use('/api/finance', financeRoutes);
 // Error handling
 app.use((err, req, res, next) => {
   console.error(err.stack);

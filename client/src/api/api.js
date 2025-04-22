@@ -182,22 +182,32 @@ export const getLessonsByWeek = async (startDate, endDate) => {
 };
 
 // ➕ Добавить урок
+// ➕ Добавить урок
 export const addLesson = async (lesson) => {
   const res = await fetch(`${API_URL}/lessons`, {
     method: 'POST',
     headers: authHeader(),
-    body: JSON.stringify(lesson),
+    body: JSON.stringify({
+      ...lesson,
+      price: lesson.price ?? null,
+      conducted: lesson.conducted ?? false,
+    }),
   });
   if (!res.ok) throw new Error('Ошибка при добавлении урока');
   return await safeJson(res);
 };
 
 // ✏️ Обновить урок
+// ✏️ Обновить урок
 export const updateLesson = async (id, updates) => {
   const res = await fetch(`${API_URL}/lessons/${id}`, {
     method: 'PATCH',
     headers: authHeader(),
-    body: JSON.stringify(updates),
+    body: JSON.stringify({
+      ...updates,
+      price: updates.price ?? null,
+      conducted: updates.conducted ?? false,
+    }),
   });
   if (!res.ok) {
     const error = await safeJson(res);
@@ -535,5 +545,18 @@ export async function getUnreadCount() {
   return data.count;
 }
 
+// 📊 Финансовая статистика репетитора
+export async function getFinanceStats({ start, end }) {
+  const params = new URLSearchParams();
+  if (start) params.append('start', start);
+  if (end) params.append('end', end);
+
+  const res = await fetch(`${API_URL}/finance?${params.toString()}`, {
+    headers: authHeader(),
+  });
+
+  if (!res.ok) throw new Error('Ошибка при получении финансовой статистики');
+  return await res.json(); // { total, average_per_hour, chart_data: [...] }
+}
 
 

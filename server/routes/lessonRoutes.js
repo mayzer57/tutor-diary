@@ -82,14 +82,13 @@ router.get('/student', auth, async (req, res) => {
 // ➕ Добавление нового урока
 // ➕ Добавление нового урока + уведомление
 router.post('/', auth, async (req, res) => {
-  const { subject_id, date, time, homework, homework_file, grade } = req.body;
+  const { subject_id, date, time, homework, homework_file, grade, price, conducted } = req.body;
 
   if (!subject_id || !date || !time) {
     return res.status(400).json({ error: 'Обязательные поля: предмет, дата, время' });
   }
 
   try {
-    // Проверка на существующий урок
     const checkExisting = await pool.query(
       `SELECT 1 FROM lessons 
        WHERE tutor_id = $1 AND subject_id = $2 AND date = $3 AND time = $4`,
@@ -97,21 +96,19 @@ router.post('/', auth, async (req, res) => {
     );
 
     if (checkExisting.rows.length > 0) {
-      console.log('[INFO] Урок уже существует — не создаём');
       return res.status(409).json({ error: 'Урок уже существует' });
     }
 
-    // Вставка урока
     const result = await pool.query(
-      `INSERT INTO lessons (tutor_id, subject_id, date, time, homework, homework_file, grade)
-       VALUES ($1, $2, $3, $4, $5, $6, $7)
+      `INSERT INTO lessons 
+       (tutor_id, subject_id, date, time, homework, homework_file, grade, price, conducted)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
        RETURNING *`,
-      [req.tutor.id, subject_id, date, time, homework || '', homework_file || '', grade || null]
+      [req.tutor.id, subject_id, date, time, homework || '', homework_file || '', grade ?? null, price ?? null, conducted ?? false]
     );
 
     const createdLesson = result.rows[0];
 
-    // Получить student_id по subject_id
     const studentRes = await pool.query(
       `SELECT student_id FROM student_subjects WHERE id = $1`,
       [subject_id]
@@ -119,17 +116,12 @@ router.post('/', auth, async (req, res) => {
 
     if (studentRes.rows.length > 0) {
       const student_id = studentRes.rows[0].student_id;
-
       const message = `📅 Назначен новый урок на ${date} в ${time.slice(0, 5)}`;
-      console.log(`[NOTIFY] Уведомление создаётся для ученика ${student_id}: ${message}`);
-
       await pool.query(
         `INSERT INTO notifications (student_id, message, read)
          VALUES ($1, $2, FALSE)`,
         [student_id, message]
       );
-    } else {
-      console.warn('[WARN] Не удалось найти student_id для subject_id:', subject_id);
     }
 
     res.status(201).json(createdLesson);
@@ -143,15 +135,25 @@ router.post('/', auth, async (req, res) => {
 // ✏️ Обновление урока
 router.patch('/:id', auth, async (req, res) => {
   const { id } = req.params;
-  const { subject_id, time, homework, homework_file, grade } = req.body;
+  const { subject_id, time, homework, homework_file, grade, price, conducted } = req.body;
 
   try {
     const result = await pool.query(
       `UPDATE lessons
-       SET subject_id = $1, time = $2, homework = $3, homework_file = $4, grade = $5
-       WHERE id = $6 AND tutor_id = $7
+       SET subject_id = $1, time = $2, homework = $3, homework_file = $4, grade = $5, price = $6, conducted = $7
+       WHERE id = $8 AND tutor_id = $9
        RETURNING *`,
-      [subject_id, time, homework || '', homework_file || '', grade ?? null, id, req.tutor.id]
+      [
+        subject_id,
+        time,
+        homework || '',
+        homework_file || '',
+        grade ?? null,
+        price ?? null,
+        conducted ?? false,
+        id,
+        req.tutor.id
+      ]
     );
 
     if (result.rows.length === 0) {
@@ -160,7 +162,6 @@ router.patch('/:id', auth, async (req, res) => {
 
     const updated = result.rows[0];
 
-    // получаем student_id по subject_id
     const studentRes = await pool.query(
       `SELECT student_id FROM student_subjects WHERE id = $1`,
       [updated.subject_id]
@@ -176,7 +177,6 @@ router.patch('/:id', auth, async (req, res) => {
           [student_id, '📚 Новое домашнее задание от репетитора!']
         );
       }
-      
 
       if (grade !== undefined && grade !== null) {
         await pool.query(
@@ -185,7 +185,6 @@ router.patch('/:id', auth, async (req, res) => {
           [student_id, `✅ Ваша оценка за ${updated.date}: ${grade}`]
         );
       }
-      
     }
 
     res.json(updated);
@@ -292,6 +291,7 @@ router.delete('/templates/:id', auth, async (req, res) => {
 
 // 📅 Применить шаблон на неделю
 // 📅 Применить шаблон на неделю + уведомления
+// 📅 Применить шаблон на неделю + цена + флаг проведённости
 router.post('/apply-template', auth, async (req, res) => {
   const { start } = req.body;
 
@@ -316,11 +316,12 @@ router.post('/apply-template', auth, async (req, res) => {
 
       if (check.rows.length > 0) continue;
 
-      // 👇 Вставляем урок
-      await pool.query(`
-        INSERT INTO lessons (tutor_id, subject_id, date, time, homework, homework_file, grade)
-        VALUES ($1, $2, $3, $4, '', '', NULL)
-      `, [req.tutor.id, t.subject_id, dateStr, t.time]);
+      // 👇 Вставляем урок с ценой и флагом conducted = false
+      const insertRes = await pool.query(`
+        INSERT INTO lessons (tutor_id, subject_id, date, time, homework, homework_file, grade, price, conducted)
+        VALUES ($1, $2, $3, $4, '', '', NULL, $5, FALSE)
+        RETURNING id
+      `, [req.tutor.id, t.subject_id, dateStr, t.time, t.price || null]);
 
       // 👇 Получаем student_id для уведомления
       const studentRes = await pool.query(
@@ -336,7 +337,6 @@ router.post('/apply-template', auth, async (req, res) => {
            VALUES ($1, $2, FALSE)`,
           [student_id, `📅 Назначен новый урок по шаблону на ${dateStr} в ${t.time.slice(0, 5)}`]
         );
-        
       }
 
       inserted++;

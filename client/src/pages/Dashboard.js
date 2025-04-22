@@ -140,6 +140,9 @@ function Dashboard({ onLogout }) {
   <button className="dashboard-btn" onClick={() => navigate('/journal')}>
     📘 Журнал
   </button>
+  <button className="dashboard-btn" onClick={() => navigate('/finance')}>
+    💰 Финансы
+  </button>
 </div>
 
 

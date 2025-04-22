@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { format } from 'date-fns';
 import './FinancePage.css';
-
+import { getFinanceStats } from '../api/api';
 function FinancePage() {
   const [period, setPeriod] = useState('month');
   const [customStart, setCustomStart] = useState('');
@@ -10,22 +10,30 @@ function FinancePage() {
   const [chartData, setChartData] = useState([]);
 
   const loadFinance = async () => {
-    let url = `/api/finance/summary?period=${period}`;
+    let start = '', end = '';
+  
     if (period === 'custom' && customStart && customEnd) {
-      url = `/api/finance/summary?start=${customStart}&end=${customEnd}`;
+      start = customStart;
+      end = customEnd;
+    } else {
+      const now = new Date();
+      const today = now.toISOString().split('T')[0];
+  
+      let from = new Date();
+      if (period === 'week') from.setDate(now.getDate() - 7);
+      else if (period === 'month') from.setMonth(now.getMonth() - 1);
+      else if (period === 'year') from.setFullYear(now.getFullYear() - 1);
+  
+      start = from.toISOString().split('T')[0];
+      end = today;
     }
-
+  
     try {
-      const res = await fetch(url, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-        },
-      });
-      const data = await res.json();
-      setSummary(data.summary);
-      setChartData(data.chart);
+      const data = await getFinanceStats({ start, end });
+      setSummary(data.summary || null);
+      setChartData(data.chart || []);
     } catch (err) {
-      console.error('Ошибка загрузки финансов:', err.message);
+      console.error('❌ Ошибка загрузки финансов:', err.message);
     }
   };
 

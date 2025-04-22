@@ -26,17 +26,19 @@ router.get('/', auth, async (req, res) => {
     }
 
     const lessons = await pool.query(`
-      SELECT 
-        l.id,
-        l.date,
-        l.time,
-        l.homework,
-        l.homework_file,
-        l.grade,
-        l.subject_id,
-        ss.student_id,
-        s.name AS student_name,
-        ss.subject AS subject_name
+     SELECT 
+  l.id,
+  l.date,
+  l.time,
+  l.homework,
+  l.homework_file,
+  l.grade,
+  l.subject_id,
+  l.price,
+  l.conducted,
+  ss.student_id,
+  s.name AS student_name,
+  ss.subject AS subject_name
       FROM lessons l
       JOIN student_subjects ss ON l.subject_id = ss.id
       JOIN students s ON ss.student_id = s.id
@@ -57,15 +59,17 @@ router.get('/student', auth, async (req, res) => {
   try {
     const lessons = await pool.query(
       `SELECT 
-        l.id,
-        l.date,
-        l.time,
-        l.homework,
-        l.homework_file,
-        l.grade,
-        l.subject_id,
-        ss.student_id,
-        ss.subject AS subject_name
+  l.id,
+  l.date,
+  l.time,
+  l.homework,
+  l.homework_file,
+  l.grade,
+  l.subject_id,
+  l.price,
+  l.conducted,
+  ss.student_id,
+  ss.subject AS subject_name
       FROM lessons l
       JOIN student_subjects ss ON l.subject_id = ss.id
       WHERE ss.student_id = $1

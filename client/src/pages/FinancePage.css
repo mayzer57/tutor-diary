@@ -8,25 +8,28 @@
   font-family: 'Segoe UI', sans-serif;
 }
 
-/* 🔁 Адаптивные фильтры */
+/* 🔁 Фильтры */
 .filters {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 12px;
   margin-bottom: 20px;
+  justify-content: space-between;
 }
 
 .filters select,
 .filters input[type="date"],
 .filters input[type="text"] {
-  padding: 10px;
+  padding: 10px 12px;
   font-size: 14px;
   border: 1px solid #d1d5db;
   border-radius: 6px;
-  flex: 1 1 180px;
-  min-width: 150px;
+  flex: 1 1 calc(50% - 12px);
+  min-width: 140px;
+  box-sizing: border-box;
 }
 
+/* 📉 Финансовая сводка */
 .finance-summary {
   display: flex;
   flex-wrap: wrap;
@@ -39,13 +42,13 @@
   color: #1f2937;
 }
 
-/* 📊 График */
+/* 📊 Контейнер графика */
 .chart-container {
   width: 100%;
   overflow-x: auto;
 }
 
-/* 🔙 Кнопка Назад */
+/* 🔙 Назад */
 .finance-header {
   display: flex;
   align-items: center;
@@ -68,15 +71,19 @@
 }
 
 /* 📱 Мобильная адаптация */
-@media (max-width: 768px) {
+@media (max-width: 600px) {
   .filters {
-    flex-direction: column;
-    gap: 12px;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
   }
 
   .filters select,
-  .filters input {
-    width: 100%;
+  .filters input[type="date"],
+  .filters input[type="text"] {
+    flex: 1 1 calc(50% - 10px);
+    font-size: 13px;
   }
 
   .finance-summary {

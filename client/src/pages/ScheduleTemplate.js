@@ -46,7 +46,11 @@ function ScheduleTemplate() {
     e.preventDefault();
     const data = templatesData[weekday];
     try {
-      await addTemplate({ ...data, weekday });
+      await addTemplate({
+        ...data,
+        weekday,
+        price: parseFloat(data.price || '0')
+      });
       setTemplatesData(prev => ({
         ...prev,
         [weekday]: { student_id: '', subject_id: '', time: '', price: '' }

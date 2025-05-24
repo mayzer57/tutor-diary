@@ -3,8 +3,7 @@ const router = express.Router();
 const pool = require('../db');
 const auth = require('../middleware/authMiddleware');
 
-// 📊 Финансовая аналитика по всей неделе/месяцу/году
-// 📊 Получить финансы репетитора с фильтрацией по предмету/ученику и точным периодом
+
 router.get('/summary', auth, async (req, res) => {
   const { period, start, end, student, subject } = req.query;
   const tutorId = req.tutor?.id;

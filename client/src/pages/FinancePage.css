@@ -8,7 +8,7 @@
   font-family: 'Segoe UI', sans-serif;
 }
 
-/* 🔁 Фильтры */
+
 .filters {
   display: flex;
   flex-wrap: wrap;
@@ -29,7 +29,7 @@
   box-sizing: border-box;
 }
 
-/* 📉 Финансовая сводка */
+
 .finance-summary {
   display: flex;
   flex-wrap: wrap;
@@ -42,13 +42,13 @@
   color: #1f2937;
 }
 
-/* 📊 Контейнер графика */
+
 .chart-container {
   width: 100%;
   overflow-x: auto;
 }
 
-/* 🔙 Назад */
+
 .finance-header {
   display: flex;
   align-items: center;
@@ -70,7 +70,7 @@
   background-color: #e5e7eb;
 }
 
-/* 📱 Мобильная адаптация */
+
 @media (max-width: 600px) {
   .filters {
     flex-direction: row;

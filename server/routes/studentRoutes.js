@@ -7,7 +7,7 @@ const bcrypt = require('bcryptjs');
 
 const auth = require('../middleware/authMiddleware');
 
-// ✅ Получение всех учеников
+
 router.get('/', auth, async (req, res) => {
   try {
     const result = await pool.query(`
@@ -58,7 +58,7 @@ router.get('/', auth, async (req, res) => {
 });
 
 
-// ✅ Добавление ученика
+
 router.post('/', auth, [
   check('name').notEmpty(),
   check('login').notEmpty(),
@@ -100,7 +100,7 @@ router.post('/', auth, [
   }
 });
 
-// ✅ Логин ученика
+
 router.post('/login', async (req, res) => {
   const { login, password } = req.body;
   if (!login || !password) return res.status(400).json({ error: 'Введите логин и пароль' });
@@ -131,7 +131,7 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// ✅ Профиль ученика
+
 router.get('/me', auth, async (req, res) => {
   if (!req.student) return res.status(403).json({ error: 'Нет доступа' });
 
@@ -141,7 +141,7 @@ router.get('/me', auth, async (req, res) => {
       FROM students s
       JOIN tutors t ON s.tutor_id = t.id
       WHERE s.id = $1
-    `, [req.student.id]); // <-- ✅ теперь вернёт tutor_id
+    `, [req.student.id]); 
 
     if (studentInfo.rows.length === 0)
       return res.status(404).json({ error: 'Ученик не найден' });
@@ -164,7 +164,7 @@ router.get('/me', auth, async (req, res) => {
 });
 
 
-// ✅ Обновление ученика
+
 router.patch('/:id', auth, async (req, res) => {
   const { name, login, subjects } = req.body;
 
@@ -210,7 +210,7 @@ router.patch('/:id', auth, async (req, res) => {
   }
 });
 
-// ✅ Удаление ученика
+
 router.delete('/:id', auth, async (req, res) => {
   try {
     const studentId = req.params.id;
@@ -300,7 +300,7 @@ router.get('/ranking', auth, async (req, res) => {
     res.status(500).json({ error: 'Ошибка при получении рейтинга' });
   }
 });
-// 🔔 Уведомления ученика
+
 router.get('/notifications', auth, async (req, res) => {
   try {
     const result = await pool.query(

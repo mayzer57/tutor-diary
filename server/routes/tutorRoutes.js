@@ -8,7 +8,7 @@ const { check, validationResult } = require('express-validator');
 
 const auth = require('../middleware/authMiddleware');
 
-// 🔐 Регистрация
+
 router.post('/register', [
   check('name').notEmpty().withMessage('Имя обязательно'),
   check('email').isEmail().withMessage('Некорректный email'),
@@ -81,7 +81,7 @@ router.post('/login', [
 });
 
 
-// 🔍 Профиль
+
 router.get('/profile', auth, async (req, res) => {
   try {
     const result = await pool.query('SELECT id, name, email FROM tutors WHERE id = $1', [req.tutor.id]);
@@ -91,7 +91,7 @@ router.get('/profile', auth, async (req, res) => {
   }
 });
 
-// ✏️ Обновление профиля
+
 router.put('/profile', auth, [
   check('name').optional().notEmpty(),
   check('phone').optional().isMobilePhone(),
@@ -109,7 +109,7 @@ router.put('/profile', auth, [
   }
 });
 
-// 🔑 Смена пароля
+
 router.put('/change-password', auth, [
   check('currentPassword').notEmpty(),
   check('newPassword').isLength({ min: 6 })

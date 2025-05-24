@@ -53,7 +53,7 @@ function AuthForm({ onAuthSuccess }) {
     } catch (err) {
       console.error('Auth error:', err);
   
-      // 💬 Читаем сообщение от сервера
+     
       const message =
         err?.response?.data?.error ||  // axios-стиль (если используешь axios)
         err?.message ||                // fetch-стиль (то что ты используешь)

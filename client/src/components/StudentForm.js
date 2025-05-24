@@ -6,7 +6,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const auth = require('../middleware/authMiddleware');
 
-// 🔍 Получение всех учеников с предметами
+
 router.get('/', auth, async (req, res) => {
   try {
     const result = await pool.query(`
@@ -82,7 +82,7 @@ router.post('/', auth, [
   }
 });
 
-// 🔐 Логин ученика
+
 router.post('/login', async (req, res) => {
   const { login, password } = req.body;
   if (!login || !password) return res.status(400).json({ error: 'Введите логин и пароль' });

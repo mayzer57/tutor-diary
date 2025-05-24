@@ -4,7 +4,7 @@ const db = require('../db');
 const auth = require('../middleware/authMiddleware');
 const multer = require('multer');
 
-// 📂 Хранилище для файлов (в папке /uploads)
+//  Хранилище для файлов (в папке /uploads)
 const path = require('path');
 
 const storage = multer.diskStorage({
@@ -20,7 +20,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 
-// 📩 Получить все сообщения между репетитором и учеником
+//  Получить все сообщения между репетитором и учеником
 router.get('/', async (req, res) => {
   const { student_id, tutor_id } = req.query;
   if (!student_id || !tutor_id) {
@@ -44,7 +44,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-// ✉️ Отправка сообщения (с возможным файлом)
+// Отправка сообщения (с возможным файлом)
 router.post('/', upload.single('file'), async (req, res) => {
   try {
     const { sender_type, sender_id, receiver_id, message } = req.body;
@@ -62,7 +62,7 @@ router.post('/', upload.single('file'), async (req, res) => {
   }
 });
 
-// 📜 Список всех чатов репетитора
+//  Список всех чатов репетитора
 router.get('/chats', auth, async (req, res) => {
   try {
     const result = await db.query(`
@@ -114,7 +114,7 @@ router.post('/mark-as-read', auth, async (req, res) => {
   }
 });
 
-// 📩 Получить кол-во непрочитанных сообщений
+//  Получить кол-во непрочитанных сообщений
 router.get('/unread-count', auth, async (req, res) => {
   const { id } = req.tutor || req.student;
   const userType = req.tutor ? 'tutor' : 'student';

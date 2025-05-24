@@ -3,8 +3,7 @@ const router = express.Router();
 const pool = require('../db');
 const auth = require('../middleware/authMiddleware');
 
-// 📅 Получение уроков репетитора
-// 📅 Получение уроков репетитора с поддержкой start/end/limit/offset
+
 router.get('/', auth, async (req, res) => {
   let { start, end, limit = 50, offset = 0 } = req.query;
   limit = parseInt(limit);
@@ -54,7 +53,7 @@ router.get('/', auth, async (req, res) => {
   }
 });
 
-// 📚 Получение расписания для ученика
+
 router.get('/student', auth, async (req, res) => {
   try {
     const lessons = await pool.query(
@@ -83,8 +82,7 @@ router.get('/student', auth, async (req, res) => {
   }
 });
 
-// ➕ Добавление нового урока
-// ➕ Добавление нового урока + уведомление
+
 router.post('/', auth, async (req, res) => {
   const { subject_id, date, time, homework, homework_file, grade, price, conducted } = req.body;
 
@@ -136,7 +134,7 @@ router.post('/', auth, async (req, res) => {
 });
 
 
-// ✏️ Обновление урока
+
 router.patch('/:id', auth, async (req, res) => {
   const { id } = req.params;
   const { subject_id, time, homework, homework_file, grade, price, conducted } = req.body;
@@ -198,7 +196,7 @@ router.patch('/:id', auth, async (req, res) => {
   }
 });
 
-// ❌ Удаление урока
+
 router.delete('/:id', auth, async (req, res) => {
   const { id } = req.params;
   try {
@@ -216,7 +214,7 @@ router.delete('/:id', auth, async (req, res) => {
   }
 });
 
-// 🧬 Клонировать недели
+
 router.post('/clone-multiple', auth, async (req, res) => {
   const { from, weeks } = req.body;
   const WEEKS_TO_CLONE = weeks || 4;
@@ -261,7 +259,7 @@ router.post('/clone-multiple', auth, async (req, res) => {
   }
 });
 
-// 📋 Получить шаблоны
+
 router.get('/templates', auth, async (req, res) => {
   const result = await pool.query(`
     SELECT lt.*, s.name AS student_name, ss.subject AS subject_name
@@ -273,7 +271,7 @@ router.get('/templates', auth, async (req, res) => {
   res.json(result.rows);
 });
 
-// ➕ Добавить шаблон
+
 router.post('/templates', auth, async (req, res) => {
   const { subject_id, weekday, time, price } = req.body;
 
@@ -286,7 +284,7 @@ router.post('/templates', auth, async (req, res) => {
   res.status(201).json(result.rows[0]);
 });
 
-// ❌ Удалить шаблон
+
 router.delete('/templates/:id', auth, async (req, res) => {
   await pool.query(`DELETE FROM lesson_templates WHERE id = $1 AND tutor_id = $2`, [
     req.params.id,
@@ -295,9 +293,7 @@ router.delete('/templates/:id', auth, async (req, res) => {
   res.json({ success: true });
 });
 
-// 📅 Применить шаблон на неделю
-// 📅 Применить шаблон на неделю + уведомления
-// 📅 Применить шаблон на неделю + цена + флаг проведённости
+
 router.post('/apply-template', auth, async (req, res) => {
   const { start } = req.body;
 
@@ -322,14 +318,14 @@ router.post('/apply-template', auth, async (req, res) => {
 
       if (check.rows.length > 0) continue;
 
-      // 👇 Вставляем урок с ценой и флагом conducted = false
+   
       const insertRes = await pool.query(`
         INSERT INTO lessons (tutor_id, subject_id, date, time, homework, homework_file, grade, price, conducted)
         VALUES ($1, $2, $3, $4, '', '', NULL, $5, FALSE)
         RETURNING id
       `, [req.tutor.id, t.subject_id, dateStr, t.time, t.price || null]);
 
-      // 👇 Получаем student_id для уведомления
+
       const studentRes = await pool.query(
         `SELECT student_id FROM student_subjects WHERE id = $1`,
         [t.subject_id]
@@ -355,10 +351,7 @@ router.post('/apply-template', auth, async (req, res) => {
   }
 });
 
-// 📊 Новый маршрут: Получить все оценки
-// 📊 Получить оценки за период с фильтрами и пагинацией
-// 📊 Получить оценки за период с фильтрами и пагинацией
-// 📊 Получить оценки за период с фильтрами и пагинацией
+
 router.get('/grades', auth, async (req, res) => {
   const { start, end, offset = 0, limit = 100, student, subject } = req.query;
 
@@ -366,7 +359,7 @@ router.get('/grades', auth, async (req, res) => {
     return res.status(403).json({ error: 'Только для репетитора' });
   }
 
-  // ✅ Безопасный парсинг даты
+
   const parseDate = (d) => {
     const parsed = new Date(d);
     return !isNaN(parsed.getTime()) ? parsed.toISOString().split('T')[0] : null;
@@ -426,7 +419,7 @@ router.get('/grades', auth, async (req, res) => {
     res.status(500).json({ error: 'Ошибка при получении оценок' });
   }
 });
-// 🎯 Обновление оценки урока (только grade)
+
 router.patch('/:id/grade', auth, async (req, res) => {
   const { id } = req.params;
   const { grade } = req.body;
@@ -447,7 +440,7 @@ router.patch('/:id/grade', auth, async (req, res) => {
     
     const updated = result.rows[0];
     
-    // Найти student_id для уведомления
+
     const studentRes = await pool.query(`
       SELECT ss.student_id 
       FROM student_subjects ss

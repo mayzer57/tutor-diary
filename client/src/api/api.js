@@ -2,7 +2,6 @@ export const API_URL = "https://mayzer57-tutor-diary-2e5c.twc1.net/api";
 
 
 
-// 🔐 Заголовок авторизации
 export const authHeader = () => {
   const token = localStorage.getItem('token');
   return {
@@ -11,7 +10,7 @@ export const authHeader = () => {
   };
 };
 
-// 🧯 Безопасный парсинг JSON
+
 export const safeJson = async (res) => {
   const contentType = res.headers.get('content-type');
   if (res.status === 204 || !contentType || !contentType.includes('application/json')) {
@@ -26,7 +25,7 @@ export const safeJson = async (res) => {
   }
 };
 
-// ✅ Регистрация репетитора
+
 export const register = async (name, email, password) => {
   const response = await fetch(`${API_URL}/tutors/register`, {
     method: 'POST',
@@ -44,7 +43,7 @@ export const register = async (name, email, password) => {
   return await safeJson(response);
 };
 
-// ✅ Вход репетитора
+
 export const login = async (email, password) => {
   const response = await fetch(`${API_URL}/tutors/login`, {
     method: 'POST',
@@ -67,7 +66,7 @@ export const login = async (email, password) => {
 };
 
 
-// ✅ Вход ученика
+
 export const loginStudent = async (login, password) => {
   const response = await fetch(`${API_URL}/students/login`, {
     method: 'POST',
@@ -102,7 +101,6 @@ export const deleteStudent = async (id) => {
   return await safeJson(res);
 };
 
-// 👤 Профиль ученика
 export const getStudentProfile = async () => {
   const res = await fetch(`${API_URL}/students/me`, {
     headers: authHeader(),
@@ -111,7 +109,7 @@ export const getStudentProfile = async () => {
   return await safeJson(res);
 };
 
-// 👤 Получить список учеников
+
 export const getStudents = async () => {
   const res = await fetch(`${API_URL}/students`, {
     headers: authHeader(),
@@ -127,7 +125,7 @@ export const getStudents = async () => {
   return await safeJson(res);
 };
 
-// 👤 Добавить ученика
+
 export const addStudent = async (student) => {
   const res = await fetch(`${API_URL}/students`, {
     method: 'POST',
@@ -136,7 +134,7 @@ export const addStudent = async (student) => {
       name: student.name,
       login: student.login,
       password: student.password,
-      subjects: student.subjects, // обязательно массив строк
+      subjects: student.subjects, 
     }),
   });
 
@@ -152,7 +150,7 @@ export const addStudent = async (student) => {
   return data;
 };
 
-// 📅 Уроки репетитора
+
 export const getTutorLessons = async () => {
   const res = await fetch(`${API_URL}/lessons`, {
     headers: authHeader(),
@@ -163,7 +161,7 @@ export const getTutorLessons = async () => {
   return data;
 };
 
-// 📅 Уроки ученика
+
 export const getStudentLessons = async () => {
   const res = await fetch(`${API_URL}/lessons/student`, {
     headers: authHeader(),
@@ -172,7 +170,7 @@ export const getStudentLessons = async () => {
   return await safeJson(res);
 };
 
-// 📅 Уроки по неделе
+
 export const getLessonsByWeek = async (startDate, endDate) => {
   const res = await fetch(`${API_URL}/lessons?start=${startDate}&end=${endDate}`, {
     headers: authHeader(),
@@ -181,8 +179,8 @@ export const getLessonsByWeek = async (startDate, endDate) => {
   return await safeJson(res);
 };
 
-// ➕ Добавить урок
-// ➕ Добавить урок
+
+
 export const addLesson = async (lesson) => {
   const res = await fetch(`${API_URL}/lessons`, {
     method: 'POST',
@@ -197,8 +195,7 @@ export const addLesson = async (lesson) => {
   return await safeJson(res);
 };
 
-// ✏️ Обновить урок
-// ✏️ Обновить урок
+
 export const updateLesson = async (id, updates) => {
   const res = await fetch(`${API_URL}/lessons/${id}`, {
     method: 'PATCH',
@@ -216,7 +213,7 @@ export const updateLesson = async (id, updates) => {
   return await safeJson(res);
 };
 
-// ❌ Удалить урок
+
 export const deleteLesson = async (id) => {
   const res = await fetch(`${API_URL}/lessons/${id}`, {
     method: 'DELETE',
@@ -226,7 +223,7 @@ export const deleteLesson = async (id) => {
   return await safeJson(res);
 };
 
-// 🧬 Клонировать недели
+
 export const cloneMultipleWeeks = async (fromDate, weeks = 4) => {
   const res = await fetch(`${API_URL}/lessons/clone-multiple`, {
     method: 'POST',
@@ -237,7 +234,7 @@ export const cloneMultipleWeeks = async (fromDate, weeks = 4) => {
   return await safeJson(res);
 };
 
-// 📋 Получить шаблоны
+
 export const getTemplates = async () => {
   const res = await fetch(`${API_URL}/lessons/templates`, {
     headers: authHeader(),
@@ -246,7 +243,7 @@ export const getTemplates = async () => {
   return await safeJson(res);
 };
 
-// ➕ Добавить шаблон
+
 export const addTemplate = async (template) => {
   const res = await fetch(`${API_URL}/lessons/templates`, {
     method: 'POST',
@@ -257,7 +254,7 @@ export const addTemplate = async (template) => {
   return await safeJson(res);
 };
 
-// ❌ Удалить шаблон
+
 export const deleteTemplate = async (id) => {
   const res = await fetch(`${API_URL}/lessons/templates/${id}`, {
     method: 'DELETE',
@@ -267,7 +264,7 @@ export const deleteTemplate = async (id) => {
   return await safeJson(res);
 };
 
-// 📅 Применить шаблон на неделю
+
 export const applyTemplateToWeek = async (startDate) => {
   const res = await fetch(`${API_URL}/lessons/apply-template`, {
     method: 'POST',
@@ -278,7 +275,7 @@ export const applyTemplateToWeek = async (startDate) => {
   return await safeJson(res);
 };
 
-// ⚙️ Обновление профиля (ученик/репетитор)
+
 export const updateUserProfile = async (id, updates) => {
   const isTutor = localStorage.getItem('userType') === 'tutor';
   const endpoint = isTutor ? `/users/tutor/${id}` : `/users/${id}`;
@@ -296,7 +293,7 @@ export const updateUserProfile = async (id, updates) => {
   return await safeJson(res);
 };
 
-// 🔑 Смена пароля
+
 export const changePassword = async ({ userId, userType, newPassword }) => {
   const res = await fetch(`${API_URL}/auth/change-password`, {
     method: 'POST',
@@ -332,9 +329,9 @@ export const updateStudent = async (student) => {
   return data;
 };
 
-// 📚 Получить все оценки репетитора
 
-// src/api/api.js
+
+
 export async function getTutorGrades(
   period,
   offset = 0,
@@ -361,7 +358,7 @@ export async function getTutorGrades(
 
     let daysBack = daysMap[period];
 
-    // 💡 Пробуем парсить как число
+
     if (daysBack === undefined && !isNaN(Number(period))) {
       daysBack = Number(period);
     }
@@ -396,7 +393,7 @@ export async function getTutorGrades(
 
   return await res.json();
 }
-// 🔁 Обновление только оценки
+
 export async function updateLessonGrade(id, grade) {
   const res = await fetch(`${API_URL}/lessons/${id}/grade`, {
     method: 'PATCH',
@@ -424,7 +421,7 @@ export async function getStudentRanking() {
   });
   return await safeJson(res);
 }
-// ✅ В api.js
+
 export async function fetchStudentGrades() {
   const res = await fetch(`${API_URL}/students/my-grades`, {
     headers: authHeader()
@@ -437,8 +434,7 @@ export async function fetchStudentGrades() {
 
   return await res.json(); // [{ date, grade, subject }]
 }
-// 🔔 Получить уведомления ученика
-// 🔔 Получить уведомления ученика
+
 export async function getStudentNotifications(studentId) {
   const res = await fetch(`${API_URL}/notifications?student_id=${studentId}`, {
     headers: authHeader(),
@@ -449,8 +445,6 @@ export async function getStudentNotifications(studentId) {
 }
 
 
-
-// ➕ Добавить уведомление
 export async function createNotification(studentId, message) {
   const res = await fetch(`${API_URL}/notifications`, {
     method: 'POST',
@@ -462,8 +456,7 @@ export async function createNotification(studentId, message) {
   if (!res.ok) throw new Error(data.error || 'Ошибка создания уведомления');
   return data;
 }
-// ✅ Обновить уведомление как прочитанное
-// 📌 Пометить уведомление как прочитанное
+
 export async function markNotificationAsRead(id) {
   const res = await fetch(`${API_URL}/notifications/${id}/read`, {
     method: 'PATCH',
@@ -474,7 +467,6 @@ export async function markNotificationAsRead(id) {
   return await res.json();
 }
 
-// ❌ Удалить одно уведомление
 export async function deleteNotification(id) {
   const res = await fetch(`${API_URL}/notifications/${id}`, {
     method: 'DELETE',
@@ -496,7 +488,7 @@ export async function sendChatMessage(formData) {
   const res = await fetch(`${API_URL}/chat`, {
     method: 'POST',
     headers: {
-      Authorization: authHeader().Authorization, // ⚠️ только токен, без Content-Type!
+      Authorization: authHeader().Authorization, 
     },
     body: formData,
   });
@@ -505,7 +497,7 @@ export async function sendChatMessage(formData) {
   if (!res.ok) throw new Error(data.error || 'Ошибка отправки сообщения');
   return data;
 }
-// 🔄 Получить список чатов репетитора с непрочитанными
+
 export async function getChatListForTutor() {
   const res = await fetch(`${API_URL}/chat/chats`, {
     headers: authHeader(),
@@ -516,7 +508,7 @@ export async function getChatListForTutor() {
     throw new Error(`Ошибка загрузки чатов: ${errText}`);
   }
 
-  return await res.json(); // [{ student_id, name, last_message_at, unread_count }]
+  return await res.json(); 
 }
 
 export async function markMessagesAsRead(student_id, tutor_id) {
@@ -533,8 +525,7 @@ export async function markMessagesAsRead(student_id, tutor_id) {
   if (!res.ok) throw new Error(data.error || 'Ошибка при пометке сообщений');
   return data;
 }
-// 🔢 Получить количество непрочитанных сообщений
-// ✅ в src/api/api.js
+
 export async function getUnreadCount() {
   const res = await fetch(`${API_URL}/chat/unread-count`, {
     headers: authHeader(),
@@ -545,7 +536,7 @@ export async function getUnreadCount() {
   return data.count;
 }
 
-// 📊 Финансовая статистика репетитора
+
 export async function getFinanceStats({ start, end, period, student, subject }) {
   const params = new URLSearchParams();
 

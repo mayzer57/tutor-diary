@@ -8,7 +8,7 @@
   min-height: 100vh;
 }
 
-/* 🧠 Шапка */
+
 .dashboard-header {
   display: flex;
   justify-content: space-between;
@@ -60,7 +60,7 @@
   background-color: #fecaca;
 }
 
-/* 🔘 Кнопки действий */
+
 .dashboard-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
@@ -94,7 +94,7 @@
   margin-bottom: 16px;
 }
 
-/* 📦 Карточка ученика */
+
 .student-card {
   background-color: #ffffff;
   border-radius: 16px;
@@ -131,7 +131,7 @@
   vertical-align: top;
 }
 
-/* 📱 Мобильная адаптация */
+
 @media (max-width: 768px) {
   .dashboard-container {
     padding: 16px;

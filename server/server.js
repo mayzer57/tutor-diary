@@ -56,22 +56,21 @@ app.use('/api/students', studentRoutes);
 app.use('/api/auth', authRoutes);
 const financeRoutes = require('./routes/financeRoutes');
 app.use('/api/finance', financeRoutes);
-// Error handling
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({ error: 'Internal Server Error' });
 });
-// 👉 Раздаём фронтенд как статику
+
 
 app.use(express.static(path.join(__dirname, '..', 'client', 'build')));
 
-// 👉 Обрабатываем все неизвестные GET-запросы и возвращаем index.html
+
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'client', 'build', 'index.html'));
 });
 
 app.listen(PORT, () => {
-  console.log(`🚀 Сервер запущен на http://localhost:${PORT}`);
+  console.log(`Сервер запущен на http://localhost:${PORT}`);
 });
 const cron = require('node-cron');
 

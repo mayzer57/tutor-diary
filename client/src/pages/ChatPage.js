@@ -23,7 +23,7 @@ function ChatPage() {
       const data = await getChatMessages(studentId, tutorId);
       setMessages(data);
 
-      // 🟢 Авто-пометка как прочитано
+
       await fetch(`${API_URL}/chat/mark-as-read`, {
         method: 'POST',
         headers: {
@@ -92,7 +92,7 @@ function ChatPage() {
         </div>
       )}
   
-      {/* 🔙 Кнопка назад для ученика */}
+      {/*  Кнопка назад для ученика */}
       {userType === 'student' && (
         <div style={{ padding: '12px 20px' }}>
           <button className="back-btn" onClick={() => navigate('/student-dashboard')}>
@@ -101,7 +101,7 @@ function ChatPage() {
         </div>
       )}
   
-      {/* 💬 Сообщения */}
+      {/*  Сообщения */}
       <div className="chat-messages" ref={scrollRef}>
         {messages.map((msg, i) => (
           <div key={i} className={`chat-bubble ${msg.sender_type}`}>
@@ -131,7 +131,7 @@ function ChatPage() {
         ))}
       </div>
   
-      {/* ✍️ Инпут с кнопками в Telegram-стиле */}
+     
       <div className="chat-input">
         <label htmlFor="file-upload" title="Прикрепить файл">📎</label>
         <input
@@ -153,7 +153,7 @@ function ChatPage() {
         </button>
       </div>
   
-      {/* 📁 Превью прикрепленного файла */}
+  
       {file && (
         <div className="chat-file-preview">
           <span>📁 {file.name}</span>

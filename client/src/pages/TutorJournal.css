@@ -40,7 +40,7 @@ body {
   color: #111827;
 }
 
-/* 🔙 Кнопка назад */
+
 .home-button {
   background: linear-gradient(90deg, #6366f1, #3b82f6);
   color: white;
@@ -84,7 +84,7 @@ body {
   outline: none;
 }
 
-/* 🔘 Кнопки режимов */
+
 .mode-btn,
 .active-mode-btn {
   padding: 8px 14px;
@@ -110,7 +110,7 @@ body {
   transform: translateY(-1px);
 }
 
-/* 📅 Datepicker */
+
 .react-datepicker-wrapper {
   display: inline-block;
   width: auto;
@@ -200,7 +200,7 @@ body {
   padding-left: 1rem;
 }
 
-/* 📈 Прокачка */
+
 .level-progress {
   margin-top: 20px;
   max-width: 400px;
@@ -260,7 +260,7 @@ body {
     width: 100%;
   }
 
-  /* 📥 Фильтры — скрыты/отображаются */
+
   .filters-row.hidden {
     display: none;
   }
@@ -271,7 +271,7 @@ body {
     gap: 12px;
   }
 
-  /* 📦 Обёртка фильтров */
+
   .filters-row {
     flex-direction: column;
     align-items: stretch;
@@ -284,7 +284,7 @@ body {
     width: 100%;
   }
 
-  /* 📊 Таблица */
+
   .grade-table th,
   .grade-table td {
     font-size: 13px;
@@ -304,7 +304,7 @@ body {
     font-size: 13px;
   }
 
-  /* 🖼️ Хедер */
+
   .header-row {
     flex-direction: column;
     align-items: flex-start;
@@ -316,14 +316,14 @@ body {
     margin-bottom: 8px;
   }
 
-  /* 🔘 Переключатели таблица/диаграмма */
+
   .mode-btn,
   .active-mode-btn {
     width: 100%;
     margin-bottom: 8px;
   }
 
-  /* 📊 Графики (Recharts) */
+
   .chart,
   .recharts-wrapper {
     max-width: 100% !important;
@@ -335,7 +335,7 @@ body {
   }
 }
 
-/* 📌 Sticky колонка "Ученик" */
+
 .grade-table thead th:first-child,
 .grade-table tbody td:first-child {
   position: sticky;

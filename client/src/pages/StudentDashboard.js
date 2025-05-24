@@ -17,7 +17,7 @@ function StudentDashboard({ onLogout }) {
   const [monthActivity, setMonthActivity] = useState(0);
   const [medals, setMedals] = useState({});
   const navigate = useNavigate();
-  const [unread] = useUnreadMessages(); // ✅ правильно
+  const [unread] = useUnreadMessages(); 
 
   useEffect(() => {
     const userType = localStorage.getItem('userType');

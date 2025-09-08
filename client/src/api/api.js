@@ -1,4 +1,4 @@
-export const API_URL = "https://mayzer57-tutor-diary-2e5c.twc1.net/api";
+export const API_URL = "https://mayzer57-tutor-diary-744f.twc1.net/api";
 
 
 

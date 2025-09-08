@@ -1,4 +1,3 @@
-
 # Node.js base
 FROM node:20
 
@@ -9,15 +8,21 @@ WORKDIR /opt/build
 RUN apt update && apt install -y git && \
     npm install -g pm2
 
-# Клонируем только сервер
+# Клонируем весь проект
 RUN git clone https://github.com/mayzer57/tutor-diary.git -b main . && \
     git remote rm origin
 
-WORKDIR /opt/build/server
+# Устанавливаем зависимости для клиента и сервера
+WORKDIR /opt/build
 RUN npm install
+WORKDIR /opt/build/client
+RUN npm install && npm run build
 
-# Пробрасываем порт
-EXPOSE 5001
+# Возвращаемся к корню для запуска
+WORKDIR /opt/build
+
+# Пробрасываем порт (опционально, Render сам задаёт)
+EXPOSE 10000
 
 # Запуск через pm2-runtime
-CMD ["pm2-runtime", "server.js"]
+CMD ["pm2-runtime", "server/server.js"]

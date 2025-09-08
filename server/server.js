@@ -10,6 +10,8 @@ const PORT = process.env.PORT || 5001;
 const allowedOrigins = [
   'https://mayzer57-tutor-diary-4d45.twc1.net',
   'https://mayzer57-tutor-diary-2e5c.twc1.net',
+  'https://mayzer57-tutor-diary-c3a0.twc1.net',
+  'https://mayzer57-tutor-diary-744f.twc1.net',
 ];
 app.use(cors({
   origin: function (origin, callback) {

@@ -1,5 +1,5 @@
 # 1. Node.js base
-FROM node:18
+FROM node:20
 
 # 2. Рабочая директория
 WORKDIR /opt/build

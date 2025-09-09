@@ -8,6 +8,8 @@ const PORT = process.env.PORT || 10000;
 
 // ✅ CORS конфиг
 const allowedOrigins = [
+  'https://mayzer57-tutor-diary-7435.twc1.net',
+  'https://mayzer57-tutor-diary-60d0.twc1.net',
   'https://mayzer57-tutor-diary-da70.twc1.net',
   'https://mayzer57-tutor-diary-4d45.twc1.net',
   'https://mayzer57-tutor-diary-2e5c.twc1.net',

@@ -2,7 +2,7 @@
   "name": "client",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://mayzer57-tutor-diary-2e5c.twc1.net",
+  "homepage": "https://mayzer57-tutor-diary-7435.twc1.net",
   "proxy": "http://localhost:5000",
   "dependencies": {
     "@testing-library/dom": "^10.4.0",

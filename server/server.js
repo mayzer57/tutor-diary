@@ -1,6 +1,5 @@
 const express = require('express');
 const cors = require('cors');
-
 require('dotenv').config();
 
 const app = express();
@@ -29,9 +28,6 @@ app.use(cors({
 const notificationRoutes = require('./routes/notificationRoutes');
 app.use('/api/notifications', notificationRoutes);
 
-
-
-
 // JSON + кэш
 app.use(express.json());
 app.use((req, res, next) => {
@@ -41,6 +37,10 @@ app.use((req, res, next) => {
 
 // DB
 const pool = require('./db');
+pool.connect((err) => {
+  if (err) console.error('Database connection error:', err.stack);
+  else console.log('Database connected');
+});
 
 // Routes
 const authRoutes = require('./routes/authRoutes');
@@ -53,7 +53,6 @@ app.use('/api/chat', chatRoutes);
 const path = require('path');
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-
 app.use('/api/lessons', lessonRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/tutors', tutorRoutes);
@@ -62,43 +61,48 @@ app.use('/api/auth', authRoutes);
 const financeRoutes = require('./routes/financeRoutes');
 app.use('/api/finance', financeRoutes);
 app.use((err, req, res, next) => {
-  console.error(err.stack);
+  console.error('Global error:', {
+    message: err.message,
+    stack: err.stack,
+    url: req.url,
+    method: req.method,
+  });
   res.status(500).json({ error: 'Internal Server Error' });
 });
 
-
 app.use(express.static(path.join(__dirname, '..', 'client', 'build')));
-
-
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'client', 'build', 'index.html'));
 });
 
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`Сервер запущен на http://localhost:${PORT}`);
 });
-const cron = require('node-cron');
 
+const cron = require('node-cron');
 cron.schedule('*/30 * * * *', async () => {
   console.log('[CRON] Проверка уроков на ближайшие 3 часа');
-
   const now = new Date();
   const in3Hours = new Date(now.getTime() + 3 * 60 * 60 * 1000);
   const nowStr = now.toISOString().split('T')[0];
-  const hour = now.getHours();
+  const hour = in3Hours.getHours();
 
-  const res = await db.query(`
-    SELECT l.id, l.date, l.time, l.student_id, s.name AS student
-    FROM lessons l
-    JOIN students s ON s.id = l.student_id
-    WHERE l.date = $1
-      AND EXTRACT(HOUR FROM l.time) = $2
-  `, [nowStr, in3Hours.getHours()]);
+  try {
+    const res = await pool.query(`
+      SELECT l.id, l.date, l.time, l.student_id, s.name AS student
+      FROM lessons l
+      JOIN students s ON s.id = l.student_id
+      WHERE l.date = $1
+        AND EXTRACT(HOUR FROM l.time) = $2
+    `, [nowStr, hour]);
 
-  for (const lesson of res.rows) {
-    await db.query(
-      'INSERT INTO notifications (student_id, message) VALUES ($1, $2)',
-      [lesson.student_id, '🕒 Напоминание: через 3 часа начнётся занятие!']
-    );
+    for (const lesson of res.rows) {
+      await pool.query(
+        'INSERT INTO notifications (student_id, message) VALUES ($1, $2)',
+        [lesson.student_id, '🕒 Напоминание: через 3 часа начнётся занятие!']
+      );
+    }
+  } catch (error) {
+    console.error('Cron error:', error);
   }
 });
